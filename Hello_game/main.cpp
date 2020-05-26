@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 
-#include "NodeGame.h"
+#include "Header/NodeGame.h"
 #include <iostream>
 
 

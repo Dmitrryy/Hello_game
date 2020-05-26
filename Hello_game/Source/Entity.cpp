@@ -1,4 +1,4 @@
-#include "Entity.h"
+#include "../Header/Entity.h"
 
 
 namespace ezg {

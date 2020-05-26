@@ -143,18 +143,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NodeGame.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\NodeGame.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="NodeGame.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="TileMap.h" />
+    <ClInclude Include="Header\config.h" />
+    <ClInclude Include="Header\Entity.h" />
+    <ClInclude Include="Header\NodeGame.h" />
+    <ClInclude Include="Header\Player.h" />
+    <ClInclude Include="Header\TileMap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource\Images\Mario_tileset.png" />
+    <Image Include="Resource\Images\TileMap.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

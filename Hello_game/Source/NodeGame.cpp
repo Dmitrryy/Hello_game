@@ -1,4 +1,4 @@
-#include "NodeGame.h"
+#include "../Header/NodeGame.h"
 
 
 namespace ezg {

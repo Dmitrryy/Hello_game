@@ -1,7 +1,8 @@
 #include <SFML/Graphics.hpp>
 
-#include "Header/NodeGame.h"
 #include <iostream>
+#include "../Header/NodeGame.h"
+
 
 
 int main()

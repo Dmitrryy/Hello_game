@@ -14,7 +14,7 @@ namespace ezg {
 	}
 
 
-	Entity::Entity (TipeEntity _tipe, sf::Texture& texture, float pos_x, float pos_y, float _width, float _height)
+	Entity::Entity (TipeEntity _tipe, float pos_x, float pos_y, float _width, float _height)
 		: m_hit_box  (pos_x, pos_y, _width, _height)
 		, speed_x    (0)
 		, speed_y    (0)
@@ -22,9 +22,16 @@ namespace ezg {
 		, on_ground  (false)
 		, m_tipe     (_tipe)
 	{
-		sprite.setTexture     (texture);
-		sprite.setTextureRect (sf::IntRect(82, 144, _width, _height));
-		sprite.setPosition    (pos_x, pos_y);
+
+	}
+
+	void 
+	Entity::SetSprite(sf::Texture& texture, int location_x/* = 0*/, int location_y/* = 0*/) {
+
+		sprite.setTexture(texture);
+		sprite.setTextureRect(sf::IntRect(location_x, location_y, m_hit_box.width, m_hit_box.top));
+		//sprite.setPosition(pos_x, pos_y);
+
 	}
 
 
@@ -56,6 +63,10 @@ namespace ezg {
 		else if (_dir == Direction::Horixontal) {
 
 			moveIt(speed_x * time, 0);
+
+			if (is_gravity) {
+				on_ground = false;
+			}
 
 		}
 	}

@@ -21,9 +21,9 @@ namespace ezg {
 
 
     void 
-    NodeGame::loadHero(sf::Texture& texture, float pos_x, float pos_y, float _width, float _height) {
+    NodeGame::loadHero(sf::Texture& texture, int texture_loc_x, int texture_loc_y, float pos_x, float pos_y, float _width, float _height) {
 
-        m_hero.load(texture, pos_x, pos_y, _width, _height);
+        m_hero.load(texture, texture_loc_x, texture_loc_y, pos_x, pos_y, _width, _height);
 
     }
 
@@ -33,26 +33,52 @@ namespace ezg {
 
 //************************************************************
 // алгоритм(дл€ каждого элемента):
-//      1. смещаем все элементы по х (устанавливаем on_ground = false т.к. персонаж помет упасть)
+//      1. смещаем все элементы по х (устанавливаем on_ground = false т.к. персонаж может упасть)
 //      2. провер€ем на взаиможействие с картой
 //      3. смещаем все элементы по у
 //      4. провер€ем на взаимодействие с картой
-//      5. занул€ем скорость по x
 //      6. устанавливаем спрайт в новую позицию
-// цикл с проверкой на фзаимодействие элементов между собой
+// все в цикл с проверкой на dзаимодействие элементов между собой
 //************************************************************
 
-        m_hero.upPosition(time, Direction::Horixontal);
-        m_hero.colisionMap(Direction::Horixontal, m_map);
-        m_hero.on_ground = false;
+        upAllPosition(time, Direction::Horixontal);
+        allColision(Direction::Horixontal);
 
-        m_hero.upPosition(time, Direction::Vertical);
-        m_hero.colisionMap(Direction::Vertical, m_map);
+        upAllPosition(time, Direction::Vertical);
+        allColision(Direction::Vertical);
 
-        m_hero.setSpeedX(0);
+        upSprite();
 
-        m_hero.sprite.setPosition(m_hero.m_hit_box.left, m_hero.m_hit_box.top);
     } // update
 
+    void 
+    NodeGame::upAllPosition(float time, Direction _dir) {
+
+        m_hero.upPosition(time, _dir);
+
+        for (Entity* elem : m_entities) {
+            elem->upPosition(time, _dir);
+        }
+
+    }
+
+    void 
+    NodeGame::allColision(Direction _dir) {
+
+        for (Entity* elem : m_entities) {
+            m_hero.colision(elem, _dir);
+        }
+
+    }
+
+    void 
+    NodeGame::upSprite() {
+
+        m_hero.sprite.setPosition(m_hero.m_hit_box.left, m_hero.m_hit_box.top);
+
+        for (auto* elem : m_entities) {
+            elem->sprite.setPosition(elem->m_hit_box.left, elem->m_hit_box.top);
+        }
+    }
 
 } //namecpace ezg

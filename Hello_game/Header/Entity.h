@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+
 #include "TileMap.h"
 #include "config.h"
 
@@ -14,7 +14,7 @@ namespace ezg {
 
 		Entity(TipeEntity _tipe);
 
-		Entity(TipeEntity _tipe, sf::Texture& texture, float pos_x, float pos_y, float _width, float _height);
+		Entity(TipeEntity _tipe, float pos_x, float pos_y, float _width, float _height);
 
 
 
@@ -24,8 +24,11 @@ namespace ezg {
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 
 		// осуществляет взаиможействие с картой
-		virtual void colisionMap(Direction _dir, ezg::TileMap& _map) = 0;
+		//virtual void colisionMap(Direction _dir, ezg::TileMap& _map) = 0;
 
+		virtual void colision(ezg::Entity* _entity, Direction _dir) = 0;
+
+		void SetSprite(sf::Texture& texture, int location_x = 0, int location_y = 0);
 
 		virtual void setSpeed(float _sp_x, float _sp_y) noexcept {
 
@@ -55,7 +58,6 @@ namespace ezg {
 
 
 	public:
-		//void setPosition(float _x, float _y);
 
 		void moveIt (float _x, float _y) noexcept;
 
@@ -63,6 +65,7 @@ namespace ezg {
 
 
 
+	private:
 
 		TipeEntity m_tipe;
 

@@ -24,7 +24,7 @@ namespace ezg {
 
 
         // load the tileset texture
-        if (!m_tileset.loadFromFile(tileset)) {
+        if (!m_tileset.loadFromFile( tileset)) {
             return false;
         }
 
@@ -41,8 +41,11 @@ namespace ezg {
 
                 // get the current tile number
                 // const int tileNumber = tiles[i * width + j];
-                const int tileNumber = level[i * width + j];
+                const int tileNumber = level[i * width + j] - 1;
 
+                if (tileNumber < 0) {
+                    continue;
+                }
 
                 // find its position in the tileset texture
                 const int tu = tileNumber % (m_tileset.getSize().x / tileSize.x);

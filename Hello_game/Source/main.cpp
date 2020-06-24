@@ -10,7 +10,7 @@ int main()
     ezg::NodeGame game;
 
 
-    if (!game.loadLevel("Resource/Images/TileMap.png", sf::Vector2u(16, 16)/*, level*/, MAP_WIDTH, 8)) {
+    if (!game.loadLevel("Resource/Images/Mario_tileset.png", sf::Vector2u(16, 16)/*, level*/, MAP_WIDTH, MAP_HEIGHT)) {
         return 1;
     }
     
@@ -20,7 +20,17 @@ int main()
         return 2;
     }
 
-    game.loadHero(txlist, 50, 50, HERO_WIDTH, HERO_HEIGHT);
+    sf::Font font;
+    if (!font.loadFromFile("Resource/calibri.ttf")) {
+        return 3;
+    }
+
+    sf::Text fps;
+    fps.setFont(font);
+    fps.setFillColor(sf::Color::Green);
+    fps.setCharacterSize(25);
+
+    game.loadHero(txlist, HERO_TEXTURE_LOC_X, HERO_TEXTURE_LOC_Y, 50, 50, HERO_WIDTH, HERO_HEIGHT);
 
 
     //вид для скролинга камеры (прикреплена к герою)
@@ -28,32 +38,82 @@ int main()
 
 
     // create the window
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Tilemap");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Hello Game (ezg)");
+
+
+
+    ///////////////////////////////////////test////////////////////////////////////////
+
+    ezg::Solid* sol1 = new ezg::Solid (0, 208, 432, 16);
+    game.m_entities.push_back(sol1);
+
+    ezg::Solid* sol2 = new ezg::Solid (32, 160, 16, 48);
+    game.m_entities.push_back(sol2);
+     
+    ezg::Solid* sol3 = new ezg::Solid (48, 176, 16, 16);
+    game.m_entities.push_back(sol3);
+
+    ezg::Solid* sol4 = new ezg::Solid (96, 144, 80, 16);
+    game.m_entities.push_back(sol4);
+
+    ezg::Solid* sol5 = new ezg::Solid (208, 160, 32, 16);
+    game.m_entities.push_back(sol5);
+
+    ///////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 
     //запускаем таймер для регулировки скорости игры
     sf::Clock clock;
   
+    double gameTime = 0;
 
     // run the main loop
     while (window.isOpen())
     {
-        float time = clock.getElapsedTime().asMicroseconds();
+        float time = clock.getElapsedTime().asSeconds();
         clock.restart();
 
+        
+        //fps.setString(std::to_string(static_cast<int>(1.0 / time)));
+        //gameTime += time;
+
         // регулятор скорости игры
-        time /= 800;
+        time = time * 1200;
+
 
 
         // handle events
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed) {
+            switch (event.type)
+            {
+
+            case sf::Event::Closed:
 
                 window.close();
+                break;
 
+            case sf::Event::KeyReleased:
+
+                switch (event.key.code) {
+
+                case sf::Keyboard::Left:
+                    game.m_hero.setSpeedX(0);
+                    break;
+
+                case sf::Keyboard::Right:
+                    game.m_hero.setSpeedX(0);
+                    break;
+                }
+
+                break;
             }
+
         }
 
 
@@ -61,12 +121,12 @@ int main()
         // todo: вынести в отдельную функцию
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 
-            game.m_hero.addSpeedX(-0.1);
+            game.m_hero.setSpeedX(-0.1);
 
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
 
-            game.m_hero.addSpeedX(0.1);
+            game.m_hero.setSpeedX(0.1);
           
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -85,15 +145,20 @@ int main()
         sf::Transform tr;
         tr.scale(4, 4);
 
+        //printf("%f    %f\n", game.m_hero.m_hit_box.left * 4, game.m_hero.m_hit_box.top * 4);
+
         mainView.setCenter(sf::Vector2f(game.m_hero.m_hit_box.left * 4, game.m_hero.m_hit_box.top * 4));
         window.setView(mainView);
 
+        //fps.setPosition(mainView.getCenter().x - WINDOW_WIDTH / 2, mainView.getCenter().y - WINDOW_HEIGHT / 2);
+
         window.draw(game, tr);
+        //window.draw(fps);
 
         window.display();
-    
+
     } // while (window.isOpen())
 
 
     return 0;
-}
+} // main()

@@ -6,7 +6,7 @@
 
 namespace ezg {
 
-
+   
     class Hero : public ezg::Entity
     {
 
@@ -18,13 +18,16 @@ namespace ezg {
 
         }
 
-        void load(sf::Texture& texture, float pos_x, float pos_y, float _width, float _height);
+        void load(sf::Texture& texture, int texture_loc_x, int texture_loc_y, float pos_x, float pos_y, float _width, float _height);
 
 
         void jump();
 
 
-        virtual void colisionMap(Direction _dir, TileMap& _map) override;
+        //virtual void colisionMap(Direction _dir, TileMap& _map) override;
+
+        //определяет взаимодействие героя с другими обьектами
+        virtual void colision(ezg::Entity* _entity, Direction _dir) override;
 
 
         virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

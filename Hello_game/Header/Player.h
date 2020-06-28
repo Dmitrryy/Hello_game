@@ -11,6 +11,7 @@ namespace ezg {
     {
 
     public:
+
         Hero() noexcept
             : Entity(TipeEntity::MainHero)
             , frame_stat(Stat::Stay)
@@ -18,27 +19,27 @@ namespace ezg {
 
         }
 
-        void load(sf::Texture& texture, int texture_loc_x, int texture_loc_y, float pos_x, float pos_y, float _width, float _height);
+        
+        //makes the hero jump ...
+        void jump() noexcept;
 
 
-        void jump();
+        //determines the interaction of the hero with other objects
+        void colision(gsl::not_null <Entity*> _entity, Direction _dir) override;
+        
 
-
-        //virtual void colisionMap(Direction _dir, TileMap& _map) override;
-
-        //определяет взаимодействие героя с другими обьектами
-        virtual void colision(ezg::Entity* _entity, Direction _dir) override;
-
-
-        virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        //draws a hero texture
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 
     private:
 
-        //для анимации (todo)
+        //for animation (todo)
         float current_frame = 0;
         Stat frame_stat;
 
+
     }; // class Hero
+
 
 } //namespace ezg

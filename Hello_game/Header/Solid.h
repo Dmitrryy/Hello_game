@@ -11,23 +11,47 @@ namespace ezg {
 	//regular rectangl that you cannot go through
 	//
 	///////////////////////////////////////////////
-	class Solid : public ezg::Entity {
+	class Solid : public ezg::Entity 
+	{
 
 	public:
+
 		Solid(float place_x, float place_y, float width, float height)
 			: Entity(TipeEntity::Solid, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}
 
-		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
-			//nop
+		void draw(sf::RenderTarget& , sf::RenderStates) const noexcept override { /* nop */
+
+			/*sf::RectangleShape rec(sf::Vector2f(m_hit_box.width, m_hit_box.height));
+			rec.setPosition(sf::Vector2f(m_hit_box.left, m_hit_box.top));
+			rec.setFillColor(sf::Color::Red);
+			target.draw(rec, states);*/
 		}
 
-		virtual void colision(ezg::Entity*, Direction) override {
-			//nop
+		void colision(gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
+
+	}; // class Solid
+
+
+	/////////////////////////////////////////////////////////////////////////////
+
+
+	class SolidAbove : public ezg::Entity
+	{
+
+	public:
+
+		SolidAbove(float place_x, float place_y, float width, float height)
+			: Entity(TipeEntity::SolidAbove, place_x, place_y, width, height)
+		{
+			is_gravity = false;
 		}
 
+		void draw(sf::RenderTarget&, sf::RenderStates) const noexcept override { /* nop */ }
+
+		void colision(gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
 	};
 
 } // namespace ezg

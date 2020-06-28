@@ -2,64 +2,95 @@
 
 #include <vector>
 
+#include <tinyxml2.h>
 
 #include "config.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Solid.h"
 
+#include <cassert>
+#include <iostream>
 
 namespace ezg {
 
 
     class NodeGame : public sf::Drawable, public sf::Transformable
     {
+
+        friend TileMap;
+        friend Entity;
+
+        NodeGame            (const NodeGame& _that)      = delete; //not saported
+        NodeGame& operator= (const NodeGame&)            = delete; //not saported
+        NodeGame            (NodeGame&& _that)           = delete; //not saported
+        NodeGame& operator= (NodeGame&&)                 = delete; //not saported
+
+
     public:
 
-        NodeGame  ()
-            : m_map()
-            , m_hero()
+        NodeGame () noexcept
+            : m_map(nullptr)
+            , m_hero(nullptr)
+            , m_mod(GameMod::Game)
         {}
+        ~NodeGame();
 
-        ~NodeGame () 
-        {
-            for (auto& elem : m_entities) {
 
-                delete elem;       
-            }
-        }
+        //function of drawing the whole picture
+        void draw   (sf::RenderTarget& target, sf::RenderStates states) const override;
 
-        //функци€ рисовани€ всей картины
-        virtual void draw   (sf::RenderTarget& target, sf::RenderStates states) const override;
 
-        // загружает карту
-        // todo: считывать карту и ее составл€ющие элементы (враги и тд) из файла (xml)
-        bool loadLevel      (const std::string& tileset, sf::Vector2u tileSize/*, const int* tiles*/, unsigned int width, unsigned int height);
+        //////////////////////////////////////////////////////
+        // loads a map and objects from a file in a format XML.
+        // P.S: I get this file using TileMap editor.
+        //////////////////////////////////////////////////////
+        bool loadLevelXML (const std::string& _fileXML);
 
-        // загружает информацию о главном герое 
-        void loadHero       (sf::Texture& texture, int texture_loc_x, int texture_loc_y, float pos_x, float pos_y, float _width, float _height);
-        
-        //обновл€ет координаты элементов и провер€ет на взаимодействие
+
+        void checkEvent    (const sf::Event& _event) noexcept;
+        void checkKeyBoard ( );
+
+
+        // updates the coordinates of elements and checks for interaction
         void update         (float time);
+
+
+        inline const float   getPosHeroX () noexcept { return (m_hero == nullptr) ? 0 : m_hero->getPosX(); }
+        inline const float   getPosHeroY () noexcept { return (m_hero == nullptr) ? 0 : m_hero->getPosY(); }
+
+        inline const GameMod getMod      () noexcept { return m_mod; }
+
 
     private:
 
         ////////////////////////////////////////////////////////////////////////
-        // дл€ обновлени€ состо€ни€ всех элементов из массива m_entities (todo)
+        // to update the state of all elements from the m_entities array
         void upAllPosition (float time, Direction _dir);
-
+        //
         void allColision   (Direction _dir);
-
+        //
         void upSprite      ();
         ////////////////////////////////////////////////////////////////////////
 
 
+        inline void addObject(std::unique_ptr<Entity>&& _elem) { m_entities.push_back(_elem.release()); }
 
-    public: //private!!!!!
-        Hero                      m_hero;            // главный герой
-        TileMap                   m_map;             // карта
-        std::vector<Entity*>      m_entities;        // массив с остальными элемениами игры (враги, пули и тд)
+
+    private:
+
+        GameMod                                    m_mod;
+
+        //sf::Clock                                  m_clock;
+        //double                                     m_time;
+        //double                                     m_time_period;
+
+        std::unique_ptr < Hero >                   m_hero;            
+        std::unique_ptr < TileMap >                m_map;
+        std::list < gsl::not_null < Entity* > >    m_entities; // an array with other elements of the game (enemies, bullets, etc.)
+
 
     }; // class NodeGame
+
 
 } //namespace ezg

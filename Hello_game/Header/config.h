@@ -1,32 +1,74 @@
 #pragma once
 
 
-#define WINDOW_WIDTH       16 * 16 * 4
-#define WINDOW_HEIGHT      8 * 16 * 4
+#include <tinyxml2.h>
+#include <SFML/Graphics.hpp>
 
-#define HERO_WIDTH         13
-#define HERO_HEIGHT        16
 
-#define HERO_STAY_FRAME    1
-#define HERO_WALK_FRAME    3
+#include <vector>
+#include <iostream>
+#include <sstream>
+#include <cassert>
+#include <list>
+#include <algorithm>
 
-#define SIZE_TILE          16
 
-#define MAP_WIDTH          30
-#define MAP_HEIGHT         15
+#include <memory>
 
-#define HERO_TEXTURE_LOC_X 82
-#define HERO_TEXTURE_LOC_Y 144
 
+#include <gsl/gsl>
+#define GSL_THROW_ON_CONTRACT_VIOLATION
+
+
+////////////////////////////////settings/////////////////////////////////////
+//game speed controller
+static int GAME_SPEED_CONSTROLLER   = 1200;
+//
+//display settings
+static int SCALE_ALL_X              = 5;
+static int SCALE_ALL_Y              = 5;
+//
+//window sizes
+static int WINDOW_WIDTH             = 16 * 16 * SCALE_ALL_X;
+static int WINDOW_HEIGHT            = 8 * 16 * SCALE_ALL_Y;
+//
+//
+//hero settings
+#define HERO_TEXTURE_FNAME      "Resource/Images/Player.png"
+#define HERO_TEXTURE_LOC_X      1
+#define HERO_TEXTURE_LOC_Y      9
+#define HERO_WIDTH              7
+#define HERO_HEIGHT             7
+/////////////////////////////////////////////////////////////////////////////
 
 
 namespace ezg {
 
+    
+    class NodeGame;
+    class TileMap;
+    class Layer;
+    class Entity;
+    class Player;
+    class Enemy;
+    class Solid;
+
+
+    enum class GameMod {
+          Menu
+        , Pause
+        , Game
+        , Exit
+    };
+
+
+    //todo
     enum class Stat {
           Stay
         , WalkLeft
         , WalkRight
     };
+
 
     enum class Direction {
           Left
@@ -37,9 +79,14 @@ namespace ezg {
         , Horixontal
     };
 
+
+    //available game object types
     enum class TipeEntity {
           MainHero
         , Solid
+        , SolidAbove
+        , Stairs
+        , Enemy
     };
 
 } //namespace ezg

@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Libs\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\dadro\source\repos\Hello_game\Hello_game\Libs\tinyxml2;C:\Libs\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Libs\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\main.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="Header\Player.h" />
     <ClInclude Include="Header\Solid.h" />
     <ClInclude Include="Header\TileMap.h" />
+    <ClInclude Include="Libs\tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\Images\Mario_tileset.png" />

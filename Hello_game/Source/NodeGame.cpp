@@ -12,29 +12,75 @@ namespace ezg {
         m_hero = nullptr;
 
         m_entities.clear();
+
+        m_window.close();
     }
 
 
-    void NodeGame::draw(sf::RenderTarget& target, sf::RenderStates states) const /* override */ {
+    void NodeGame::draw(sf::RenderStates states) {
 
-        m_map->drawBackGround(target, states);
-        m_map->drawMap(target, states);
+        m_window.clear();
+
+        switch (m_mod) 
+        {
+        case GameMod::Game: 
+            m_map->drawBackGround(m_window, states);
+            m_map->drawMap(m_window, states);
 
 
-        m_hero->draw(target, states);
+            m_hero->draw(m_window, states);
 
 
-        for (auto elem : m_entities) {
+            for (auto elem : m_entities) {
 
-            elem->draw(target, states);
+                elem->draw(m_window, states);
+
+            }
+
+            m_map->drawFrontGround(m_window, states);
+
+            break; // case GameMod::Game
+        
+
+        case GameMod::MainMenu:
+
+            m_menu.draw(m_window, states);
+            
+            break;
+
+
+        case GameMod::Pause:
+
+            m_map->drawBackGround(m_window, states);
+            m_map->drawMap(m_window, states);
+
+
+            m_hero->draw(m_window, states);
+
+            for (auto elem : m_entities) {
+
+                elem->draw(m_window, states);
+
+            }
+            m_map->drawFrontGround(m_window, states);
+
+
+            m_menu.draw(m_window, states);
+
+            break;
 
         }
 
-        m_map->drawFrontGround(target, states);
+        m_window.display();
+
+        m_window.setView(m_view);
     }
 
 
     bool NodeGame::loadLevelXML(const std::string& _fileXML) {
+
+        m_mod = GameMod::Loading;
+
 
         tinyxml2::XMLDocument lvl;
         lvl.LoadFile(_fileXML.c_str());
@@ -96,17 +142,16 @@ namespace ezg {
             else if (0 == std::strcmp(layer->Name(), "layer")) {
 
                 if (0 == std::strcmp(layer->Attribute("name"), "background")) {
-                    //std::cout << "back\n";
+                    
                     m_map->addBackGround(layer);
                 }
                 else if (0 == std::strcmp(layer->Attribute("name"), "frontground")) {
-                    m_map->addFrontGround(layer);
-                    //std::cout << "front\n";
+
+                    m_map->addFrontGround(layer); 
                 }
                 else {
-                    m_map->addLayer(layer);
-                    //std::cout << "layer\n";
 
+                    m_map->addLayer(layer);
                 }
 
             }
@@ -157,66 +202,129 @@ namespace ezg {
 
         } // while (layer != nullptr)
 
+
+        m_menu.setFont(FONT_FNAME);
+        m_menu.setTextSize(FONT_DEFAULT_SIZE);
+        m_menu.setTextColor(FONT_DEFAULT_COLOR);
+
+
+        m_mod = GameMod::MainMenu;
+        m_menu.setMenu(TipeMenu::Main);
+
+        //m_menu.clear();
+        //m_menu.setTextColor(sf::Color(192, 181, 149));
+
+        //m_menu.setBackGround(MENU_BACKGROUND1_FNAME);
+
+        //// -_-
+        //m_menu.addButton(1, MenuButton::toGame, "Game",
+        //    sf::Vector2f((m_view.getCenter().x + m_view.getSize().x / 5)
+        //        , (m_view.getCenter().y - m_view.getSize().y / 2) + 128));
+
+        //m_menu.addButton(2, MenuButton::toExit, "Exit",
+        //    sf::Vector2f((m_view.getCenter().x + m_view.getSize().x / 5)
+        //        , (m_view.getCenter().y - m_view.getSize().y / 2) + 200));
+
+
+
         //todo: проверка на состояние уровня (все ли загружено) 
         return true;
     } // loadLevelXML
 
 
-    void NodeGame::checkEvent(const sf::Event& _event) noexcept {
+    void NodeGame::checkEvents() noexcept {
 
-        switch (_event.type)
+        sf::Event event;
+        while (m_window.pollEvent(event))
         {
 
-        case sf::Event::Closed:
+            switch (m_mod)
+            {
+            case GameMod::Game:
 
-            m_mod = GameMod::Exit;
-            break;
+                switch (event.type)
+                {
+                    ////////////////////////////Closed//////////////////////////////////////////////////////////
+                case sf::Event::Closed:
+                    m_mod = GameMod::Exit;
+                    break;
 
-        case sf::Event::KeyReleased:
+                    ////////////////////////////KeyPressed//////////////////////////////////////////////////////
+                case sf::Event::KeyPressed:
+                    switch (event.key.code)
+                    {
 
-            switch (_event.key.code) {
+                    case sf::Keyboard::A:
+                        m_hero->addSpeedX(-0.1);
+                        break;
 
-            case sf::Keyboard::A:
-                m_hero->addSpeedX(0.1);
+
+                    case sf::Keyboard::D:
+                        m_hero->addSpeedX(0.1);
+                        break;
+
+
+                    case sf::Keyboard::Escape:
+                        m_mod = GameMod::Pause;
+                        m_hero->setSpeed(0, 0);
+
+                        m_menu.setMenu(TipeMenu::Pause);
+
+                    }
+                    break; //case sf::Event::KeyPressed:
+
+
+                case sf::Event::KeyReleased:
+
+                    switch (event.key.code) {
+
+                    case sf::Keyboard::A:
+                        m_hero->addSpeedX(0.1);
+                        break;
+
+                    case sf::Keyboard::D:
+                        m_hero->addSpeedX(-0.1);
+                        break;
+                    }
+                    break; //case sf::Event::KeyReleased:
+                }
+                break; //case GameMod::Game:
+
+            case GameMod::Pause:
+            case GameMod::MainMenu:
+                m_menu.checkEvent(event);
                 break;
 
-            case sf::Keyboard::D:
-                m_hero->addSpeedX(-0.1);
+            default:
+                
                 break;
             }
-
-            break;
-
-
-        case sf::Event::KeyPressed:
-
-            switch (_event.key.code) {
-
-            case sf::Keyboard::A:
-                m_hero->addSpeedX(-0.1);
-                break;
-
-            case sf::Keyboard::D:
-                m_hero->addSpeedX(0.1);
-                break;
-
-            //case sf::Keyboard::W:
-            //    m_hero->jump();
-            //    break;
-            }
-
-            break;
         }
+
 
     }
 
 
     void NodeGame::checkKeyBoard() {
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        switch (m_mod) {
 
-            m_hero->jump();
+        case GameMod::Game:
 
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+
+                m_hero->jump();
+
+            }
+
+            break; // GameMode::Game
+
+        case GameMod::MainMenu:
+        case GameMod::Pause   :
+
+            m_menu.checkKeyBoard();
+
+            break; //Menu
         }
 
     }
@@ -233,16 +341,24 @@ namespace ezg {
 //      6. устанавливаем спрайт в новую позицию
 // все в цикл с проверкой на dзаимодействие элементов между собой
 //************************************************************
+        switch (m_mod) 
+        {
+        case GameMod::Game:
 
-        upAllPosition(time, Direction::Horixontal);
-        allColision(Direction::Horixontal);
+            upAllPosition(time, Direction::Horixontal);
+            allColision(Direction::Horixontal);
 
-        upAllPosition(time, Direction::Vertical);
-        allColision(Direction::Vertical);
+            upAllPosition(time, Direction::Vertical);
+            allColision(Direction::Vertical);
 
-        //std::cout << m_hero->onGround() << std::endl;
+            //std::cout << m_hero->onGround() << std::endl;
 
-        upSprite();
+            upSprite();
+            m_view.setCenter(sf::Vector2f(getPosHeroX() * SCALE_ALL_X, getPosHeroY() * SCALE_ALL_Y));
+
+            break;
+
+        }
 
     } // update
 

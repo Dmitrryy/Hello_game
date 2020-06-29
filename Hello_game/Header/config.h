@@ -10,6 +10,7 @@
 #include <sstream>
 #include <cassert>
 #include <list>
+#include <map>
 #include <algorithm>
 
 
@@ -28,17 +29,27 @@ static int GAME_SPEED_CONSTROLLER   = 1200;
 static int SCALE_ALL_X              = 5;
 static int SCALE_ALL_Y              = 5;
 //
-//window sizes
-static int WINDOW_WIDTH             = 16 * 16 * SCALE_ALL_X;
-static int WINDOW_HEIGHT            = 8 * 16 * SCALE_ALL_Y;
+#define STYLE_WINDOW sf::Style::Fullscreen
 //
+//window sizes
+static int WINDOW_WIDTH = 1920;
+static int WINDOW_HEIGHT = 1080;
+//
+//font
+#define FONT_FNAME              "Resource/19440.ttf"
+#define FONT_DEFAULT_SIZE       50
+#define FONT_DEFAULT_COLOR      sf::Color(255, 255, 255)
 //
 //hero settings
 #define HERO_TEXTURE_FNAME      "Resource/Images/Player.png"
-#define HERO_TEXTURE_LOC_X      1
-#define HERO_TEXTURE_LOC_Y      9
-#define HERO_WIDTH              7
-#define HERO_HEIGHT             7
+#define HERO_TEXTURE_LOC_X      0
+#define HERO_TEXTURE_LOC_Y      8
+#define HERO_WIDTH              8
+#define HERO_HEIGHT             8
+//
+//menu settings
+#define MENU_BACKGROUND_PAUSE_FNAME "Resource/Images/menu_pause.png"
+#define MENU_BACKGROUND1_FNAME      "Resource/Images/menu1.png"
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -46,19 +57,40 @@ namespace ezg {
 
     
     class NodeGame;
+
     class TileMap;
     class Layer;
+
     class Entity;
     class Player;
     class Enemy;
     class Solid;
+    class SolidAbove;
+    class Menu;
 
 
     enum class GameMod {
-          Menu
+          NotInitialized
+        , Loading
+        , MainMenu
         , Pause
         , Game
         , Exit
+    };
+
+
+    enum class TipeMenu {
+          Main
+        , Pause
+    };
+
+
+    enum class MenuButton {
+          toGame
+        , toExit
+        , toMainMenu
+        , Continue
+        , Restart
     };
 
 

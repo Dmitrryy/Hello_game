@@ -4,16 +4,142 @@
 
 namespace ezg {
 
+    NodeGame::NodeGame() noexcept
+        : m_map()
+        , m_hero()
+        , m_menus()
+        , m_mood(GameMood::NotInitialized)
+        , m_view(sf::FloatRect(0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT))
+        , m_window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Hello Game (ezg)")
+    {
 
+        _initialize_();
+
+    }
     NodeGame::~NodeGame()
     {
 
-        m_map = nullptr;
-        m_hero = nullptr;
-
         m_entities.clear();
 
-        m_window.close();
+        //m_window.close();
+    }
+
+
+    void NodeGame::_initialize_() {
+
+        m_window.setView(m_view);
+        m_window.setKeyRepeatEnabled(false);
+
+
+        m_hero.setWidth(HERO_WIDTH);
+        m_hero.setHeight(HERO_HEIGHT);
+        
+
+        if (!m_hero.atAnimation().loadTexture(HERO_TEXTURE_FNAME)) {
+            assert(0);
+        }
+        {
+            m_hero.atAnimation().addAnimation(EntityAnimation::Walk);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(0, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(8, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(16, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(24, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(32, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(40, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(48, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(56, 8, 8, 8), 100.f);
+
+            m_hero.atAnimation().addAnimation(EntityAnimation::Jump);
+            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(0, 80, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(8, 80, 8, 8), 120.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(16, 80, 8, 8), 500.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(24, 80, 8, 8), 4000.f);
+
+            m_hero.atAnimation().addAnimation(EntityAnimation::Idle);
+            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(0, 56, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(8, 56, 8, 8), 400.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(16, 56, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(24, 56, 8, 8), 400.f);
+        }
+
+
+        m_menus.setFont(FONT_FNAME);
+
+        _addMainMenu_();
+        _addPauseMenu_();
+        _addDeathMenu_();
+
+
+        changeMood(GameMood::MainMenu);
+    }
+
+
+#define ButtonMain(a) m_menus.atMenu(TipeMenu::Main).atButton(a)
+    void NodeGame::_addMainMenu_() {
+
+
+        m_menus.create(TipeMenu::Main);
+
+
+        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toGame, "Game", 0.70f, 0.36f);
+        ButtonMain(MenuButton::toGame).setTextColor(MAIN_MENU_FONT_COLOR);
+        ButtonMain(MenuButton::toGame).setTextSize(MAIN_MENU_FONT_SIZE);
+
+        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toExit, "Exit", 0.70f, 0.46f);
+        ButtonMain(MenuButton::toExit).setTextColor(MAIN_MENU_FONT_COLOR);
+        ButtonMain(MenuButton::toExit).setTextSize(MAIN_MENU_FONT_SIZE);
+
+
+        if (!m_menus.atMenu(TipeMenu::Main).setBackGround(MENU_BACKGROUND1_FNAME)) {
+            assert(0);
+        }
+
+    }
+
+
+#define ButtonPause(a) m_menus.atMenu(TipeMenu::Pause).atButton(a)
+    void NodeGame::_addPauseMenu_() {
+
+        m_menus.create(TipeMenu::Pause);
+
+
+        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Continue, "Continue", 0.8f, 0.2f);
+        ButtonPause(MenuButton::Continue).setTextColor(MAIN_MENU_FONT_COLOR);
+        ButtonPause(MenuButton::Continue).setTextSize(MAIN_MENU_FONT_SIZE);
+
+        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Restart, "Restart", 0.8f, 0.3f);
+        ButtonPause(MenuButton::Restart).setTextColor(MAIN_MENU_FONT_COLOR);
+        ButtonPause(MenuButton::Restart).setTextSize(MAIN_MENU_FONT_SIZE);
+
+        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::toMainMenu, "Menu", 0.8f, 0.4f);
+        ButtonPause(MenuButton::toMainMenu).setTextColor(MAIN_MENU_FONT_COLOR);
+        ButtonPause(MenuButton::toMainMenu).setTextSize(MAIN_MENU_FONT_SIZE);
+
+
+        if (!m_menus.atMenu(TipeMenu::Pause).setBackGround(MENU_BACKGROUND_PAUSE_FNAME)) {
+            assert(0);
+        }
+
+    }
+
+
+#define ButtonDeath(a) m_menus.atMenu(TipeMenu::Death).atButton(a)
+    void NodeGame::_addDeathMenu_() {
+
+        m_menus.create(TipeMenu::Death); 
+
+        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, "Restart", 0.5f, 0.55f);
+        ButtonDeath(MenuButton::Restart).setTextColor(MENU_DEATH_FONT_COLOR);
+        ButtonDeath(MenuButton::Restart).setTextSize(MENU_DEATH_FONT_SIZE);
+
+        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::toMainMenu, "Menu", 0.5f, 0.65f);
+        ButtonDeath(MenuButton::toMainMenu).setTextColor(MENU_DEATH_FONT_COLOR);
+        ButtonDeath(MenuButton::toMainMenu).setTextSize(MENU_DEATH_FONT_SIZE);
+
+        if (!m_menus.atMenu(TipeMenu::Death).setBackGround(MENU_BACKGROUND_DEATH_FNAME)) {
+            assert(0);
+        }
+
     }
 
 
@@ -21,14 +147,18 @@ namespace ezg {
 
         m_window.clear();
 
-        switch (m_mod) 
+        m_window.setView(m_view);
+
+        //printf("%d\n", m_mood);
+
+        switch (m_mood) 
         {
-        case GameMod::Game: 
-            m_map->drawBackGround(m_window, states);
-            m_map->drawMap(m_window, states);
+        case GameMood::Game: 
+            m_map.drawBackGround(m_window, states);
+            m_map.drawMap(m_window, states);
 
 
-            m_hero->draw(m_window, states);
+            m_hero.draw(m_window, states);
 
 
             for (auto elem : m_entities) {
@@ -37,35 +167,37 @@ namespace ezg {
 
             }
 
-            m_map->drawFrontGround(m_window, states);
+            m_map.drawFrontGround(m_window, states);
 
             break; // case GameMod::Game
         
 
-        case GameMod::MainMenu:
+        case GameMood::MainMenu:
 
-            m_menu.draw(m_window, states);
+            m_menus.drawActive(m_window);
             
             break;
 
 
-        case GameMod::Pause:
+            //these menus are drawn against the background of a stopped game
+        case GameMood::Pause:
+        case GameMood::Death:
 
-            m_map->drawBackGround(m_window, states);
-            m_map->drawMap(m_window, states);
+            m_map.drawBackGround(m_window, states);
+            m_map.drawMap(m_window, states);
 
 
-            m_hero->draw(m_window, states);
+            m_hero.draw(m_window, states);
 
             for (auto elem : m_entities) {
 
                 elem->draw(m_window, states);
 
             }
-            m_map->drawFrontGround(m_window, states);
+            m_map.drawFrontGround(m_window, states);
 
 
-            m_menu.draw(m_window, states);
+            m_menus.drawActive(m_window);
 
             break;
 
@@ -73,13 +205,12 @@ namespace ezg {
 
         m_window.display();
 
-        m_window.setView(m_view);
     }
 
 
     bool NodeGame::loadLevelXML(const std::string& _fileXML) {
 
-        m_mod = GameMod::Loading;
+        //changeMood(GameMood::Loading);
 
 
         tinyxml2::XMLDocument lvl;
@@ -92,36 +223,27 @@ namespace ezg {
             throw std::invalid_argument("not found a 'map' in XML file");
         }
 
-       
-
-        m_map =  std::move(std::make_unique <TileMap>());
-        m_hero = std::move(std::make_unique <Hero>());
-
-        m_hero->setWidth (HERO_WIDTH);
-        m_hero->setHeight(HERO_HEIGHT);
-
-        m_hero->SetSprite(HERO_TEXTURE_FNAME, HERO_TEXTURE_LOC_X, HERO_TEXTURE_LOC_Y, HERO_WIDTH, HERO_HEIGHT);
 
 
-        {   //фиксируем размер карты (в тайлах)
+        {   //fix the card size (in tiles)
             const int64_t width = mapXML->Int64Attribute("width");
             const int64_t height = mapXML->Int64Attribute("height");
             assert(width >= 0 || height >= 0);
 
-            m_map->setWidth(width);
-            m_map->setHeight(height);
+            m_map.setWidth(width);
+            m_map.setHeight(height);
         }
 
-        {   //фиксируем размер одного тайла
+        {   //fix the size of one tile
             const int64_t tilewidth = mapXML->Int64Attribute("tilewidth");
             const int64_t tileheight = mapXML->Int64Attribute("tileheight");
             assert(tilewidth >= 0 || tileheight >= 0);
 
-            m_map->setTileSize(sf::Vector2u(tilewidth, tileheight));
+            m_map.setTileSize(sf::Vector2u(tilewidth, tileheight));
         }
 
+
         tinyxml2::XMLElement* layer = mapXML->FirstChildElement();
-        
 
         while (layer != nullptr) {
 
@@ -134,7 +256,7 @@ namespace ezg {
             }
             else if (0 == std::strcmp(layer->Name(), "tileset")) {
 
-                if (!m_map->setTexture(layer->FirstChildElement("image")->Attribute("source"))) {
+                if (!m_map.setTexture(layer->FirstChildElement("image")->Attribute("source"))) {
                     throw std::invalid_argument("image upload error");
                 }
 
@@ -143,15 +265,15 @@ namespace ezg {
 
                 if (0 == std::strcmp(layer->Attribute("name"), "background")) {
                     
-                    m_map->addBackGround(layer);
+                    m_map.addBackGround(layer);
                 }
                 else if (0 == std::strcmp(layer->Attribute("name"), "frontground")) {
 
-                    m_map->addFrontGround(layer); 
+                    m_map.addFrontGround(layer); 
                 }
                 else {
 
-                    m_map->addLayer(layer);
+                    m_map.addLayer(layer);
                 }
 
             }
@@ -170,27 +292,46 @@ namespace ezg {
                     if (obj->Attribute("type") == nullptr) {
 
                         std::cout << "unknown tipe object" << std::endl;
-
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "solid")) {
 
-                        addObject (std::move (std::make_unique <Solid> (x, y, width, height)));
-
+                        addObject(std::move(std::make_unique <Solid>(x, y, width, height)));
                     }
-                    else if(0 == std::strcmp(obj->Attribute("type"), "solidabove")) {
+                    else if (0 == std::strcmp(obj->Attribute("type"), "solidabove")) {
 
                         addObject(std::move(std::make_unique <SolidAbove>(x, y, width, height)));
+                    }
+                    else if (0 == std::strcmp(obj->Attribute("type"), "stairs")) {
 
+                        addObject(std::move(std::make_unique <Stairs>(x, y, width, height)));
+                    }
+                    else if (0 == std::strcmp(obj->Attribute("type"), "needle")) {
+
+                        addObject(std::move(std::make_unique <Needle>(x, y, width, height)));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "playerspawn")) {
 
-                        m_hero->setPositionHB(x, y);
+                        m_hero.setPosition(x, y);
+                        
+                        //advanced setting
+                        tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
+                        if (pr != nullptr) {
+                            pr = pr->FirstChildElement("property");
+                            while (pr != nullptr) {
+
+                                if (0 == std::strcmp(pr->Attribute("name"), "hp")) {
+                                    m_hero.setHp(pr->IntAttribute("value"));
+                                    //assert(m_hero.m_hp > 0);
+                                }
+                              
+                                pr = pr->NextSiblingElement();
+                            }
+                        }
 
                     }
                     else {
 
                         std::cout << "unknown tipe object: " << obj->Attribute("type") << std::endl;
-
                     }
 
                     obj = obj->NextSiblingElement();
@@ -202,73 +343,40 @@ namespace ezg {
 
         } // while (layer != nullptr)
 
-
-        m_menu.setFont(FONT_FNAME);
-        m_menu.setTextSize(FONT_DEFAULT_SIZE);
-        m_menu.setTextColor(FONT_DEFAULT_COLOR);
-
-
-        m_mod = GameMod::MainMenu;
-        m_menu.setMenu(TipeMenu::Main);
-
-        //m_menu.clear();
-        //m_menu.setTextColor(sf::Color(192, 181, 149));
-
-        //m_menu.setBackGround(MENU_BACKGROUND1_FNAME);
-
-        //// -_-
-        //m_menu.addButton(1, MenuButton::toGame, "Game",
-        //    sf::Vector2f((m_view.getCenter().x + m_view.getSize().x / 5)
-        //        , (m_view.getCenter().y - m_view.getSize().y / 2) + 128));
-
-        //m_menu.addButton(2, MenuButton::toExit, "Exit",
-        //    sf::Vector2f((m_view.getCenter().x + m_view.getSize().x / 5)
-        //        , (m_view.getCenter().y - m_view.getSize().y / 2) + 200));
-
-
-
+        
         //todo: проверка на состояние уровня (все ли загружено) 
         return true;
+
     } // loadLevelXML
 
 
     void NodeGame::checkEvents() noexcept {
 
+        int id = 0;
         sf::Event event;
         while (m_window.pollEvent(event))
         {
 
-            switch (m_mod)
+            switch (m_mood)
             {
-            case GameMod::Game:
-
+///////////////////////////Game///////////////////////////////////
+            case GameMood::Game:
+                m_hero.checkEvent(event);
                 switch (event.type)
                 {
-                    ////////////////////////////Closed//////////////////////////////////////////////////////////
+                    
                 case sf::Event::Closed:
-                    m_mod = GameMod::Exit;
+                    m_mood = GameMood::Exit;
                     break;
 
-                    ////////////////////////////KeyPressed//////////////////////////////////////////////////////
+                   
                 case sf::Event::KeyPressed:
                     switch (event.key.code)
                     {
 
-                    case sf::Keyboard::A:
-                        m_hero->addSpeedX(-0.1);
-                        break;
-
-
-                    case sf::Keyboard::D:
-                        m_hero->addSpeedX(0.1);
-                        break;
-
-
                     case sf::Keyboard::Escape:
-                        m_mod = GameMod::Pause;
-                        m_hero->setSpeed(0, 0);
-
-                        m_menu.setMenu(TipeMenu::Pause);
+                        changeMood(GameMood::Pause);
+                        break;
 
                     }
                     break; //case sf::Event::KeyPressed:
@@ -276,25 +384,88 @@ namespace ezg {
 
                 case sf::Event::KeyReleased:
 
-                    switch (event.key.code) {
+                    switch (event.key.code) 
+                    {
 
-                    case sf::Keyboard::A:
-                        m_hero->addSpeedX(0.1);
-                        break;
-
-                    case sf::Keyboard::D:
-                        m_hero->addSpeedX(-0.1);
-                        break;
                     }
                     break; //case sf::Event::KeyReleased:
                 }
-                break; //case GameMod::Game:
+                break; 
 
-            case GameMod::Pause:
-            case GameMod::MainMenu:
-                m_menu.checkEvent(event);
+
+///////////////////////////Pause///////////////////////////////////
+            case GameMood::Pause:
+                if (m_menus.checkPressing(event, m_window, id)) {
+                    if (id == MenuButton::Continue) {
+                        changeMood(GameMood::Game);
+                    }
+                    else if (id == MenuButton::Restart) {
+                        m_mood = GameMood::Restart;
+                        changeMood(GameMood::Game);
+                    }
+                    else if (id == MenuButton::toMainMenu) {
+                        changeMood(GameMood::MainMenu);
+                    }
+                }
+                switch (event.type)
+                {
+                case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Escape) {
+                        changeMood(GameMood::Game);
+                    }
+                    break;
+
+
+                case sf::Event::Closed:
+                    m_mood = GameMood::Exit;
+                    break;
+                }
                 break;
 
+
+///////////////////////////Death///////////////////////////////////
+            case GameMood::Death:
+                if (m_menus.checkPressing(event, m_window, id)) {
+                    if (id == MenuButton::Restart) {
+                        m_mood = GameMood::Restart;
+                        changeMood(GameMood::Game);
+                    }
+                    else if (id == MenuButton::toMainMenu) {
+                        changeMood(GameMood::MainMenu);
+                    }
+                }
+                switch (event.type)
+                {
+
+                case sf::Event::Closed:
+                    m_mood = GameMood::Exit;
+                    break;
+                }
+                break;
+
+
+///////////////////////////MainMenu///////////////////////////////////
+            case GameMood::MainMenu:
+                if (m_menus.checkPressing(event, m_window, id)) {
+                    if (id == MenuButton::toGame) {
+                        changeMood(GameMood::Game);
+                    }
+                    else if (id == MenuButton::toExit) {
+                        changeMood(GameMood::Exit);
+                    }
+                }
+                switch (event.type)
+                {
+
+                case sf::Event::Closed:
+                    m_mood = GameMood::Exit;
+                    break;
+                }
+            
+                break;
+
+
+////////////////////////////////////////////////////////////////////////
             default:
                 
                 break;
@@ -307,31 +478,84 @@ namespace ezg {
 
     void NodeGame::checkKeyBoard() {
 
-        switch (m_mod) {
+        switch (m_mood) {
 
-        case GameMod::Game:
+        case GameMood::Game:
+            m_hero.checkKeyBoard();
+            break;
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        case GameMood::MainMenu:
+        case GameMood::Death   :
+        case GameMood::Pause   :
 
-                m_hero->jump();
+            //m_menus.checkKeyBoard(m_window);
 
-            }
-
-            break; // GameMode::Game
-
-        case GameMod::MainMenu:
-        case GameMod::Pause   :
-
-            m_menu.checkKeyBoard();
-
-            break; //Menu
+            break;
         }
 
     }
 
 
-    void NodeGame::update(float time) {
+    void NodeGame::changeMood(GameMood _new) {
 
+        switch (_new)
+        {
+        case GameMood::Exit:
+            clear();
+            break;
+
+
+        case GameMood::Game:
+            if (m_mood != GameMood::Pause) {
+                clear();
+                loadLevelXML("Resource/Levels/lvl2.tmx");
+            }
+            break;
+
+
+        case GameMood::MainMenu:
+            clear();
+            m_menus.activate(TipeMenu::Main);
+            break;
+
+
+        case GameMood::Pause:
+            m_menus.activate(TipeMenu::Pause);
+            break;
+
+        case GameMood::Death:
+            m_menus.activate(TipeMenu::Death);
+            break;
+
+        default:
+            
+            break;
+        }
+        m_mood = _new;
+    }
+
+
+    void NodeGame::clear() {
+
+        m_window.clear();
+        
+        for (Entity* en : m_entities) {
+            delete en;
+            en = nullptr;
+        }
+        m_entities.clear();
+        m_hero.restart();
+
+        m_map.clear();
+    }
+
+
+    void NodeGame::update() {
+
+        const auto _period = m_clock.getElapsedTime().asSeconds() * GAME_SPEED_CONTROLLER;
+        m_clock.restart();
+
+        m_time += _period;
 //************************************************************
 // алгоритм(для каждого элемента):
 //      1. смещаем все элементы по х (устанавливаем on_ground = false т.к. персонаж может упасть)
@@ -341,21 +565,29 @@ namespace ezg {
 //      6. устанавливаем спрайт в новую позицию
 // все в цикл с проверкой на dзаимодействие элементов между собой
 //************************************************************
-        switch (m_mod) 
+        switch (m_mood) 
         {
-        case GameMod::Game:
+        case GameMood::Game:
 
-            upAllPosition(time, Direction::Horixontal);
+
+
+            upAllPosition(_period, Direction::Horixontal);
             allColision(Direction::Horixontal);
 
-            upAllPosition(time, Direction::Vertical);
+
+            upAllPosition(_period, Direction::Vertical);
             allColision(Direction::Vertical);
 
-            //std::cout << m_hero->onGround() << std::endl;
+            allOtherUpdate(_period);
 
-            upSprite();
+            //upAnimation(_period);
             m_view.setCenter(sf::Vector2f(getPosHeroX() * SCALE_ALL_X, getPosHeroY() * SCALE_ALL_Y));
 
+            if (m_hero.getStat() == EntityStat::Death) {
+                changeMood(GameMood::Death);
+            }
+
+            //m_hero.setSpeedX(0);
             break;
 
         }
@@ -365,7 +597,7 @@ namespace ezg {
 
     void NodeGame::upAllPosition(float time, Direction _dir) {
 
-        m_hero->upPosition(time, _dir);
+        m_hero.upPosition(time, _dir);
 
         for (const gsl::not_null < Entity* > elem : m_entities) {
             elem->upPosition(time, _dir);
@@ -378,19 +610,19 @@ namespace ezg {
 
         for (const gsl::not_null < Entity* > elem : m_entities) {
 
-            m_hero->colision(elem, _dir);
+            m_hero.colision(elem, _dir);
           
         }
 
     }
 
 
-    void NodeGame::upSprite() {
+    void NodeGame::allOtherUpdate(float _time) {
 
-        m_hero->upPosSprite();
+        m_hero.otherUpdate(_time);
 
-        for (const gsl::not_null < Entity* > elem : m_entities) {
-            elem->upPosSprite();
+        for (auto& e : m_entities) {
+            e->otherUpdate(_time);
         }
     }
 

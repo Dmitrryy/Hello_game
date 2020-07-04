@@ -24,28 +24,25 @@ namespace ezg {
 
         ~Layer() {
 
-            m_vertices.clear();
         }
 
 
     public:
 
-        // map loading
+        // layer loading
         bool load(const sf::Texture& texture, sf::Vector2u tileSize, std::unique_ptr<int[]>&& tiles, size_t width, size_t height);
 
 
     private:
 
-        // рисует всю карту
+
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 
     private:
 
+
         sf::VertexArray m_vertices;
-
-
-    private:
 
         std::unique_ptr<int[]> m_level;
 
@@ -68,10 +65,6 @@ namespace ezg {
         TileMap& operator=  (TileMap&&)             = delete;   //not saported
 
 
-        friend Layer;
-        friend NodeGame;
-
-
     public:
 
         TileMap  () noexcept;
@@ -80,11 +73,18 @@ namespace ezg {
 
     public:
 
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-        void drawMap(sf::RenderTarget& target, sf::RenderStates states) const;
-        void drawBackGround(sf::RenderTarget& target, sf::RenderStates states) const;
-        void drawFrontGround(sf::RenderTarget& target, sf::RenderStates states) const;
 
+        //////////////////////////////////////////////////
+        //drawing function:
+        //  draws the entire map.
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+        //  draws everything except the background.
+        void drawMap(sf::RenderTarget& target, sf::RenderStates states) const;
+        //
+        void drawBackGround(sf::RenderTarget& target, sf::RenderStates states) const;
+        //
+        void drawFrontGround(sf::RenderTarget& target, sf::RenderStates states) const;
+        //////////////////////////////////////////////////
 
 
         void addBackGround(tinyxml2::XMLElement* _layer);
@@ -97,26 +97,29 @@ namespace ezg {
         inline const size_t getHeight() const noexcept { return m_height; }
 
 
+        void clear();
 
-    private:
+
         bool setTexture  (const char* _name) { return m_tileset.loadFromFile(_name); }
 
-        void setWidth    (size_t _new) noexcept { m_width = _new;  }
-        void setHeight   (size_t _new) noexcept { m_height = _new; }
+        void setWidth    (size_t _new)          noexcept { m_width = _new;      }
+        void setHeight   (size_t _new)          noexcept { m_height = _new;     }
 
-        void setTileSize (sf::Vector2u _size) noexcept { m_tile_size = _size; }
+        void setTileSize (sf::Vector2u _size)   noexcept { m_tile_size = _size; }
 
-        std::unique_ptr<Layer> _readXML_ (tinyxml2::XMLElement* _layer);
 
+    private:
+
+        Layer* _readXML_ (tinyxml2::XMLElement* _layer);
 
         std::unique_ptr<int[]> _csvToArrInt_(const char* _data, size_t _num_elem) const;
 
 
     private:
 
-        std::unique_ptr<Layer>                    m_backGround;
-        std::vector < std::unique_ptr <Layer> >   m_map;
-        std::unique_ptr<Layer>                    m_frontGround;
+        Layer*                   m_backGround;
+        std::vector < Layer* >   m_map;
+        Layer*                   m_frontGround;
 
         sf::Vector2u m_tile_size;
         sf::Texture m_tileset;

@@ -83,7 +83,24 @@ namespace ezg {
 
     TileMap::~TileMap() {
 
+        clear();
+
+    }
+
+
+    void TileMap::clear() {
+
+        delete m_backGround;
+        delete m_frontGround;
+        m_backGround = m_frontGround = nullptr;
+
+        for (auto& m : m_map) {
+            delete m;
+            m = nullptr;
+        }
         m_map.clear();
+
+        m_tile_size = sf::Vector2u();
 
         m_width = m_height = 0;
     }
@@ -170,15 +187,15 @@ namespace ezg {
 
     void TileMap::addLayer(tinyxml2::XMLElement* _layer) {
 
-        std::unique_ptr<Layer> l = _readXML_(_layer);
+        Layer* l = _readXML_(_layer);
 
         if (l != nullptr) {
-            m_map.push_back(std::move(l));
+            m_map.push_back(l);
         }
     }
 
 
-    std::unique_ptr<Layer> TileMap::_readXML_(tinyxml2::XMLElement* _layer) {
+    Layer* TileMap::_readXML_(tinyxml2::XMLElement* _layer) {
 
         if (_layer == nullptr) {
             return nullptr;
@@ -199,7 +216,7 @@ namespace ezg {
         }
 
 
-        std::unique_ptr<Layer> returnableLayer = std::make_unique<Layer>();
+        Layer* returnableLayer = new Layer();
 
         std::unique_ptr<int[]> lvl = _csvToArrInt_(data->GetText(), m_width * m_height);
 

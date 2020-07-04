@@ -22,7 +22,7 @@ namespace ezg {
 			is_gravity = false;
 		}
 
-		void draw(sf::RenderTarget& , sf::RenderStates) const noexcept override { /* nop */
+		void draw		(sf::RenderTarget& , sf::RenderStates)	noexcept override { /* nop */
 
 			/*sf::RectangleShape rec(sf::Vector2f(m_hit_box.width, m_hit_box.height));
 			rec.setPosition(sf::Vector2f(m_hit_box.left, m_hit_box.top));
@@ -30,7 +30,9 @@ namespace ezg {
 			target.draw(rec, states);*/
 		}
 
-		void colision(gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
+		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+
+		void otherUpdate(float _time)							noexcept override { /* nop */ }
 
 	}; // class Solid
 
@@ -49,9 +51,29 @@ namespace ezg {
 			is_gravity = false;
 		}
 
-		void draw(sf::RenderTarget&, sf::RenderStates) const noexcept override { /* nop */ }
+		void draw		(sf::RenderTarget&, sf::RenderStates)	noexcept override { /* nop */ }
 
-		void colision(gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
+		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+
+		void otherUpdate(float _time)							noexcept override { /* nop */ }
+	};
+
+
+	class Stairs : public ezg::Entity
+	{
+	public:
+
+		Stairs(float place_x, float place_y, float width, float height)
+			: Entity(TipeEntity::Stairs, place_x, place_y, width, height)
+		{
+			is_gravity = false;
+		}
+
+		void draw		(sf::RenderTarget&, sf::RenderStates)	noexcept override { /* nop */ }
+
+		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+
+		void otherUpdate(float _time)							noexcept override { /* nop */ }
 	};
 
 } // namespace ezg

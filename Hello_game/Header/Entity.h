@@ -7,15 +7,46 @@
 
 namespace ezg {
 
+
+	////////////////////////////////////////////////
+	enum class EntityStat {
+		Death
+		, InAir
+		, onSolid
+		, onSolidAbove
+		, onStairs
+	};
+	//
+	enum class EntityEffect {
+		  Normal
+		, Wounded
+	};
+#define DURATION_WOUNDED (2.f * 100.f)
+	//
+	enum EntityAnimation {
+		Idle
+		, Jump
+		, Walk
+		, Wounded
+	};
+	//available game object types
+	enum class TipeEntity {
+		  Solid
+		, SolidAbove
+		, Stairs
+		, Needle
+		, Enemy
+	};
+	////////////////////////////////////////////////
+
+
 	///////////////////////////////////////////
 	//the main class of any object of the game
-	///////////////////////////////////////////
-	class Entity : public sf::Drawable, public sf::Transformable
+	class Entity
 	{
-		friend NodeGame;
-
 
 	public:
+
 
 		Entity (TipeEntity _tipe) noexcept;
 		Entity (TipeEntity _tipe, float pos_x, float pos_y, float _width, float _height);
@@ -28,66 +59,52 @@ namespace ezg {
 		inline const sf::FloatRect	getHitBox	() const noexcept { return m_hit_box;		}
 		inline const TipeEntity		getTipe		() const noexcept { return m_tipe;  		}
 
-		inline const bool			onGround	() const noexcept { return on_ground;		}
+
+		//does gravity affect an object
 		inline const bool			isGravity	() const noexcept { return is_gravity;		}
 
 		
-		virtual void draw (sf::RenderTarget& target, sf::RenderStates states) const = 0;
-		
-
-	protected:
-		///////////////////////////////
-		//change the speed of an object
-		///////////////////////////////
-		virtual void setSpeed  (float _sp_x, float _sp_y) noexcept;
-		virtual void setSpeedX (float _sp_x)              noexcept {	speed_x =  _sp_x; }
-		virtual void addSpeedX (float _sp_x)              noexcept {	speed_x += _sp_x; }
-		virtual void setSpeedY (float _sp_y)              noexcept {	speed_y =  _sp_y; }
-		virtual void addSpeedY (float _sp_y)              noexcept {	speed_y += _sp_y; }
-
-
-	private:
+		//to draw the object
+		virtual void draw (sf::RenderTarget& target, sf::RenderStates states) = 0;
+	
 
 		//check intersection with another object
 		//and determine the interaction
 		virtual void colision (gsl::not_null <Entity*> _entity, Direction _dir) = 0;
 		
 
-		//function for... move object
-		void moveIt        (float _x, float _y)         noexcept;
-		void upPosition    (float time, Direction _dir) noexcept;
-		void setPositionHB (float _x, float _y)		  noexcept { m_hit_box.left = _x; /**/ m_hit_box.top = _y; }
+		//position update virtual function
+		virtual void upPosition(float time, Direction _dir) noexcept { }
 
 
-		//sprite position is updated only once
-		//after all coordinate updates, etc.
-		void upPosSprite ()			{  m_sprite.setPosition(m_hit_box.left, m_hit_box.top);  }
+		void setPosition (float _x, float _y)	noexcept { m_hit_box.left = _x; /**/ m_hit_box.top = _y; }
 
 
-		//set a sprite for an object
-		void SetSprite   (const std::string& texture, int location_x, int location_y, int width, int height);
 
+		//&@#
+		virtual void otherUpdate(float _time) = 0;
+
+
+	protected:
 
 		//set hit box...
 		void setHitBox   (sf::FloatRect _rect)	noexcept	{ m_hit_box = _rect;			}
 		void setWidth    (float _width)			noexcept	{ m_hit_box.width = _width;		}
 		void setHeight	 (float _height)		noexcept	{ m_hit_box.height = _height;	}
 
+
+		//function for... move object
+		void moveIt        (float _x, float _y)         noexcept;
+
+
 	protected:
 
 		TipeEntity		m_tipe;
 
 		bool			is_gravity;
-		bool			on_ground;
-
-		float			speed_x;
-		float			speed_y;
 
 		sf::FloatRect	m_hit_box;
-
-		sf::Sprite		m_sprite;
-		sf::Texture		m_texture;
-
+		
 	}; // class Entity
 
 } //namespace ezg

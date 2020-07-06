@@ -63,6 +63,11 @@ namespace ezg {
         }
 
 
+        if (!m_enemy_texture.loadFromFile(ENEMY_TEXTURE_FNAME)) {
+            assert(0);
+        }
+
+
         m_menus.setFont(FONT_FNAME);
 
         _addMainMenu_();
@@ -305,6 +310,50 @@ namespace ezg {
 
                         addObject(std::move(std::make_unique <Stairs>(x, y, width, height)));
                     }
+                    else if (0 == std::strcmp(obj->Attribute("type"), "MushroomRed")) {
+
+                        int64_t pos_x = 0;
+                        int64_t pos_y = 0;
+
+                        tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
+                        if (pr != nullptr) {
+                            pr = pr->FirstChildElement("property");
+                            while (pr != nullptr) {
+
+                                if (0 == std::strcmp(pr->Attribute("name"), "spawn_x")) {
+                                    pos_x = pr->Int64Attribute("value");
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "spawn_y")) {
+                                    pos_y = pr->Int64Attribute("value");
+                                }
+
+                                pr = pr->NextSiblingElement();
+                            }
+                        }
+
+                        
+                        addObject(std::move(std::make_unique<MushroomRed>(pos_x, pos_y, sf::IntRect(x, y, width, height), m_enemy_texture)));
+                    }
+                    else if (0 == std::strcmp(obj->Attribute("type"), "bee")) {
+
+                        int64_t radius = 0;
+
+                        tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
+                        if (pr != nullptr) {
+                            pr = pr->FirstChildElement("property");
+                            while (pr != nullptr) {
+
+                                if (0 == std::strcmp(pr->Attribute("name"), "radius")) {
+                                    radius = pr->Int64Attribute("value");
+                                }
+
+                                pr = pr->NextSiblingElement();
+                            }
+                        }
+
+                        addObject(std::move(std::make_unique <Bee>(x, y, sf::IntRect(x, y, width, height), 
+                            50, m_enemy_texture)));
+                    }
                     else if (0 == std::strcmp(obj->Attribute("type"), "needle")) {
 
                         addObject(std::move(std::make_unique <Needle>(x, y, width, height)));
@@ -377,6 +426,13 @@ namespace ezg {
                     case sf::Keyboard::Escape:
                         changeMood(GameMood::Pause);
                         break;
+
+
+                    case sf::Keyboard::LControl:
+                    case sf::Keyboard::RControl:
+                        addObject(std::move(m_hero.fire()));
+                        break;
+
 
                     }
                     break; //case sf::Event::KeyPressed:
@@ -610,8 +666,13 @@ namespace ezg {
 
         for (const gsl::not_null < Entity* > elem : m_entities) {
 
-            m_hero.colision(elem, _dir);
-          
+            addObject(m_hero.colision(elem, _dir));
+        }
+
+        for (const gsl::not_null < Entity* > elem1 : m_entities) {
+            for (const gsl::not_null < Entity* > elem2 : m_entities) {
+                Entity::colision(elem1, elem2, _dir);
+            }
         }
 
     }
@@ -624,6 +685,19 @@ namespace ezg {
         for (auto& e : m_entities) {
             e->otherUpdate(_time);
         }
+
+        for (auto& e : m_entities) {
+            if (!e->alive()) {
+                delete e;
+                e = nullptr;
+            }
+        }
+
+        m_entities.remove_if([](auto elem) {
+            return elem == nullptr;
+            });
+
+        //std::cout << m_entities.size() << std::endl;
     }
 
 

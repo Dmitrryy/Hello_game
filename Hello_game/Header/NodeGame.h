@@ -72,7 +72,11 @@ namespace ezg {
         void changeMood(GameMood _new);
 
 
-        inline void addObject(std::unique_ptr<Entity>&& _elem) { m_entities.push_back(_elem.release()); }
+        inline void addObject(std::unique_ptr<Entity>&& _elem) { 
+            if (_elem != nullptr) {
+                m_entities.push_back(_elem.release());
+            }
+        }
 
 
         void clear();
@@ -104,6 +108,8 @@ namespace ezg {
 
         MenuManager                                 m_menus;
 
+
+        sf::Texture m_enemy_texture;
     }; // class NodeGame
 
 

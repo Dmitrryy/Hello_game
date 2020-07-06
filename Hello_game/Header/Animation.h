@@ -49,6 +49,9 @@ namespace ezg {
 		//texture loading.
 		//there is only one texture for all animations
 		bool loadTexture(const std::string& _fname) { return m_texture.loadFromFile(_fname); }
+		//Attention! when using this function, make sure that the texture is not destroyed. 
+		//otherwise there will be a white square.
+		void setTexture(const sf::Texture& _texture) { m_texture = _texture; }
 
 
 		//creates a new animation.

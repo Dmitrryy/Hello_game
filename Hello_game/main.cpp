@@ -26,7 +26,8 @@ int main()
 
         game.draw(tr);
 
-    } // while (window.isOpen())
+    }
+
 
 
     return 0;

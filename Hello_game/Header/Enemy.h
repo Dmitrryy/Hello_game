@@ -7,21 +7,231 @@
 namespace ezg {
 
 
+	class Mushroom : public Entity
+	{
+	public:
+
+		Mushroom(TipeEntity _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
+
+
+		void draw(sf::RenderTarget& target, sf::RenderStates states) noexcept override;
+
+
+
+		virtual std::unique_ptr<Entity> fire(float _x, float _y) = 0;
+
+
+		void getHit(float _damage) noexcept;
+
+		void upEffect(float _time) noexcept;
+
+
+		void otherUpdate(float _time) noexcept override;
+
+
+		void setDirection(Direction _dir) noexcept { m_direction = _dir; }
+		void setStat(EntityAnimation _stat);
+		void setEffect(EntityEffect _effect) noexcept { m_effect = _effect; }
+
+
+		sf::FloatRect getArea() const noexcept { return m_area_attack; }
+
+
+	private:
+
+		virtual void _setAnimations_() = 0;
+
+
+		void _upHitBox_();
+
+
+	protected:
+
+		float m_time;
+		float m_time_effect;
+
+		float m_hp;
+
+		Animation m_animation;
+		EntityEffect m_effect;
+		Direction m_direction;
+
+		float m_damage;
+		sf::FloatRect m_area_attack;
+	};
+
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	class MushroomRed : public Mushroom
+	{
+	public:
+
+		MushroomRed(float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture)
+			: Mushroom(TipeEntity::MushroomRed, place_x, place_y, _area, _texture)
+		{
+			_setAnimations_();
+		}
+
+
+		std::unique_ptr<Entity> fire(float _x, float _y);
+
+	private:
+
+
+		void _setAnimations_() override;
+
+	};
+
+	///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+	//class MushroomBlue : public Mushroom
+	//{
+	//public:
+
+	//	MushroomBlue(float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
+
+
+	//	void draw(sf::RenderTarget& target, sf::RenderStates states) noexcept override;
+
+
+
+	//	std::unique_ptr<Entity> fire(float _x, float _y);
+
+
+	//	void getHit(float _damage) noexcept;
+
+	//	void upEffect(float _time) noexcept;
+
+
+	//	void otherUpdate(float _time) noexcept override;
+
+
+	//	void setDirection(Direction _dir) noexcept { m_direction = _dir; }
+	//	void setStat(EntityAnimation _stat);
+	//	void setEffect(EntityEffect _effect) noexcept { m_effect = _effect; }
+
+
+	//	sf::FloatRect getArea() const noexcept { return m_area_attack; }
+
+
+	//private:
+
+	//	void _setAnimations_();
+
+
+	//	void _upHitBox_();
+
+
+	////private:
+
+	////	float m_time;
+
+	////	float m_hp;
+
+	////	Animation m_animation;
+	////	EntityEffect m_effect;
+	////	Direction m_direction;
+
+	////	float m_damage;
+	////	sf::FloatRect m_area_attack;
+	//};
+
+
+
+	///////////////////////////////////////////////////////////////////////////////////////
+
+#define OBSERVETION_RADIUS  40
+#define MAX_SPEED			0.05f
+
+	class Bee : public Entity
+	{
+	public:
+
+		Bee(float place_x, float place_y, sf::IntRect _area, float _radius, const sf::Texture& _texture);
+
+
+		void draw(sf::RenderTarget& target, sf::RenderStates states) noexcept override;
+
+
+		float attack(sf::FloatRect _rec);
+
+
+		void getHit(float _damage) noexcept;
+
+
+		void upEffect(float _time) noexcept;
+
+
+		void otherUpdate(float _time) noexcept override;
+
+
+		void upPosition(float time, Direction _dir) noexcept override;
+
+
+
+		void setDirection(Direction _dir) noexcept { m_direction = _dir; }
+
+
+		void setEffect(EntityEffect _effect) noexcept;
+
+
+		static bool intersection(sf::CircleShape _circle, sf::Vector2f _point);
+
+
+	private:
+
+		void _setAnimations_();
+
+		void _goto_(float _x, float _y) noexcept;
+
+
+	private:
+
+		float			m_time_effect;
+
+		float			m_hp;
+
+		float			m_goto_x;
+		float			m_goto_y;
+
+		float			speed_x;
+		float			speed_y;
+		float			m_acceleration;
+		float			m_corner;
+
+		Animation		m_animation;
+		EntityEffect	m_effect;
+		Direction		m_direction;
+
+		float			m_damage;
+		sf::FloatRect	m_area;
+		float			m_radius;
+
+	};
+
+	///////////////////////////////////////////////////////////////////////////////////////
+
 	class Needle : public Entity
 	{
 	public:
 
-		Needle(float place_x, float place_y, float width, float height)
-			: Entity(TipeEntity::Needle, place_x, place_y, width, height)
-		{
-			is_gravity = false;
-		}
+		Needle (float place_x, float place_y, float width, float height);
 
-		void draw		(sf::RenderTarget&, sf::RenderStates)	noexcept override { /* nop */ }
+		void draw		 (sf::RenderTarget&, sf::RenderStates)	noexcept override { /* nop */ }
 
-		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+		void otherUpdate (float _time)							noexcept override { /* nop */ }
 
-		void otherUpdate(float _time)							noexcept override { /* nop */ }
+		inline const float getDamage() const noexcept { return m_damage; }
+
+
+	private:
+		
+		float m_damage;
 	};
 
 

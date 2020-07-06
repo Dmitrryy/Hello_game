@@ -25,7 +25,7 @@
 
 ////////////////////////////////settings/////////////////////////////////////
 //game speed controller
-static int GAME_SPEED_CONTROLLER   = 1050.f;
+static int GAME_SPEED_CONTROLLER   = 1050;
 //
 //display settings
 static int SCALE_ALL_X              = 5;
@@ -62,6 +62,10 @@ static int WINDOW_HEIGHT = 9 * 80;
 #define MENU_BACKGROUND_DEATH_FNAME "Resource/Images/menu_death.png"
 #define MENU_DEATH_FONT_SIZE        55
 #define MENU_DEATH_FONT_COLOR       sf::Color(175, 144, 64)
+//
+//
+//enemy texture
+#define ENEMY_TEXTURE_FNAME         "Resource/Images/Enemies.png"
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -76,9 +80,15 @@ namespace ezg {
     class Layer;
 
     class Entity;
+    class Needle;
     class Enemy;
     class Solid;
     class SolidAbove;
+
+    class HeroBullet;
+
+    class MushroomRed;
+    class Bee;
 
 
     enum class GameMood {
@@ -109,6 +119,15 @@ namespace ezg {
         , Restart
     };
     /////////////////////////////////////////////
+
+
+
+    enum class Bullets
+    {
+        HeroBullet
+        , BlueBullet
+        , RedBullet
+    };
 
 
     enum class Direction {

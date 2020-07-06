@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="left-up" width="50" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="6" nextobjectid="22">
+<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="left-up" width="50" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="7" nextobjectid="28">
  <tileset firstgid="1" name="Tiles" tilewidth="8" tileheight="8" tilecount="720" columns="18">
   <image source="Resource/Images/Tiles.png" width="144" height="320"/>
  </tileset>
@@ -28,6 +28,30 @@
   <object id="19" name="needle" type="needle" x="25.8125" y="178.125" width="5.1875" height="5.625"/>
   <object id="20" name="needle" type="needle" x="200.938" y="209.688" width="53.1875" height="6.125"/>
   <object id="21" name="solid" type="solid" x="121" y="193.063" width="38" height="6"/>
+ </objectgroup>
+ <objectgroup id="6" name="enemy">
+  <object id="24" name="MushroomRed" type="MushroomRed" x="8.068" y="170.744" width="110.864" height="45.0114">
+   <properties>
+    <property name="spawn_x" type="int" value="57"/>
+    <property name="spawn_y" type="int" value="210"/>
+   </properties>
+  </object>
+  <object id="25" name="bee" type="bee" x="256" y="80.75" width="136.5" height="106">
+   <properties>
+    <property name="radius" type="int" value="40"/>
+   </properties>
+  </object>
+  <object id="26" name="MushroomRed" type="MushroomRed" x="90.5455" y="159.636" width="109.455" height="56.7273">
+   <properties>
+    <property name="spawn_x" type="int" value="129"/>
+    <property name="spawn_y" type="int" value="210"/>
+   </properties>
+  </object>
+  <object id="27" name="bee" type="bee" x="181.667" y="78" width="106.667" height="70.3333">
+   <properties>
+    <property name="radius" type="int" value="45"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="1" name="background" width="50" height="30">
   <data encoding="csv">

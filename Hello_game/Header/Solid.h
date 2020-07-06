@@ -30,7 +30,7 @@ namespace ezg {
 			target.draw(rec, states);*/
 		}
 
-		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+		//void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
 
 		void otherUpdate(float _time)							noexcept override { /* nop */ }
 
@@ -53,7 +53,7 @@ namespace ezg {
 
 		void draw		(sf::RenderTarget&, sf::RenderStates)	noexcept override { /* nop */ }
 
-		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+		//void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
 
 		void otherUpdate(float _time)							noexcept override { /* nop */ }
 	};
@@ -71,7 +71,7 @@ namespace ezg {
 
 		void draw		(sf::RenderTarget&, sf::RenderStates)	noexcept override { /* nop */ }
 
-		void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
+		//void colision	(gsl::not_null<Entity*>, Direction)		noexcept override { /* nop */ }
 
 		void otherUpdate(float _time)							noexcept override { /* nop */ }
 	};

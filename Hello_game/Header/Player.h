@@ -35,8 +35,14 @@ namespace ezg {
 		void jumpOff() noexcept;
 
 
+		std::unique_ptr<Entity> fire() noexcept;
+
+
+		void getHit(float _damage) noexcept;
+
+
 		//determines the interaction of the hero with other objects
-		void colision(gsl::not_null <Entity*> _entity, Direction _dir);
+		std::unique_ptr<Entity> colision(Entity* const _entity, Direction _dir);
 
 
 		//////////////////////////////////////////////////

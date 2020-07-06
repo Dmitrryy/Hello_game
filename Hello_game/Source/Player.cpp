@@ -1,5 +1,6 @@
 #include "../Header/Player.h"
-
+#include "../Header/Enemy.h"
+#include "../Header/Bullets.h"
 
 namespace ezg {
 
@@ -105,6 +106,32 @@ namespace ezg {
     }
 
 
+    std::unique_ptr<Entity> Hero::fire() noexcept {
+
+        std::unique_ptr<HeroBullet> button(std::make_unique<HeroBullet>());
+
+        float _y = m_hit_box.top + 4;
+        if (m_direction == Direction::Left) {
+            button->setPosition(m_hit_box.left - 1, _y);
+            button->setSpeed(-0.11f, 0);
+        }
+        else {
+            button->setPosition(m_hit_box.left + 8, _y);
+            button->setSpeed(0.11f, 0);
+        }
+
+        return button;
+    }
+
+
+    void Hero::getHit(float _damage) noexcept {
+        if (m_effect != EntityEffect::Wounded && _damage > 0.f) {
+            m_hp -= _damage;
+            m_effect = EntityEffect::Wounded;
+        }
+    }
+
+
     void Hero::upPosition(float time, Direction _dir) noexcept {
 
         if (_dir == Direction::Vertical) {
@@ -137,25 +164,29 @@ namespace ezg {
         static float _duration = 0.f;
 
         if (m_effect == EntityEffect::Wounded) {
+
             _duration += _time;
 
-
-
             if (_duration > DURATION_WOUNDED) {
+
                 m_effect = EntityEffect::Normal;
                 _duration = 0.f;
             }
 
             if (m_effect == EntityEffect::Wounded) {
-                //printf("%g %g %g\n", (_duration / DURATION_WOUNDED) / 10.f, _duration, DURATION_WOUNDED);
+
                 if (m_direction == Direction::Left) {
+
                     speed_x = 0.1f - _duration / DURATION_WOUNDED / 10.f;
                 }
                 else {
                     speed_x = -0.1 + _duration / DURATION_WOUNDED / 10.f;
                 }
             }
-            //setSpeedX(0);
+
+        }
+        else {
+            _duration = 0.f;
         }
     }
 
@@ -207,9 +238,13 @@ namespace ezg {
     }
 
     
-    void Hero::colision(gsl::not_null <Entity*> _entity, Direction _dir) {
+    std::unique_ptr<Entity> Hero::colision(Entity* const _entity, Direction _dir) {
 
+        if (_entity == nullptr) {
+            return nullptr;
+        }
 
+        std::unique_ptr<Entity> result = nullptr;
         if (m_hit_box.intersects(_entity->getHitBox())) {
 
             switch (_entity->getTipe())
@@ -246,6 +281,7 @@ namespace ezg {
                 break;
             } // case Solid
 
+
 /////////////////////////////SolidAbove
             case TipeEntity::SolidAbove: {
 
@@ -263,6 +299,7 @@ namespace ezg {
                 break;
             } // case SolidAbove
                 
+
 /////////////////////////////Stairs
             case TipeEntity::Stairs: {
 
@@ -285,10 +322,32 @@ namespace ezg {
                 break;
             } // case Stairs
 
+
 /////////////////////////////Needle
             case TipeEntity::Needle: {
                 if (m_effect != EntityEffect::Wounded) {
-                    m_hp -= 50;
+
+                    //is it safe?!?
+                    m_hp -= dynamic_cast<Needle*>(_entity)->getDamage();
+                    m_effect = EntityEffect::Wounded;
+
+                    if (speed_y >= 0) {
+                        speed_y = -0.12;
+                    }
+                    else {
+                        speed_y = 0.1;
+                    }
+
+                }
+                break; // case Needle
+
+
+/////////////////////////////RedBullet
+            case TipeEntity::RedBullet: {
+                if (m_effect != EntityEffect::Wounded) {
+
+                    //is it safe?!?
+                    m_hp -= dynamic_cast<RedBullet*>(_entity)->getDamage();
                     m_effect = EntityEffect::Wounded;
 
                     if (speed_y >= 0) {
@@ -300,7 +359,8 @@ namespace ezg {
 
                 }
 
-                break; // case Needle
+                break;
+            }
             }
 
 
@@ -309,6 +369,22 @@ namespace ezg {
             }
            
         }
+        if (_entity->getTipe() == TipeEntity::MushroomRed && _dir == Direction::Horixontal) {
+            MushroomRed* mr = dynamic_cast<MushroomRed*>(_entity);
+            if (m_hit_box.intersects(mr->getArea())) {
+                result = mr->fire(getPosX(), getPosY());
+            }
+            else {
+                mr->setStat(EntityAnimation::Idle);
+            }
+        }
+        else if (_entity->getTipe() == TipeEntity::Bee && _dir == Direction::Horixontal) {
+            Bee* bee = dynamic_cast<Bee*>(_entity);
+
+            getHit(bee->attack(m_hit_box));
+        }
+
+        return result;
 
     } // Hero::colision
 

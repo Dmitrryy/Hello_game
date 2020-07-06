@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Animation.h" />
+    <ClInclude Include="Header\Bullets.h" />
     <ClInclude Include="Header\config.h" />
     <ClInclude Include="Header\Enemy.h" />
     <ClInclude Include="Header\Entity.h" />

@@ -75,6 +75,9 @@
     <ClInclude Include="Header\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Bullets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\Images\Mario_tileset.png">

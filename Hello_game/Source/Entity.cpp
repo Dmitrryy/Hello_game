@@ -48,7 +48,15 @@ namespace ezg {
 
 			_HeroBulletAndBee_(dynamic_cast<HeroBullet*>(_lhs_ent.get()), dynamic_cast<Bee*>(_rhs_ent.get()), _dir);
 		}
-		
+
+		else if (_lhs_ent->getTipe() == TipeEntity::Snake && _rhs_ent->getTipe() == TipeEntity::Solid) {
+
+			_SnakeAndSolid_(dynamic_cast<Snake*>(_lhs_ent.get()), dynamic_cast<Solid*>(_rhs_ent.get()), _dir);
+		}
+		else if (_lhs_ent->getTipe() == TipeEntity::Snake && _rhs_ent->getTipe() == TipeEntity::HeroBullet) {
+
+			_SnakeAndHeroBullet_(dynamic_cast<Snake*>(_lhs_ent.get()), dynamic_cast<HeroBullet*>(_rhs_ent.get()), _dir);
+		}
 	}
 
 
@@ -84,5 +92,53 @@ namespace ezg {
 
 	}
 
+
+
+	void Entity::_SnakeAndSolid_(Snake* _snake, Solid* _sol, Direction _dir) {
+
+		if (_snake->getHitBox().intersects(_sol->getHitBox())) {
+
+			if (_dir == Direction::Horixontal) {
+
+				if (_snake->speed_x > 0) {
+					_snake->m_hit_box.left = _sol->getPosX() - _snake->m_hit_box.width;
+					_snake->Stop();
+				}
+				if (_snake->speed_x < 0) {
+					_snake->m_hit_box.left = _sol->getPosX() + _sol->getHitBox().width;
+					_snake->Stop();
+				}
+			}
+
+			else if (_dir == Direction::Vertical) {
+
+				if (_snake->speed_y > 0) {
+					_snake->m_hit_box.top = _sol->getPosY() - _snake->m_hit_box.height;
+
+					_snake->setStat(EntityStat::onSolid);
+					_snake->speed_y = 0;
+				}
+				if (_snake->speed_y < 0) {
+					_snake->m_hit_box.top = _sol->getPosY() + _snake->m_hit_box.height;
+
+					_snake->speed_y = 0;
+				}
+			}
+
+		}
+
+	}
+
+
+	void Entity::_SnakeAndHeroBullet_(Snake* _snake, HeroBullet* _bullet, Direction _dir) {
+
+		if (_bullet->getHitBox().intersects(_snake->getHitBox()) && _dir == Direction::Horixontal) {
+
+			_snake->getHit(_bullet->getDamage());
+
+			_bullet->setAlive(false);
+		}
+
+	}
 
 } // namespace ezg

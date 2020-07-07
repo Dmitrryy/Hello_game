@@ -66,6 +66,9 @@ static int WINDOW_HEIGHT = 9 * 80;
 //
 //enemy texture
 #define ENEMY_TEXTURE_FNAME         "Resource/Images/Enemies.png"
+//
+//
+#define LVL_FNAME "Resource/Levels/lvl2.tmx"
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -89,6 +92,7 @@ namespace ezg {
 
     class MushroomRed;
     class Bee;
+    class Snake;
 
 
     enum class GameMood {

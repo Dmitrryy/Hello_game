@@ -45,6 +45,7 @@ namespace ezg {
 		, MushroomBlue
 		, BlueBullet
 		, Bee
+		, Snake
 	};
 	////////////////////////////////////////////////
 
@@ -82,9 +83,11 @@ namespace ezg {
 		//and determine the interaction
 		static void colision(gsl::not_null <Entity*> _lhs_ent, gsl::not_null <Entity*> _rhs_ent, Direction _dir);
 		static void _HeroBulletAndSolid_(HeroBullet* _bullet, Solid* _solid, Direction _dir);
-		static void _HeroBulletAndMushroomRed_(HeroBullet* _bullet, MushroomRed* _solid, Direction _dir);
-		static void _HeroBulletAndBee_(HeroBullet* _bullet, Bee* _solid, Direction _dir);
+		static void _HeroBulletAndMushroomRed_(HeroBullet* _bullet, MushroomRed* _mh, Direction _dir);
+		static void _HeroBulletAndBee_(HeroBullet* _bullet, Bee* _bee, Direction _dir);
 
+		static void _SnakeAndSolid_(Snake* _snake, Solid* _sol, Direction _dir);
+		static void _SnakeAndHeroBullet_(Snake* _snake, HeroBullet* _bullet, Direction _dir);
 
 		//position update virtual function
 		virtual void upPosition(float time, Direction _dir) noexcept { }

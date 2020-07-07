@@ -352,7 +352,28 @@ namespace ezg {
                         }
 
                         addObject(std::move(std::make_unique <Bee>(x, y, sf::IntRect(x, y, width, height), 
-                            50, m_enemy_texture)));
+                            radius, m_enemy_texture)));
+                    }
+                    else if (0 == std::strcmp(obj->Attribute("type"), "snake")) {
+
+                        int64_t radius = 0;
+
+                        tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
+                        if (pr != nullptr) {
+                            pr = pr->FirstChildElement("property");
+                            while (pr != nullptr) {
+
+                                if (0 == std::strcmp(pr->Attribute("name"), "radius")) {
+                                    radius = pr->Int64Attribute("value");
+                                }
+
+                                pr = pr->NextSiblingElement();
+                            }
+                        }
+
+                        addObject(std::move(std::make_unique <Snake>(x, y, radius, m_enemy_texture)));
+
+
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "needle")) {
 
@@ -564,7 +585,7 @@ namespace ezg {
         case GameMood::Game:
             if (m_mood != GameMood::Pause) {
                 clear();
-                loadLevelXML("Resource/Levels/lvl2.tmx");
+                loadLevelXML(LVL_FNAME);
             }
             break;
 
@@ -608,9 +629,12 @@ namespace ezg {
 
     void NodeGame::update() {
 
-        const auto _period = m_clock.getElapsedTime().asSeconds() * GAME_SPEED_CONTROLLER;
+        auto _period = m_clock.getElapsedTime().asSeconds();
         m_clock.restart();
 
+        //printf("%g\n", 1 / _period);
+
+        _period *= GAME_SPEED_CONTROLLER;
         m_time += _period;
 //************************************************************
 // алгоритм(для каждого элемента):

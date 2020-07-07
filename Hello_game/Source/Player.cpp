@@ -127,6 +127,8 @@ namespace ezg {
     void Hero::getHit(float _damage) noexcept {
         if (m_effect != EntityEffect::Wounded && _damage > 0.f) {
             m_hp -= _damage;
+            speed_y = -0.1f;
+            setStat(EntityStat::InAir);
             m_effect = EntityEffect::Wounded;
         }
     }
@@ -177,10 +179,10 @@ namespace ezg {
 
                 if (m_direction == Direction::Left) {
 
-                    speed_x = 0.1f - _duration / DURATION_WOUNDED / 10.f;
+                    speed_x = 0.1f - _duration / DURATION_WOUNDED / 50.f;
                 }
                 else {
-                    speed_x = -0.1 + _duration / DURATION_WOUNDED / 10.f;
+                    speed_x = -0.1 + _duration / DURATION_WOUNDED / 50.f;
                 }
             }
 
@@ -382,6 +384,11 @@ namespace ezg {
             Bee* bee = dynamic_cast<Bee*>(_entity);
 
             getHit(bee->attack(m_hit_box));
+        }
+        else if (_entity->getTipe() == TipeEntity::Snake && _dir == Direction::Horixontal) {
+            Snake* snake = dynamic_cast<Snake*>(_entity);
+
+            getHit(snake->attack(m_hit_box));
         }
 
         return result;

@@ -196,8 +196,8 @@ namespace ezg {
 
 		float			m_hp;
 
-		float			m_goto_x;
-		float			m_goto_y;
+		sf::Vector2f    m_goto;
+
 
 		float			speed_x;
 		float			speed_y;
@@ -213,6 +213,82 @@ namespace ezg {
 		float			m_radius;
 
 	};
+
+	///////////////////////////////////////////////////////////////////////////////////////
+
+
+	class Snake : public Entity
+	{
+	public:
+
+		Snake(float place_x, float place_y, float _distance_attack, const sf::Texture& _texture);
+
+
+		void draw(sf::RenderTarget& target, sf::RenderStates states) noexcept override;
+
+
+		float attack(sf::FloatRect _rec);
+
+
+		void jump() {
+
+			if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
+				speed_y = -0.13f;
+				setStat(EntityStat::InAir);
+			}
+
+		}
+
+
+		void setStat(EntityStat _new);
+
+		void setEffect(EntityEffect _new_effect);
+
+
+		void getHit(float _damage) noexcept;
+
+
+		void upEffect(float _time) noexcept;
+
+
+		void upPosition(float time, Direction _dir) noexcept;
+
+
+		void otherUpdate(float _time);
+
+		void Stop() { setEffect(EntityEffect::Normal); }
+
+
+	private:
+
+		void _setAnimations_();
+
+
+		void _goto_(float _x, float _y, float _time);
+
+
+	public:
+
+		float			m_time_effect;
+
+		float			m_hp;
+
+		sf::Vector2f    m_goto;
+
+		float			speed_x;
+		float			speed_y;
+		float			m_accelerationx;
+
+		Animation		m_animation;
+
+		EntityStat		m_status;
+		EntityEffect	m_effect;
+		Direction		m_direction;
+
+		float			m_damage;
+		float			m_distance_attack;
+	};
+
 
 	///////////////////////////////////////////////////////////////////////////////////////
 

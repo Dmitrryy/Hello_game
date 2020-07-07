@@ -104,7 +104,7 @@ namespace ezg {
         Hero                                        m_hero;            
         TileMap                                     m_map;
 
-        std::list < Entity*  >                      m_entities; // an array with other elements of the game (enemies, bullets, etc.)
+        std::list < Entity* >                       m_entities; // an array with other elements of the game (enemies, bullets, etc.)
 
         MenuManager                                 m_menus;
 

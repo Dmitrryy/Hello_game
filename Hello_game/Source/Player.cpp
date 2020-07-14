@@ -330,39 +330,25 @@ namespace ezg {
                 if (m_effect != EntityEffect::Wounded) {
 
                     //is it safe?!?
-                    m_hp -= dynamic_cast<Needle*>(_entity)->getDamage();
-                    m_effect = EntityEffect::Wounded;
-
-                    if (speed_y >= 0) {
-                        speed_y = -0.12;
-                    }
-                    else {
-                        speed_y = 0.1;
-                    }
+                    gsl::not_null<Needle*> bl = dynamic_cast<Needle*>(_entity);
+                    getHit(bl->getDamage());
 
                 }
                 break; // case Needle
 
 
 /////////////////////////////RedBullet
-            case TipeEntity::RedBullet: {
+            case TipeEntity::RedBullet:
+            case TipeEntity::BlueBullet: 
                 if (m_effect != EntityEffect::Wounded) {
 
                     //is it safe?!?
-                    m_hp -= dynamic_cast<RedBullet*>(_entity)->getDamage();
-                    m_effect = EntityEffect::Wounded;
-
-                    if (speed_y >= 0) {
-                        speed_y = -0.12;
-                    }
-                    else {
-                        speed_y = 0.1;
-                    }
+                    gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_entity);
+                    getHit(bl->getDamage());
 
                 }
-
                 break;
-            }
+            
             }
 
 
@@ -371,8 +357,10 @@ namespace ezg {
             }
            
         }
-        if (_entity->getTipe() == TipeEntity::MushroomRed && _dir == Direction::Horixontal) {
-            MushroomRed* mr = dynamic_cast<MushroomRed*>(_entity);
+        if ((_entity->getTipe() == TipeEntity::MushroomRed || _entity->getTipe() == TipeEntity::MushroomBlue) 
+            && _dir == Direction::Horixontal) 
+        {
+            gsl::not_null<Mushroom*> mr = dynamic_cast<Mushroom*>(_entity);
             if (m_hit_box.intersects(mr->getArea())) {
                 result = mr->fire(getPosX(), getPosY());
             }
@@ -380,13 +368,15 @@ namespace ezg {
                 mr->setStat(EntityAnimation::Idle);
             }
         }
-        else if (_entity->getTipe() == TipeEntity::Bee && _dir == Direction::Horixontal) {
-            Bee* bee = dynamic_cast<Bee*>(_entity);
+        else if (_entity->getTipe() == TipeEntity::Bee && _dir == Direction::Horixontal) 
+        {
+            gsl::not_null<Bee*> bee = dynamic_cast<Bee*>(_entity);
 
             getHit(bee->attack(m_hit_box));
         }
-        else if (_entity->getTipe() == TipeEntity::Snake && _dir == Direction::Horixontal) {
-            Snake* snake = dynamic_cast<Snake*>(_entity);
+        else if (_entity->getTipe() == TipeEntity::Snake && _dir == Direction::Horixontal) 
+        {
+            gsl::not_null<Snake*> snake = dynamic_cast<Snake*>(_entity);
 
             getHit(snake->attack(m_hit_box));
         }

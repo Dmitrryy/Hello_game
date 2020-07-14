@@ -9,10 +9,12 @@ namespace ezg {
 
 	class Mushroom : public Entity
 	{
-	public:
+	protected:
 
 		Mushroom(TipeEntity _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
 
+
+	public:
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states) noexcept override;
 
@@ -76,7 +78,7 @@ namespace ezg {
 		}
 
 
-		std::unique_ptr<Entity> fire(float _x, float _y);
+		std::unique_ptr<Entity> fire(float _x, float _y) override;
 
 	private:
 
@@ -89,57 +91,25 @@ namespace ezg {
 
 
 
-	//class MushroomBlue : public Mushroom
-	//{
-	//public:
+	class MushroomBlue : public Mushroom
+	{
+	public:
 
-	//	MushroomBlue(float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
+		MushroomBlue(float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture)
+			: Mushroom(TipeEntity::MushroomBlue, place_x, place_y, _area, _texture)
+		{
+			_setAnimations_();
+		}
+			
 
-
-	//	void draw(sf::RenderTarget& target, sf::RenderStates states) noexcept override;
-
-
-
-	//	std::unique_ptr<Entity> fire(float _x, float _y);
-
-
-	//	void getHit(float _damage) noexcept;
-
-	//	void upEffect(float _time) noexcept;
+		std::unique_ptr<Entity> fire(float _x, float _y) override;
 
 
-	//	void otherUpdate(float _time) noexcept override;
+	private:
 
+		void _setAnimations_() override;
 
-	//	void setDirection(Direction _dir) noexcept { m_direction = _dir; }
-	//	void setStat(EntityAnimation _stat);
-	//	void setEffect(EntityEffect _effect) noexcept { m_effect = _effect; }
-
-
-	//	sf::FloatRect getArea() const noexcept { return m_area_attack; }
-
-
-	//private:
-
-	//	void _setAnimations_();
-
-
-	//	void _upHitBox_();
-
-
-	////private:
-
-	////	float m_time;
-
-	////	float m_hp;
-
-	////	Animation m_animation;
-	////	EntityEffect m_effect;
-	////	Direction m_direction;
-
-	////	float m_damage;
-	////	sf::FloatRect m_area_attack;
-	//};
+	};
 
 
 
@@ -230,10 +200,24 @@ namespace ezg {
 		float attack(sf::FloatRect _rec);
 
 
+	private: float m_rallback_jump = 0.f;
+	public:
 		void jump() {
 
-			if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
-				speed_y = -0.13f;
+			if (m_rallback_jump > 800.f) {
+				if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
+					speed_y = -0.13f;
+					setStat(EntityStat::InAir);
+					m_rallback_jump = 0.f;
+				}
+			}
+
+		}
+
+		void jumpOff() {
+
+			if (m_status == EntityStat::onSolidAbove) {
+				moveIt(0.f, 1.f);
 				setStat(EntityStat::InAir);
 			}
 

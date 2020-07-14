@@ -86,5 +86,42 @@
     <Image Include="Resource\Images\TileMap.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resource\Images\Enemies.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\Images\menu_death.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\Images\menu_pause.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\Images\menu1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\Images\Player.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\Images\Tiles.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resource\19440.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Resource\calibri.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Levels\lvl1.tmx">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resource\Levels\lvl2.tmx">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resource\Levels\lvl3_test.tmx">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

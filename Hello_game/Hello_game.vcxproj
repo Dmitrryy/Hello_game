@@ -172,8 +172,23 @@
     <ClInclude Include="Libs\tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resource\Images\Enemies.png" />
     <Image Include="Resource\Images\Mario_tileset.png" />
+    <Image Include="Resource\Images\menu1.png" />
+    <Image Include="Resource\Images\menu_death.png" />
+    <Image Include="Resource\Images\menu_pause.png" />
+    <Image Include="Resource\Images\Player.png" />
     <Image Include="Resource\Images\TileMap.png" />
+    <Image Include="Resource\Images\Tiles.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resource\19440.ttf" />
+    <Font Include="Resource\calibri.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Levels\lvl1.tmx" />
+    <None Include="Resource\Levels\lvl2.tmx" />
+    <None Include="Resource\Levels\lvl3_test.tmx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

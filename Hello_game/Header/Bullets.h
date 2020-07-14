@@ -98,6 +98,51 @@ namespace ezg {
 	//////////////////////////////////////////////////////////////////////////////////////
 
 
+	class BlueBullet : public Bullet
+	{
+	public:
+
+		BlueBullet() noexcept
+			: Bullet(TipeEntity::BlueBullet, 0, 0)
+		{
+			is_gravity = false;
+		}
+
+		BlueBullet(float place_x, float place_y)
+			: Bullet(TipeEntity::BlueBullet, place_x, place_y)
+		{
+			is_gravity = false;
+		}
+
+
+		void draw(sf::RenderTarget& target, sf::RenderStates states) override {
+
+			static sf::RectangleShape rec(sf::Vector2f(m_hit_box.width, m_hit_box.height));
+
+			rec.setPosition(sf::Vector2f(m_hit_box.left, m_hit_box.top));
+			rec.setFillColor(sf::Color::Blue);
+
+			target.draw(rec, states);
+
+		}
+
+
+		void otherUpdate(float _time) noexcept override {
+
+			m_time += _time;
+
+			//life time is limited
+			if (m_time > 1000.f) {
+				m_alive = false;
+			}
+		}
+
+	};
+
+
+	//////////////////////////////////////////////////////////////////////////////////////
+
+
 	class HeroBullet : public Bullet
 	{
 	public:

@@ -35,7 +35,7 @@
     <property name="radius" type="int" value="40"/>
    </properties>
   </object>
-  <object id="26" name="MushroomRed" type="MushroomRed" x="152.296" y="159.886" width="109.455" height="56.7273">
+  <object id="26" name="MushroomBlue" type="MushroomBlue" x="86.9627" y="158.886" width="109.455" height="56.7273">
    <properties>
     <property name="spawn_x" type="int" value="129"/>
     <property name="spawn_y" type="int" value="210"/>

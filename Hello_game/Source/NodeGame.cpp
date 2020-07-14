@@ -217,7 +217,7 @@ namespace ezg {
 
         //changeMood(GameMood::Loading);
 
-
+        system("dir");
         tinyxml2::XMLDocument lvl;
         lvl.LoadFile(_fileXML.c_str());
 
@@ -333,6 +333,30 @@ namespace ezg {
 
                         
                         addObject(std::move(std::make_unique<MushroomRed>(pos_x, pos_y, sf::IntRect(x, y, width, height), m_enemy_texture)));
+                    }
+                    else if (0 == std::strcmp(obj->Attribute("type"), "MushroomBlue")) {
+
+                        int64_t pos_x = 0;
+                        int64_t pos_y = 0;
+
+                        tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
+                        if (pr != nullptr) {
+                            pr = pr->FirstChildElement("property");
+                            while (pr != nullptr) {
+
+                                if (0 == std::strcmp(pr->Attribute("name"), "spawn_x")) {
+                                    pos_x = pr->Int64Attribute("value");
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "spawn_y")) {
+                                    pos_y = pr->Int64Attribute("value");
+                                }
+
+                                pr = pr->NextSiblingElement();
+                            }
+                        }
+
+
+                        addObject(std::move(std::make_unique<MushroomBlue>(pos_x, pos_y, sf::IntRect(x, y, width, height), m_enemy_texture)));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "bee")) {
 
@@ -587,6 +611,7 @@ namespace ezg {
                 clear();
                 loadLevelXML(LVL_FNAME);
             }
+            m_clock.restart();
             break;
 
 
@@ -649,7 +674,7 @@ namespace ezg {
         {
         case GameMood::Game:
 
-
+            //std::cout << m_entities.size() << std::endl;
 
             upAllPosition(_period, Direction::Horixontal);
             allColision(Direction::Horixontal);

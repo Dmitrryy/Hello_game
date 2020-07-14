@@ -148,28 +148,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entities\Animation.cpp" />
+    <ClCompile Include="Entities\Bots\Bee\Bee.cpp" />
+    <ClCompile Include="Entities\Bots\Mushroom\Mushroom.cpp" />
+    <ClCompile Include="Entities\Bots\Mushroom\MushroomBlue.cpp" />
+    <ClCompile Include="Entities\Bots\Mushroom\MushroomRed.cpp" />
+    <ClCompile Include="Entities\Bots\Snake\Snake.cpp" />
+    <ClCompile Include="Entities\Entity.cpp" />
+    <ClCompile Include="Entities\Hero\Player.cpp" />
+    <ClCompile Include="Entities\Traps\Needle\Needle.cpp" />
     <ClCompile Include="Libs\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Animation.cpp" />
-    <ClCompile Include="Source\Enemy.cpp" />
-    <ClCompile Include="Source\Entity.cpp" />
-    <ClCompile Include="Source\Menu.cpp" />
-    <ClCompile Include="Source\NodeGame.cpp" />
-    <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\TileMap.cpp" />
+    <ClCompile Include="Menu\Menu.cpp" />
+    <ClCompile Include="NodeGame\NodeGame.cpp" />
+    <ClCompile Include="TileMap\TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\Animation.h" />
-    <ClInclude Include="Header\Bullets.h" />
-    <ClInclude Include="Header\config.h" />
-    <ClInclude Include="Header\Enemy.h" />
-    <ClInclude Include="Header\Entity.h" />
-    <ClInclude Include="Header\Menu.h" />
-    <ClInclude Include="Header\NodeGame.h" />
-    <ClInclude Include="Header\Player.h" />
-    <ClInclude Include="Header\Solid.h" />
-    <ClInclude Include="Header\TileMap.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="Entities\Animation.h" />
+    <ClInclude Include="Entities\Bots\Bee\Bee.h" />
+    <ClInclude Include="Entities\Bots\Mushroom\Mushroom.h" />
+    <ClInclude Include="Entities\Bots\Mushroom\MushroomBlue.h" />
+    <ClInclude Include="Entities\Bots\Mushroom\MushroomRed.h" />
+    <ClInclude Include="Entities\Bots\Snake\Snake.h" />
+    <ClInclude Include="Entities\Bullets\Bullets.h" />
+    <ClInclude Include="Entities\Entity.h" />
+    <ClInclude Include="Entities\Hero\Player.h" />
+    <ClInclude Include="Entities\Solid\Solid.h" />
+    <ClInclude Include="Entities\Traps\Needle\Needle.h" />
     <ClInclude Include="Libs\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="Menu\Menu.h" />
+    <ClInclude Include="NodeGame\NodeGame.h" />
+    <ClInclude Include="TileMap\TileMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\Images\Enemies.png" />

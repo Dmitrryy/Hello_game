@@ -2,12 +2,14 @@
 
 
 
-#include "config.h"
-#include "Entity.h"
-#include "Player.h"
-#include "Solid.h"
-#include "Enemy.h"
+#include "../config.h"
 
+
+#include "../Entities/Hero/Player.h"
+#include "../Entities/Entity.h"
+
+#include "../Menu/Menu.h"
+#include "../TileMap/TileMap.h"
 
 #include <cassert>
 #include <iostream>
@@ -17,6 +19,7 @@ namespace ezg {
 
     class NodeGame
     {
+    public:
 
         NodeGame            (const NodeGame& _that)      = delete; //not saported
         NodeGame& operator= (const NodeGame&)            = delete; //not saported
@@ -72,7 +75,7 @@ namespace ezg {
         void changeMood(GameMood _new);
 
 
-        inline void addObject(std::unique_ptr<Entity>&& _elem) { 
+        void addObject(std::unique_ptr<Entity>&& _elem) { 
             if (_elem != nullptr) {
                 m_entities.push_back(_elem.release());
             }
@@ -96,7 +99,6 @@ namespace ezg {
 
         sf::Clock                                   m_clock;
         double                                      m_time;
-        //double                                     m_time_period;
 
         sf::View                                    m_view;
         sf::RenderWindow                            m_window;
@@ -106,7 +108,7 @@ namespace ezg {
 
         std::list < Entity* >                       m_entities; // an array with other elements of the game (enemies, bullets, etc.)
 
-        MenuManager                                 m_menus;
+        menu::MenuManager                           m_menus;
 
 
         sf::Texture m_enemy_texture;

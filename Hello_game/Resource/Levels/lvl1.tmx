@@ -4,7 +4,7 @@
   <export format="csv"/>
  </editorsettings>
  <tileset firstgid="1" name="mario" tilewidth="16" tileheight="16" tilecount="256" columns="16">
-  <image source="Resource/Images/Mario_tileset.png" width="256" height="256"/>
+  <image source="../Images/Mario_tileset.png" width="256" height="256"/>
  </tileset>
  <layer id="4" name="background" width="30" height="15">
   <data encoding="csv">

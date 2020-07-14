@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="left-up" width="50" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="7" nextobjectid="29">
+<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="left-up" width="50" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="8" nextobjectid="31">
  <tileset firstgid="1" name="Tiles" tilewidth="8" tileheight="8" tilecount="720" columns="18">
   <image source="Resource/Images/Tiles.png" width="144" height="320"/>
  </tileset>
@@ -14,7 +14,7 @@
   <object id="10" name="solidabove" type="solidabove" x="64" y="152" width="24" height="1"/>
   <object id="11" name="solidabove" type="solidabove" x="104" y="168" width="24" height="1"/>
   <object id="12" name="solidabove" type="solidabove" x="88" y="200" width="24" height="1"/>
-  <object id="13" name="playerspawn" type="playerspawn" x="161.068" y="134.205">
+  <object id="13" name="playerspawn" type="playerspawn" x="40.318" y="175.705">
    <properties>
     <property name="hp" type="int" value="1000"/>
    </properties>
@@ -28,6 +28,15 @@
   <object id="19" name="needle" type="needle" x="25.8125" y="178.125" width="5.1875" height="5.625"/>
   <object id="20" name="needle" type="needle" x="200.938" y="209.688" width="53.1875" height="6.125"/>
   <object id="21" name="solid" type="solid" x="121" y="193.063" width="38" height="6"/>
+  <object id="29" name="solidabove" type="solidabove" x="94.5" y="168.011" width="224" height="1"/>
+ </objectgroup>
+ <objectgroup id="7" name="doors">
+  <object id="30" name="door" type="door" x="161.043" y="136.043" width="6.95652" height="7.91304">
+   <properties>
+    <property name="into_x" type="int" value="392"/>
+    <property name="into_y" type="int" value="208"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="6" name="enemy">
   <object id="25" name="bee" type="bee" x="256" y="80.75" width="136.5" height="106">
@@ -41,12 +50,7 @@
     <property name="spawn_y" type="int" value="210"/>
    </properties>
   </object>
-  <object id="27" name="bee" type="bee" x="181.667" y="78" width="106.667" height="70.3333">
-   <properties>
-    <property name="radius" type="int" value="45"/>
-   </properties>
-  </object>
-  <object id="28" name="snake" type="snake" x="64" y="208" width="8" height="8">
+  <object id="28" name="snake" type="snake" x="95.5228" y="191.341" width="8" height="8">
    <properties>
     <property name="radius" type="int" value="50"/>
    </properties>
@@ -114,7 +118,7 @@
 0,224,225,113,114,113,114,113,114,134,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,262,0,0,0,0,0,0,0,235,253,253,235,235,253,235,235,0,0,
 0,242,243,0,0,0,0,0,0,152,0,0,0,0,0,220,220,220,220,220,238,239,0,0,0,0,0,0,0,0,0,112,113,114,115,0,0,240,241,0,235,253,253,235,235,235,235,235,0,0,
 0,260,261,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,256,257,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,258,259,0,235,235,235,235,235,235,235,253,0,0,
-0,278,279,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,274,275,0,0,0,495,495,495,495,495,495,495,0,0,0,0,0,276,277,0,253,253,253,253,253,253,253,253,0,0,
+0,278,279,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,274,275,0,0,0,495,495,495,495,495,495,495,0,0,0,0,0,276,277,0,253,253,253,253,253,253,253,253,0,334,
 0,296,297,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,292,293,0,0,0,705,706,707,708,709,710,711,0,0,0,0,0,294,295,0,0,0,0,0,0,0,0,0,0,0,
 0,314,315,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,310,311,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,312,313,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -143,7 +147,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,164,165,166,343,344,345,164,347,348,349,115,351,352,164,343,344,345,346,347,348,343,344,345,346,347,348,170,171,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,18,0,347,348,349,0,0,0,0,0,0,0,182,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,347,348,349,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,114,0,113,113,113,113,113,113,114,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,305,306,0,

@@ -1,4 +1,12 @@
-#include "../Header/TileMap.h"
+
+#include <iostream>
+#include <sstream>
+#include <cassert>
+
+#include <gsl/gsl>
+#define GSL_THROW_ON_CONTRACT_VIOLATION
+
+#include "TileMap.h"
 
 
 namespace ezg {

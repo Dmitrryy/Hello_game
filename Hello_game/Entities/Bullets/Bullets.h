@@ -1,17 +1,16 @@
 #pragma once
 
-#include "config.h"
-#include "Entity.h"
+#include "../../config.h"
+#include "../Entity.h"
 
 namespace ezg {
 
 
-	class Bullet : public Entity 
+	class Bullet : public ezg::Entity
 	{
-	public:
+	protected:
 
-
-		Bullet(TipeEntity _tipe, float place_x, float place_y)
+		Bullet(TypeEntity _tipe, float place_x, float place_y) noexcept
 			: Entity(_tipe, place_x, place_y, 1, 1)
 			, m_time(0)
 			, m_damage(20)
@@ -21,11 +20,27 @@ namespace ezg {
 			is_gravity = false;
 		}
 
+	public:
+
+		/////////////////////////////////////////////////////////
+		//interaction with other objects
+		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) final {
+
+			if (m_hit_box.intersects(_lhs->getHitBox())) {
+				if (_lhs->getType() == TypeEntity::Solid) {
+					setAlive(false);
+				}
+			}
+
+		}
+		/////////////////////////////////////////////////////////
+
+
 
 		void setSpeed(float _x, float _y) noexcept { speed_x = _x; /**/ speed_y = _y; }
 
 
-		inline const float getDamage() const noexcept { return m_damage; }
+		virtual Hit getHit() const noexcept = 0;
 
 
 		void upPosition(float time, Direction _dir) noexcept override {
@@ -53,24 +68,24 @@ namespace ezg {
 	//////////////////////////////////////////////////////////////////////////////////////
 
 
-	class RedBullet : public Bullet
+	class RedBullet final : public Bullet
 	{
 	public:
 
 		RedBullet() noexcept
-			: Bullet(TipeEntity::RedBullet, 0, 0)
+			: Bullet(TypeEntity::RedBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
-		RedBullet(float place_x, float place_y)
-			: Bullet(TipeEntity::RedBullet, place_x, place_y)
+		RedBullet(float place_x, float place_y) noexcept
+			: Bullet(TypeEntity::RedBullet, place_x, place_y)
 		{
 			is_gravity = false;
 		}
 
 
-		void draw(sf::RenderTarget& target, sf::RenderStates states) override {
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 
 			static sf::RectangleShape rec(sf::Vector2f(m_hit_box.width, m_hit_box.height));
 
@@ -79,6 +94,12 @@ namespace ezg {
 
 			target.draw(rec, states);
 
+		}
+
+
+		Hit getHit() const noexcept override {
+
+			return Hit( m_damage, Effect(EffectType::OnFire, 5.f, 6000.f) );
 		}
 
 
@@ -98,24 +119,24 @@ namespace ezg {
 	//////////////////////////////////////////////////////////////////////////////////////
 
 
-	class BlueBullet : public Bullet
+	class BlueBullet final : public Bullet
 	{
 	public:
 
 		BlueBullet() noexcept
-			: Bullet(TipeEntity::BlueBullet, 0, 0)
+			: Bullet(TypeEntity::BlueBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
-		BlueBullet(float place_x, float place_y)
-			: Bullet(TipeEntity::BlueBullet, place_x, place_y)
+		BlueBullet(float place_x, float place_y) noexcept
+			: Bullet(TypeEntity::BlueBullet, place_x, place_y)
 		{
 			is_gravity = false;
 		}
 
 
-		void draw(sf::RenderTarget& target, sf::RenderStates states) override {
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 
 			static sf::RectangleShape rec(sf::Vector2f(m_hit_box.width, m_hit_box.height));
 
@@ -124,6 +145,12 @@ namespace ezg {
 
 			target.draw(rec, states);
 
+		}
+
+
+		Hit getHit() const noexcept override {
+
+			return Hit( m_damage, Effect(EffectType::Freezing, 1.f, 8000.f) );
 		}
 
 
@@ -143,25 +170,25 @@ namespace ezg {
 	//////////////////////////////////////////////////////////////////////////////////////
 
 
-	class HeroBullet : public Bullet
+	class HeroBullet final : public Bullet
 	{
 	public:
 
 		HeroBullet() noexcept
-			: Bullet(TipeEntity::HeroBullet, 0, 0)
+			: Bullet(TypeEntity::HeroBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
-		HeroBullet(float place_x, float place_y)
-			: Bullet(TipeEntity::HeroBullet, place_x, place_y)
+		HeroBullet(float place_x, float place_y) noexcept
+			: Bullet(TypeEntity::HeroBullet, place_x, place_y)
 
 		{
 			is_gravity = false;
 		}
 
 
-		void draw(sf::RenderTarget& target, sf::RenderStates states) override {
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 
 			static sf::RectangleShape rec(sf::Vector2f(m_hit_box.width, m_hit_box.height));
 
@@ -170,6 +197,12 @@ namespace ezg {
 
 			target.draw(rec, states);
 
+		}
+
+
+		Hit getHit() const noexcept override {
+
+			return Hit{ m_damage, Effect() };
 		}
 
 

@@ -1,11 +1,12 @@
 #pragma once
 
 
-#include "../Libs/tinyxml2/tinyxml2.h"
+#include "Libs/tinyxml2/tinyxml2.h"
 #include <SFML/Graphics.hpp>
 
-#include "Menu.h"
-#include "Animation.h"
+
+
+#include "Entities/Animation.h"
 
 #include <vector>
 #include <iostream>
@@ -25,11 +26,11 @@
 
 ////////////////////////////////settings/////////////////////////////////////
 //game speed controller
-static int GAME_SPEED_CONTROLLER   = 1050;
+static float GAME_SPEED_CONTROLLER   = 800.f;
 //
 //display settings
-static int SCALE_ALL_X              = 5;
-static int SCALE_ALL_Y              = 5;
+static float SCALE_ALL_X              = 5;
+static float SCALE_ALL_Y              = 5;
 //
 #define STYLE_WINDOW sf::Style::Fullscreen
 //
@@ -93,6 +94,51 @@ namespace ezg {
     class MushroomRed;
     class Bee;
     class Snake;
+
+
+    enum class EffectType {
+        Normal
+        //, Gravity
+        , Wounded
+        , Immunity
+        , Walking
+        , Stop
+        , Attack
+        , Poisoning
+        , OnFire
+        , Freezing
+    };
+
+
+
+    struct Effect {
+
+        Effect(EffectType _tp = EffectType::Normal, float _p = 0.f, float _time = 0.f) noexcept
+            : _type(_tp)
+            , _power(_p)
+            , _time_effect(_time)
+        {}
+
+        EffectType _type;
+        float _power;
+        float _time_effect;
+
+    };
+
+
+    struct Hit {
+
+        Hit(float _dmg = 0.f, Effect _eff = Effect()) noexcept
+            : _damage(_dmg)
+            , _effect(_eff)
+        {}
+
+        float _damage;
+        //float m_corner = 0.f;
+
+        Effect _effect;
+        
+    };
 
 
     enum class GameMood {

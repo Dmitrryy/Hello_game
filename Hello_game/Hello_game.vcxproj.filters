@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -16,67 +8,135 @@
     <Filter Include="Libs">
       <UniqueIdentifier>{3f497bc1-7be3-48c5-9025-b5b744d8642a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Menu">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="NodeGame">
+      <UniqueIdentifier>{82cd9db7-23d1-49d3-bc7c-35656fdbabf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{47a1fc40-8e39-462a-9d4f-76543e4ce186}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TileMap">
+      <UniqueIdentifier>{88cbd213-6458-4cb9-80ab-e1579c319c9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Bots">
+      <UniqueIdentifier>{b4c1eaa9-11b9-4f56-b79f-6533d144f308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Hero">
+      <UniqueIdentifier>{606e24db-c500-415f-8fe8-e9ada6f98889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Solid">
+      <UniqueIdentifier>{792584c3-d454-46d7-8a50-a99c655421a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Bullets">
+      <UniqueIdentifier>{9c0a8efa-7d97-484c-8fc9-60b408a3c137}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Bots\Mushroom">
+      <UniqueIdentifier>{dfb39ee7-b325-420c-a00a-88dd0e07cced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Bots\Bee">
+      <UniqueIdentifier>{a42d22c6-5de5-4d93-87b6-43c645fa7716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Bots\Snake">
+      <UniqueIdentifier>{15adfc01-ef07-4c9b-b625-c6331136c126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Traps">
+      <UniqueIdentifier>{933204b1-29ed-4e6c-b1ce-c9a7b971578a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Traps\Needle">
+      <UniqueIdentifier>{92e1a5e5-d995-41e5-9a76-a5800276991a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\NodeGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TileMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Enemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Libs\tinyxml2\tinyxml2.cpp">
       <Filter>Libs</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Menu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu\Menu.cpp">
+      <Filter>Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeGame\NodeGame.cpp">
+      <Filter>NodeGame</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap\TileMap.cpp">
+      <Filter>TileMap</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Animation.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Entity.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Hero\Player.cpp">
+      <Filter>Entities\Hero</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Bots\Mushroom\Mushroom.cpp">
+      <Filter>Entities\Bots\Mushroom</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Bots\Mushroom\MushroomBlue.cpp">
+      <Filter>Entities\Bots\Mushroom</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Bots\Mushroom\MushroomRed.cpp">
+      <Filter>Entities\Bots\Mushroom</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Bots\Bee\Bee.cpp">
+      <Filter>Entities\Bots\Bee</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Bots\Snake\Snake.cpp">
+      <Filter>Entities\Bots\Snake</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Traps\Needle\Needle.cpp">
+      <Filter>Entities\Traps\Needle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\NodeGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TileMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Solid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Enemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Libs\tinyxml2\tinyxml2.h">
       <Filter>Libs</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Menu.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Menu\Menu.h">
+      <Filter>Menu</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Animation.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="NodeGame\NodeGame.h">
+      <Filter>NodeGame</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Bullets.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="TileMap\TileMap.h">
+      <Filter>TileMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Animation.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Entity.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Bullets\Bullets.h">
+      <Filter>Entities\Bullets</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Hero\Player.h">
+      <Filter>Entities\Hero</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Solid\Solid.h">
+      <Filter>Entities\Solid</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="Entities\Bots\Mushroom\Mushroom.h">
+      <Filter>Entities\Bots\Mushroom</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Bots\Mushroom\MushroomBlue.h">
+      <Filter>Entities\Bots\Mushroom</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Bots\Mushroom\MushroomRed.h">
+      <Filter>Entities\Bots\Mushroom</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Bots\Bee\Bee.h">
+      <Filter>Entities\Bots\Bee</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Bots\Snake\Snake.h">
+      <Filter>Entities\Bots\Snake</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Traps\Needle\Needle.h">
+      <Filter>Entities\Traps\Needle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

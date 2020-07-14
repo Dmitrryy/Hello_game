@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <map>
 
@@ -32,13 +33,14 @@ namespace ezg {
 	//	allows you to store multiple animations.
 	class Animation
 	{
+	public:
 		//high probability of mistake. 
 		//sf::Texture does not tolerate copying or moving. 
 		//as a result a white screen is drawn instead of images.
-		Animation				(const Animation& _that)	= delete;   //not saported
-		Animation& operator=	(const Animation&)			= delete;   //not saported
-		Animation				(Animation&& _that)			= delete;   //not saported
-		Animation& operator=	(Animation&&)				= delete;   //not saported
+		Animation             (const Animation& _that) = delete;   //not saported
+		Animation& operator=  (const Animation&)       = delete;   //not saported
+		Animation             (Animation&& _that)      = delete;   //not saported
+		Animation& operator=  (Animation&&)            = delete;   //not saported
 
 	public:
 
@@ -48,7 +50,7 @@ namespace ezg {
 
 		//texture loading.
 		//there is only one texture for all animations
-		bool loadTexture(const std::string& _fname) { return m_texture.loadFromFile(_fname); }
+		bool loadTexture(const std::string& _fname)  { return m_texture.loadFromFile(_fname); }
 		//Attention! when using this function, make sure that the texture is not destroyed. 
 		//otherwise there will be a white square.
 		void setTexture(const sf::Texture& _texture) { m_texture = _texture; }

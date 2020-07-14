@@ -1,6 +1,14 @@
 
-#include "../Header/NodeGame.h"
+#include "NodeGame.h"
 
+#include "../Entities/Solid/Solid.h"
+
+#include "../Entities/Bots/Mushroom/MushroomRed.h"
+#include "../Entities/Bots/Mushroom/MushroomBlue.h"
+
+#include "../Entities/Bots/Bee/Bee.h"
+#include "../Entities/Bots/Snake/Snake.h"
+#include "../Entities/Traps/Needle/Needle.h"
 
 namespace ezg {
 
@@ -14,14 +22,17 @@ namespace ezg {
     {
 
         _initialize_();
+        m_window.setFramerateLimit(150);
 
     }
     NodeGame::~NodeGame()
     {
 
-        m_entities.clear();
+        for (auto& ent : m_entities) {
+            delete ent;
+            ent = nullptr;
+        }
 
-        //m_window.close();
     }
 
 
@@ -39,27 +50,27 @@ namespace ezg {
             assert(0);
         }
         {
-            m_hero.atAnimation().addAnimation(EntityAnimation::Walk);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(0, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(8, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(16, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(24, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(32, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(40, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(48, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Walk, sf::IntRect(56, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Walk));
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(0, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(8, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(16, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(24, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 8, 8, 8), 100.f);
 
-            m_hero.atAnimation().addAnimation(EntityAnimation::Jump);
-            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(0, 80, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(8, 80, 8, 8), 120.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(16, 80, 8, 8), 500.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Jump, sf::IntRect(24, 80, 8, 8), 4000.f);
+            m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Jump));
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(0, 80, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(8, 80, 8, 8), 120.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(16, 80, 8, 8), 500.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(24, 80, 8, 8), 4000.f);
 
-            m_hero.atAnimation().addAnimation(EntityAnimation::Idle);
-            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(0, 56, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(8, 56, 8, 8), 400.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(16, 56, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(EntityAnimation::Idle, sf::IntRect(24, 56, 8, 8), 400.f);
+            m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Idle));
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 56, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 56, 8, 8), 400.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 56, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(24, 56, 8, 8), 400.f);
         }
 
 
@@ -625,6 +636,7 @@ namespace ezg {
             m_menus.activate(TipeMenu::Pause);
             break;
 
+
         case GameMood::Death:
             m_menus.activate(TipeMenu::Death);
             break;
@@ -654,10 +666,10 @@ namespace ezg {
 
     void NodeGame::update() {
 
-        auto _period = m_clock.getElapsedTime().asSeconds();
+        float _period = m_clock.getElapsedTime().asSeconds();
         m_clock.restart();
 
-        //printf("%g\n", 1 / _period);
+        //printf("%g\n",  _period );
 
         _period *= GAME_SPEED_CONTROLLER;
         m_time += _period;
@@ -685,14 +697,13 @@ namespace ezg {
 
             allOtherUpdate(_period);
 
-            //upAnimation(_period);
-            m_view.setCenter(sf::Vector2f(getPosHeroX() * SCALE_ALL_X, getPosHeroY() * SCALE_ALL_Y));
+            //std::cout << static_cast<float>(_period) << std::endl;
+            m_view.move(sf::Vector2f((getPosHeroX() * SCALE_ALL_X - m_view.getCenter().x) / _period / 7.f,
+                (getPosHeroY() * SCALE_ALL_Y - m_view.getCenter().y) / _period / 7.f ));
 
             if (m_hero.getStat() == EntityStat::Death) {
                 changeMood(GameMood::Death);
             }
-
-            //m_hero.setSpeedX(0);
             break;
 
         }
@@ -720,7 +731,11 @@ namespace ezg {
 
         for (const gsl::not_null < Entity* > elem1 : m_entities) {
             for (const gsl::not_null < Entity* > elem2 : m_entities) {
-                Entity::colision(elem1, elem2, _dir);
+
+                if (elem1 != elem2) {
+                    elem1->colision(elem2, _dir);
+                }
+                //Entity::colision(elem1, elem2, _dir);
             }
         }
 

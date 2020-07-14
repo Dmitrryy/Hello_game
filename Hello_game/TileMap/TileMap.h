@@ -1,6 +1,8 @@
 #pragma once
 
-#include "config.h"
+//#include "config.h"
+#include <SFML/Graphics.hpp>
+#include "../Libs/tinyxml2/tinyxml2.h"
 
 
 namespace ezg {

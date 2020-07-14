@@ -1,4 +1,4 @@
-#include "../Header/Animation.h"
+#include "Animation.h"
 
 
 namespace ezg {
@@ -40,7 +40,7 @@ namespace ezg {
 
 	bool Animation::activate(int _id_animation) {
 
-		auto res = m_animations.find(_id_animation);
+		const auto res = m_animations.find(_id_animation);
 
 		if (res == m_animations.end() || res->second.size() == 0) {
 
@@ -51,7 +51,8 @@ namespace ezg {
 		m_time = 0;
 		m_current_frame = 0;
 
-		return is_active = true;;
+		is_active = true;
+		return true;
 	}
 
 

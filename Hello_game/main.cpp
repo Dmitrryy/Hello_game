@@ -1,5 +1,5 @@
 
-#include "Header/NodeGame.h"
+#include "NodeGame/NodeGame.h"
 
 
 
@@ -7,7 +7,6 @@ int main()
 {
 
     ezg::NodeGame game;
-
 
     // run the main loop
     while (game.getMood() != ezg::GameMood::Exit)

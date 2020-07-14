@@ -1,10 +1,7 @@
-#include "../Header/Menu.h"
+#include "Menu.h"
 
 
-
-
-
-namespace ezg {
+namespace menu {
 
 	///////////////////////////////////Button/////////////////////////////////////////
 
@@ -326,4 +323,4 @@ namespace ezg {
 
 	}
 
-} //namespace ezg
+} //namespace menu

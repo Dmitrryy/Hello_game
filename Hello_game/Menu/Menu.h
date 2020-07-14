@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace ezg {
+namespace menu {
 
 
 	struct Button
@@ -20,15 +20,15 @@ namespace ezg {
 		//_pos_x and _pos_y - button center position, but not in coordinates (pixels):
 		//	
 		// 0.0f------------------------------------------------------------1.0f→x
-		//	:	_____________________________________________________________ 
-		//	:	|															|
-		//	:	|															|
-		//	:	|															|
-		//	:	|							WINDOW							|
-		//	:	|															|
-		//	:	|															|
-		//	:	|															|
-		//	:	|															|
+		//  :   _____________________________________________________________ 
+		//  :   |                                                           |
+		//  :   |                                                           |
+		//  :   |                                                           |
+		//  :   |                                                           |
+		//  :   |                          Window                           |
+		//  :   |                                                           |
+		//  :   |                                                           |
+		//  :   |                                                           |
 		// 1.0f _____________________________________________________________
 		//  ↓ y
 		Button(const std::string& _text, const sf::Font& _font, float _pos_x = 0.f, float _pos_y = 0.f);
@@ -41,7 +41,7 @@ namespace ezg {
 		//////////////////////////////////////////////////////////////////////////////
 
 
-		/////////////////////////////settings/////////////////////////////////////////
+		////////////////////////////////settings//////////////////////////////////////
 		//set text color
 		void setTextColor	(sf::Color _color)		{ m_text.setFillColor(_color);		}
 		//set text size
@@ -68,13 +68,15 @@ namespace ezg {
 	class Menu
 	{
 
+	public:
+
 		//high probability of mistake. 
 		//sf::Texture does not tolerate copying or moving. 
 		//as a result a white screen is drawn instead of images.
-		Menu			(const Menu& _that) = delete;   //not saported
-		Menu& operator=	(const Menu&)		= delete;   //not saported
-		Menu			(Menu&& _that)		= delete;   //not saported
-		Menu& operator=	(Menu&&)			= delete;   //not saported
+		Menu            (const Menu& _that) = delete;   //not saported
+		Menu& operator= (const Menu&)       = delete;   //not saported
+		Menu            (Menu&& _that)      = delete;   //not saported
+		Menu& operator= (Menu&&)            = delete;   //not saported
 		
 
 	public:
@@ -106,14 +108,14 @@ namespace ezg {
 
 		/////////////////////////////////settings/////////////////////////////////////
 		//set text color (default = RGB(255, 255, 255))
-		void setTextColor	(sf::Color _color)	noexcept{ m_def_color	= _color;	}
+		void setTextColor   (sf::Color _color)  noexcept{ m_def_color	= _color;                  }
 		//set text size  (default = 25)
-		void setTextSize	(int _size)			noexcept{ m_def_size	= _size;	}
+		void setTextSize    (int _size)         noexcept{ m_def_size	= _size;                   }
 		//set font
-		bool setFont		(std::string _fname)		{ return m_font.loadFromFile(_fname);	}
-		void setFont		(sf::Font _font)			{ m_font = _font; }
+		bool setFont        (std::string _fname)        { return m_font.loadFromFile(_fname);      }
+		void setFont        (sf::Font _font)            { m_font = _font; }
 		//set BackGround for ALL window
-		bool setBackGround	(std::string _fname)		{ return m_background.loadFromFile(_fname);}
+		bool setBackGround  (std::string _fname)        { return m_background.loadFromFile(_fname);}
 		///////////////////////////////////////////////////////////////////////////////
 
 
@@ -121,14 +123,16 @@ namespace ezg {
 		//removes all buttons, 
 		//sets the default colorand size of the text, 
 		//removes the background.
-		void clear			() noexcept { m_buttons.clear(); }
+		void clear () noexcept { m_buttons.clear(); }
 		//////////////////////////////////////////////////////////////////////////////
 
 
-		////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////
 		//menu interaction
-		bool checkPressing(const sf::Event& _event, const sf::RenderWindow& _target, int& _id_button);
-		////////////////////////////////////////
+		//  true - the button was pressed.
+		//  _id_button - the number of the button pressed.
+		bool checkPressing (const sf::Event& _event, const sf::RenderWindow& _target, int& _id_button);
+		//////////////////////////////////////////////////////////////////////////////
 
 
 	private:
@@ -199,4 +203,4 @@ namespace ezg {
 		sf::Font				m_font;
 	};
 
-} // namespace ezg
+} // namespace menu

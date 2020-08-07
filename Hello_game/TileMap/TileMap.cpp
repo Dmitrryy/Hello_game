@@ -14,7 +14,7 @@ namespace ezg {
     void 
     Layer::draw(sf::RenderTarget& target, sf::RenderStates states) const /* override */
     {
-
+        
         target.draw(m_vertices, states);
 
     }

@@ -11,7 +11,7 @@ namespace ezg {
 		: Entity(TypeEntity::Bee, place_x, place_y, 8, 8)
 		, m_direction(Direction::Right)
 		, m_damage(30)
-		, m_acceleration(0.00008f)
+		, m_acceleration(0.0003f)
 		, m_time_effect(0)
 		, m_hp(40)
 		, m_area(_area)
@@ -137,7 +137,7 @@ namespace ezg {
 
 		}
 		if (_effectIsActive_(EffectType::Attack)) {
-			_time *= 1.5f;
+			_time *= 1.f;
 		}
 
 		if (_dir == Direction::Horixontal) {
@@ -207,11 +207,7 @@ namespace ezg {
 		//            _x   0|
 		//                  |
 		//                  |
-		//                  |
-		//                  |
-		//                  |
 		//                  ↓y
-
 
 		const float diff_x = _x - m_hit_box.left;
 		const float diff_y = _y - m_hit_box.top;
@@ -232,7 +228,7 @@ namespace ezg {
 		//slow down at the goal level (by y).
 		//otherwise it can spin like a planet around the sun.
 		if (std::fabs(diff_y) < 8) {
-			speed_y /= 1.005f;
+			speed_y /= 1.008f;
 		}
 
 		const float excess = std::sqrt(speed_x * speed_x + speed_y * speed_y - BEE_MAX_SPEED * BEE_MAX_SPEED);

@@ -29,8 +29,8 @@
 static float GAME_SPEED_CONTROLLER   = 800.f;
 //
 //display settings
-static float SCALE_ALL_X              = 5;
-static float SCALE_ALL_Y              = 5;
+//static float SCALE_ALL_X              = 5;
+//static float SCALE_ALL_Y              = 5;
 //
 #define STYLE_WINDOW sf::Style::Fullscreen
 //
@@ -39,7 +39,7 @@ static int WINDOW_WIDTH = 16 * 80;
 static int WINDOW_HEIGHT = 9 * 80;
 //
 //font
-#define FONT_FNAME              "Resource/19440.ttf"
+#define FONT_FNAME              "Resource/pix.ttf"
 //#define FONT_DEFAULT_SIZE       50
 #define FONT_DEFAULT_COLOR      sf::Color(255, 255, 255)
 //
@@ -53,15 +53,15 @@ static int WINDOW_HEIGHT = 9 * 80;
 //menu settings
     //pause
 #define MENU_BACKGROUND_PAUSE_FNAME "Resource/Images/menu_pause.png"
-#define MENU_PAUSE_FONT_SIZE        50
+#define MENU_PAUSE_FONT_SIZE        40
 #define MENU_PAUSE_FONT_COLOR       sf::Color(175, 144, 64)
     //main menu
 #define MENU_BACKGROUND1_FNAME      "Resource/Images/menu1.png"
-#define MAIN_MENU_FONT_SIZE         55
+#define MAIN_MENU_FONT_SIZE         20
 #define MAIN_MENU_FONT_COLOR        sf::Color(175, 144, 64)
     //death menu
 #define MENU_BACKGROUND_DEATH_FNAME "Resource/Images/menu_death.png"
-#define MENU_DEATH_FONT_SIZE        55
+#define MENU_DEATH_FONT_SIZE        18
 #define MENU_DEATH_FONT_COLOR       sf::Color(175, 144, 64)
 //
 //

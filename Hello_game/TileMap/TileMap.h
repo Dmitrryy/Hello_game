@@ -10,6 +10,7 @@ namespace ezg {
 
     class Layer : public sf::Drawable, public sf::Transformable
     {
+    public:
 
         Layer            (const Layer& _that)   = delete; //not saported
         Layer& operator= (const Layer&)         = delete; //not saported
@@ -24,9 +25,7 @@ namespace ezg {
 
         }
 
-        ~Layer() {
-
-        }
+        ~Layer() = default;
 
 
     public:
@@ -60,6 +59,7 @@ namespace ezg {
 
     class TileMap
     {
+    public:
 
         TileMap             (const TileMap& _that)  = delete;   //not saported
         TileMap& operator=  (const TileMap&)        = delete;   //not saported

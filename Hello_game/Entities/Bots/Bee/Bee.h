@@ -9,7 +9,7 @@ namespace ezg {
 
 
 #define BEE_OBSERVETION_RADIUS  40
-#define BEE_MAX_SPEED			0.05f
+#define BEE_MAX_SPEED			0.1f
 #define BEE_DURATION_WOUNDED 300.f
 #define BEE_DURATION_NORMAL 1000.f
 

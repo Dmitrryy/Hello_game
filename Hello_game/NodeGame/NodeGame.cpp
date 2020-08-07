@@ -23,6 +23,7 @@ namespace ezg {
 
         _initialize_();
         m_window.setFramerateLimit(150);
+        
 
     }
     NodeGame::~NodeGame()
@@ -41,6 +42,10 @@ namespace ezg {
         m_window.setView(m_view);
         m_window.setKeyRepeatEnabled(false);
 
+        //std::cout << m_view.getSize().x << std::endl;
+        m_view.zoom(0.2f);
+        //std::cout << m_view.getSize().x << std::endl;
+        //m_view.setViewport(sf::FloatRect(0, 0, 0.5, 0.5));
 
         m_hero.setWidth(HERO_WIDTH);
         m_hero.setHeight(HERO_HEIGHT);
@@ -96,19 +101,44 @@ namespace ezg {
 
         m_menus.create(TipeMenu::Main);
 
-
-        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toGame, "Game", 0.70f, 0.36f);
-        ButtonMain(MenuButton::toGame).setTextColor(MAIN_MENU_FONT_COLOR);
-        ButtonMain(MenuButton::toGame).setTextSize(MAIN_MENU_FONT_SIZE);
-
-        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toExit, "Exit", 0.70f, 0.46f);
-        ButtonMain(MenuButton::toExit).setTextColor(MAIN_MENU_FONT_COLOR);
-        ButtonMain(MenuButton::toExit).setTextSize(MAIN_MENU_FONT_SIZE);
-
-
-        if (!m_menus.atMenu(TipeMenu::Main).setBackGround(MENU_BACKGROUND1_FNAME)) {
+        if (!m_menus.atMenu(TipeMenu::Main).setTexture(MENU_BACKGROUND1_FNAME)) {
             assert(0);
         }
+
+
+
+        menu::Button _but;
+        _but.setSize({ 0.15f, 0.095f});
+        sf::Text _txt;
+        _txt.setCharacterSize(MAIN_MENU_FONT_SIZE);
+        _txt.setFillColor(MAIN_MENU_FONT_COLOR);
+        
+
+        sf::Text _hl_txt = _txt;
+        _hl_txt.setFillColor(sf::Color::Blue);
+        sf::Text _pr_txt = _txt;
+        _pr_txt.setFillColor(sf::Color::Black);
+
+        _but.setDefText(_txt);
+        _but.setHighlightingText(_hl_txt);
+        _but.setPressedText(_pr_txt);
+        _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
+
+
+        _but.setString("Game");
+        _but.setPosition({ 0.65f, 0.46f });
+        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toGame, _but);
+
+
+        _but.setString("Exit");
+        _but.setPosition({ 0.65f, 0.56f });
+        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toExit, _but);
+
+
+        auto _bg(std::make_unique<menu::Image>());
+        _bg->setSize(sf::Vector2f(1.f, 1.f));
+        _bg->setTextureRect(sf::IntRect(0, 0, 1003, 563));
+        m_menus.atMenu(TipeMenu::Main).addImage(std::move(_bg));
 
     }
 
@@ -118,43 +148,63 @@ namespace ezg {
 
         m_menus.create(TipeMenu::Pause);
 
-
-        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Continue, "Continue", 0.8f, 0.2f);
-        ButtonPause(MenuButton::Continue).setTextColor(MAIN_MENU_FONT_COLOR);
-        ButtonPause(MenuButton::Continue).setTextSize(MAIN_MENU_FONT_SIZE);
-
-        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Restart, "Restart", 0.8f, 0.3f);
-        ButtonPause(MenuButton::Restart).setTextColor(MAIN_MENU_FONT_COLOR);
-        ButtonPause(MenuButton::Restart).setTextSize(MAIN_MENU_FONT_SIZE);
-
-        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::toMainMenu, "Menu", 0.8f, 0.4f);
-        ButtonPause(MenuButton::toMainMenu).setTextColor(MAIN_MENU_FONT_COLOR);
-        ButtonPause(MenuButton::toMainMenu).setTextSize(MAIN_MENU_FONT_SIZE);
-
-
-        if (!m_menus.atMenu(TipeMenu::Pause).setBackGround(MENU_BACKGROUND_PAUSE_FNAME)) {
+        if (!m_menus.atMenu(TipeMenu::Pause).setTexture(MENU_BACKGROUND_PAUSE_FNAME)) {
             assert(0);
         }
 
+        menu::Button _but;
+        _but.setSize({ 0.15f, 0.095f });
+        sf::Text _txt;
+        _txt.setCharacterSize(MAIN_MENU_FONT_SIZE);
+        _txt.setFillColor(MAIN_MENU_FONT_COLOR);
+
+        sf::Text _hl_txt = _txt;
+        _hl_txt.setFillColor(sf::Color::Blue);
+        sf::Text _pr_txt = _txt;
+        _pr_txt.setFillColor(sf::Color::Black);
+
+        _but.setDefText(_txt);
+        _but.setHighlightingText(_hl_txt);
+        _but.setPressedText(_pr_txt);
+        _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
+
+
+        _but.setString("Continue");
+        _but.setPosition({ 0.8f, 0.2f });
+        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Continue, _but);
+
+        _but.setString("Restart");
+        _but.setPosition({ 0.8f, 0.3f });
+        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Restart, _but);
+
+        _but.setString("Menu");
+        _but.setPosition({ 0.8f, 0.4f });
+        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::toMainMenu, _but);
+
+
+        auto _bg(std::make_unique<menu::Image>());
+        _bg->setSize(sf::Vector2f(1.f, 1.f));
+        _bg->setTextureRect(sf::IntRect(0, 0, 256, 144));
+        m_menus.atMenu(TipeMenu::Pause).addImage(std::move(_bg));
     }
 
 
 #define ButtonDeath(a) m_menus.atMenu(TipeMenu::Death).atButton(a)
     void NodeGame::_addDeathMenu_() {
-
+       
         m_menus.create(TipeMenu::Death); 
 
-        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, "Restart", 0.5f, 0.55f);
+       /* m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, "Restart", 0.5f, 0.55f);
         ButtonDeath(MenuButton::Restart).setTextColor(MENU_DEATH_FONT_COLOR);
         ButtonDeath(MenuButton::Restart).setTextSize(MENU_DEATH_FONT_SIZE);
 
         m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::toMainMenu, "Menu", 0.5f, 0.65f);
         ButtonDeath(MenuButton::toMainMenu).setTextColor(MENU_DEATH_FONT_COLOR);
-        ButtonDeath(MenuButton::toMainMenu).setTextSize(MENU_DEATH_FONT_SIZE);
+        ButtonDeath(MenuButton::toMainMenu).setTextSize(MENU_DEATH_FONT_SIZE);*/
 
-        if (!m_menus.atMenu(TipeMenu::Death).setBackGround(MENU_BACKGROUND_DEATH_FNAME)) {
-            assert(0);
-        }
+        //if (!m_menus.atMenu(TipeMenu::Death).setBackGround(MENU_BACKGROUND_DEATH_FNAME)) {
+        //    assert(0);
+        //}
 
     }
 
@@ -228,7 +278,7 @@ namespace ezg {
 
         //changeMood(GameMood::Loading);
 
-        system("dir");
+        //system("dir");
         tinyxml2::XMLDocument lvl;
         lvl.LoadFile(_fileXML.c_str());
 
@@ -448,7 +498,6 @@ namespace ezg {
 
         } // while (layer != nullptr)
 
-        
         //todo: проверка на состояние уровня (все ли загружено) 
         return true;
 
@@ -698,8 +747,8 @@ namespace ezg {
             allOtherUpdate(_period);
 
             //std::cout << static_cast<float>(_period) << std::endl;
-            m_view.move(sf::Vector2f((getPosHeroX() * SCALE_ALL_X - m_view.getCenter().x) / _period / 7.f,
-                (getPosHeroY() * SCALE_ALL_Y - m_view.getCenter().y) / _period / 7.f ));
+            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * _period / 600.f,
+                (getPosHeroY() - m_view.getCenter().y) * _period / 600.f ));
 
             if (m_hero.getStat() == EntityStat::Death) {
                 changeMood(GameMood::Death);

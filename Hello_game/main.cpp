@@ -20,7 +20,7 @@ int main()
        
 
         sf::Transform tr;
-        tr.scale(SCALE_ALL_X, SCALE_ALL_Y);
+        //tr.scale(SCALE_ALL_X, SCALE_ALL_Y);
 
 
         game.draw(tr);

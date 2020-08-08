@@ -9,9 +9,9 @@ namespace ezg {
 
 
 #define BEE_OBSERVETION_RADIUS  40
-#define BEE_MAX_SPEED			0.1f
-#define BEE_DURATION_WOUNDED 300.f
-#define BEE_DURATION_NORMAL 1000.f
+#define BEE_MAX_SPEED			70.f
+#define BEE_DURATION_WOUNDED 0.5f
+#define BEE_DURATION_NORMAL 10.f
 
 	class Bee final : public ezg::Entity
 	{

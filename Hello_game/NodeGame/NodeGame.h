@@ -82,6 +82,9 @@ namespace ezg {
         }
 
 
+        void updateDbConsole(float _time);
+
+
         void clear();
 
 
@@ -95,23 +98,24 @@ namespace ezg {
 
     private:
 
-        GameMood                                    m_mood;
+        GameMood               m_mood;
 
-        sf::Clock                                   m_clock;
-        double                                      m_time;
+        sf::Clock              m_clock;
+        double                 m_time;
 
-        sf::View                                    m_view;
-        sf::RenderWindow                            m_window;
+        sf::View               m_view;
+        sf::RenderWindow       m_window;
 
-        Hero                                        m_hero;            
-        TileMap                                     m_map;
+        Hero                   m_hero;            
+        TileMap                m_map;
 
-        std::list < Entity* >                       m_entities; // an array with other elements of the game (enemies, bullets, etc.)
+        std::list < Entity* >  m_entities; // an array with other elements of the game (enemies, bullets, etc.)
 
-        menu::MenuManager                           m_menus;
+        menu::MenuManager      m_menus;
+        menu::Menu             m_debug_cnsl;
+        bool                   m_cnslIsActive;
 
-
-        sf::Texture m_enemy_texture;
+        sf::Texture            m_enemy_texture;
     }; // class NodeGame
 
 

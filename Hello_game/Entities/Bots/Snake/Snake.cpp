@@ -4,7 +4,7 @@
 
 namespace ezg {
 
-#define MAX_SPEED_SNAKE 0.04f
+#define MAX_SPEED_SNAKE 55.f
 
 	Snake::Snake(float place_x, float place_y, float _distance_attack, const sf::Texture& _texture)
 		: Entity(TypeEntity::Snake, place_x, place_y, 8, 8)
@@ -15,7 +15,7 @@ namespace ezg {
 		, m_goto(0, 0)
 		, speed_x(0)
 		, speed_y(0)
-		, m_accelerationx(0.0001f)
+		, m_accelerationx(80.f)
 		, m_distance_attack(_distance_attack)
 		, m_effect(EffectType::Walking)
 		, m_status(EntityStat::InAir)
@@ -74,8 +74,20 @@ namespace ezg {
 			m_goto.y = _y;
 
 			if (_rec.intersects(sf::FloatRect(m_hit_box.left - 3, m_hit_box.top, m_hit_box.width + 6, m_hit_box.height))) {
+				const float diff_x = _x - m_hit_box.left;
+				const float diff_y = _y - m_hit_box.top;
 
-				return Hit{ m_damage, Effect{EffectType::Poisoning, 10.f, 3000.f} };
+
+				float m_corner = std::atan(diff_y / diff_x);
+
+				if (diff_y < 0.f && diff_x < 0.f) {
+					m_corner -= 3.141592;
+				}
+				else if (diff_x < 0.f && diff_y > 0.f) {
+					m_corner = 3.141592 + m_corner;
+				}
+				return Hit{ m_damage, Effect{EffectType::Discarding, m_corner, 100.f, 0.15f}, 
+									  Effect{EffectType::Poisoning, 5, 10.f, 2.f} };
 			}
 		}
 		else if (m_effect != EffectType::Wounded && m_effect != EffectType::Walking) {
@@ -92,7 +104,7 @@ namespace ezg {
 
 			if (is_gravity && m_status == EntityStat::InAir) {
 
-				speed_y += 0.0005f * time;
+				speed_y += acceleration_of_gravity * time;
 				moveIt(0, speed_y * time);
 			}
 			if (!is_gravity || m_status == EntityStat::onStairs) {
@@ -199,7 +211,7 @@ namespace ezg {
 
 		if (m_rallback_jump > SNAKE_RALLBACK_JUMP) {
 			if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
-				speed_y = -0.14f;
+				speed_y = -110.f;
 				setStat(EntityStat::InAir);
 				m_rallback_jump = 0.f;
 			}
@@ -247,7 +259,7 @@ namespace ezg {
 
 			m_time_effect += _time;
 
-			if (m_time_effect > 1000.f) {
+			if (m_time_effect > 2.f) {
 
 				m_goto.x = std::rand() % 80 + m_hit_box.left - 40;
 				m_goto.y = m_hit_box.top;
@@ -294,7 +306,7 @@ namespace ezg {
 	void Snake::getHit(Hit _hit) noexcept {
 		if (m_effect != EffectType::Wounded && _hit._damage > 0.f) {
 			m_hp -= _hit._damage;
-			speed_y = -0.1f;
+			speed_y = -70.f;
 			m_effect = EffectType::Wounded;
 		}
 	}
@@ -380,19 +392,19 @@ namespace ezg {
 	void Snake::_setAnimations_() {
 
 		m_animation.addAnimation(static_cast<int>(EntityAnimation::Idle));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 40, 8, 8), 200.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 40, 8, 8), 200.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 40, 8, 8), 200.f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 40, 8, 8), 0.2f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 40, 8, 8), 0.2f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 40, 8, 8), 0.2f);
 
 		m_animation.addAnimation(static_cast<int>(EntityAnimation::Walk));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 40, 8, 8), 160.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 40, 8, 8), 160.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 40, 8, 8), 160.f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 40, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 40, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 40, 8, 8), 0.16f);
 
 		m_animation.addAnimation(static_cast<int>(EntityAnimation::Attack));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(88, 40, 8, 8), 100.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(96, 40, 8, 8), 100.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(104, 40, 8, 8), 100.f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(88, 40, 8, 8), 0.1f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(96, 40, 8, 8), 0.1f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(104, 40, 8, 8), 0.1f);
 
 	}
 

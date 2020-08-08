@@ -12,6 +12,45 @@ namespace menu {
 
 	}
 
+	////////////////////////////////////Image/////////////////////////////////////////
+
+
+	void Image::draw(sf::RenderTarget& _target) /*override*/ {
+		const sf::View _view = _target.getView();
+
+		const sf::Vector2f _view_center = _view.getCenter();
+		const sf::Vector2f _view_size = _view.getSize();
+
+		const sf::Vector2f bt_pos(_view_center.x - _view_size.x * (0.5f - m_position.x),
+			_view_center.y - _view_size.y * (0.5f - m_position.y));
+
+		m_rec = sf::FloatRect(sf::Vector2f(bt_pos.x - m_size.x * _view_size.x / 2.f, bt_pos.y - m_size.y * _view_size.y / 2.f)
+			, sf::Vector2f(m_size.x * _view_size.x, m_size.y * _view_size.y));
+
+		m_sprite.setPosition(bt_pos);
+		m_sprite.setScale(m_rec.width / m_sprite.getTextureRect().width, m_rec.height / m_sprite.getTextureRect().height);
+
+		_target.draw(m_sprite);
+	}
+
+
+	////////////////////////////////////Text//////////////////////////////////////////
+
+	void Text::draw(sf::RenderTarget& _target) /*override*/ {
+
+		const sf::View _view = _target.getView();
+
+		const sf::Vector2f _view_center = _view.getCenter();
+		const sf::Vector2f _view_size = _view.getSize();
+
+		const sf::Vector2f txt_pos(_view_center.x - _view_size.x * (0.5f - m_position.x),
+			_view_center.y - _view_size.y * (0.5f - m_position.y));
+
+		m_txt.setPosition(txt_pos);
+
+		_target.draw(m_txt);
+	}
+
 	///////////////////////////////////Button/////////////////////////////////////////
 
 

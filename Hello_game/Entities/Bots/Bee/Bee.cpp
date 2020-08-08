@@ -11,7 +11,7 @@ namespace ezg {
 		: Entity(TypeEntity::Bee, place_x, place_y, 8, 8)
 		, m_direction(Direction::Right)
 		, m_damage(30)
-		, m_acceleration(0.0003f)
+		, m_acceleration(60.f)
 		, m_time_effect(0)
 		, m_hp(40)
 		, m_area(_area)
@@ -83,14 +83,14 @@ namespace ezg {
 
 		if (intersection(_circle, sf::Vector2f(_x, _y)) && !_effectIsActive_(EffectType::Wounded)) {
 			m_effects[EffectType::Walking]._time_effect = 0.f;
-			m_effects[EffectType::Attack]._time_effect = 100.f;
+			m_effects[EffectType::Attack]._time_effect = 1.f;
 
 			_goto_(_x, _y);
 
 			if (_rec.intersects(m_hit_box)) {
 				speed_x /= -1.3;
 				speed_y /= -1.3;
-				return Hit{ m_damage, Effect() };
+				return Hit{ m_damage };
 			}
 		}
 		else if (!_effectIsActive_(EffectType::Wounded) && !_effectIsActive_(EffectType::Walking)) {
@@ -109,10 +109,12 @@ namespace ezg {
 				m_hp -= _hit._damage;
 
 
-				m_effects[EffectType::Wounded]._time_effect = 600.f;
+				m_effects[EffectType::Wounded]._time_effect = 0.5f;
 			}
 
-			m_effects[_hit._effect._type] = _hit._effect;
+			for (int i = 0; i < 4; i++) {
+				m_effects[_hit._effect[i]._type] = _hit._effect[i];
+			}
 		}
 
 	}
@@ -128,7 +130,7 @@ namespace ezg {
 				_goto_(m_goto.x, m_goto.y);
 
 				if (m_hit_box.intersects(sf::FloatRect(m_goto.x, m_goto.y, 4, 4))) {
-					m_effects[EffectType::Stop]._time_effect = 2000.f;
+					m_effects[EffectType::Stop]._time_effect = 2.f;
 
 					m_goto.x = std::rand() % static_cast<int>(m_area.width) + static_cast<int>(m_area.left);
 					m_goto.y = std::rand() % static_cast<int>(m_area.height) + static_cast<int>(m_area.top);
@@ -136,9 +138,9 @@ namespace ezg {
 			}
 
 		}
-		if (_effectIsActive_(EffectType::Attack)) {
-			_time *= 1.f;
-		}
+		//if (_effectIsActive_(EffectType::Attack)) {
+		//	_time *= 1.f;
+		//}
 
 		if (_dir == Direction::Horixontal) {
 			moveIt(speed_x * _time, 0);
@@ -168,8 +170,8 @@ namespace ezg {
 			speed_y -= m_acceleration * _time / 1.5f;
 			if (speed_y < 0.f) { speed_y = 0.f; }
 		}
-		if (m_effects[EffectType::Attack]._time_effect < 10.f && _effectIsActive_(EffectType::Attack)) {
-			m_effects[EffectType::Stop]._time_effect = 400.f;
+		if (m_effects[EffectType::Attack]._time_effect < 0.1f && _effectIsActive_(EffectType::Attack)) {
+			m_effects[EffectType::Stop]._time_effect = 1.5f;
 		}
 
 	}
@@ -227,8 +229,9 @@ namespace ezg {
 
 		//slow down at the goal level (by y).
 		//otherwise it can spin like a planet around the sun.
-		if (std::fabs(diff_y) < 8) {
-			speed_y /= 1.008f;
+		if (std::fabs(diff_y) < 5) {
+			speed_y /= 1.07f;
+			//speed_x *= 1.05f;
 		}
 
 		const float excess = std::sqrt(speed_x * speed_x + speed_y * speed_y - BEE_MAX_SPEED * BEE_MAX_SPEED);
@@ -243,10 +246,10 @@ namespace ezg {
 	void Bee::_setAnimations_() {
 
 		m_animation.addAnimation(static_cast<int>(EntityAnimation::Walk));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 16, 8, 8), 160.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 16, 8, 8), 160.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 16, 8, 8), 160.f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 16, 8, 8), 160.f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 16, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 16, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 16, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 16, 8, 8), 0.16f);
 
 	}
 

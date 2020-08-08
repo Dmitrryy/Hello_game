@@ -23,7 +23,7 @@ namespace ezg {
 		{ /* nop */ }
 
 		//draws a hero texture
-		void draw (sf::RenderTarget& target, sf::RenderStates states);
+		void draw (sf::RenderTarget& target, sf::RenderStates states) const;
 
 
 		//makes the hero jump ...
@@ -99,7 +99,14 @@ namespace ezg {
 		inline const float getPosX() const noexcept { return m_hit_box.left; }
 		inline const float getPosY() const noexcept { return m_hit_box.top;  }
 		//
+		sf::Vector2f getSpeed() const noexcept { return sf::Vector2f(speed_x, speed_y); }
+		//
+		float getHP() const noexcept { return m_hp; }
+		bool isGravity() const noexcept { return is_gravity; }
+		//
 		inline const EntityStat getStat() const noexcept { return m_status; }
+		//
+		const std::map<EffectType, Effect>& getEffects() const noexcept { return m_effects; }
 		//////////////////////////////////////////////////
 
 
@@ -109,7 +116,7 @@ namespace ezg {
 	private:
 
 
-		bool _effectIsActive_(EffectType _eff) noexcept;
+		bool _effectIsActive_(EffectType _eff) const noexcept;
 
 	private:
 

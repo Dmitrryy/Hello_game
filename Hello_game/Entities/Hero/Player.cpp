@@ -10,7 +10,7 @@
 namespace ezg {
 
 
-    void Hero::draw(sf::RenderTarget& target, sf::RenderStates states) {
+    void Hero::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
         sf::Sprite _sprite = m_animation.getSprite();
         
@@ -39,25 +39,23 @@ namespace ezg {
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) 
             && m_status == EntityStat::onStairs) {
 
-            speed_y += -0.1f;
+            speed_y += -80.f;
 
         }
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
             && m_status == EntityStat::onStairs) {
 
-            speed_y += 0.1f;
+            speed_y += 80.f;
 
         }
-        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            && !_effectIsActive_(EffectType::Wounded)) {
+        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) {
 
-            speed_x += -0.1f;
+            speed_x += -80.f;
             m_direction = Direction::Left;
         }
-        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            && !_effectIsActive_(EffectType::Wounded)) {
+        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))) {
 
-            speed_x += 0.1f;
+            speed_x += 80.f;
             m_direction = Direction::Right;
         }
     }
@@ -93,7 +91,7 @@ namespace ezg {
 
         if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
 
-            speed_y = -0.14f;
+            speed_y = -115.f;
             setStat(EntityStat::InAir);
         }
 
@@ -119,11 +117,11 @@ namespace ezg {
         const float _y = m_hit_box.top + 4;
         if (m_direction == Direction::Left) {
             button->setPosition(m_hit_box.left - 1, _y);
-            button->setSpeed(-0.11f, 0);
+            button->setSpeed(-88.f, 0);
         }
         else {
             button->setPosition(m_hit_box.left + 8, _y);
-            button->setSpeed(0.11f, 0);
+            button->setSpeed(88.f, 0);
         }
 
         return button;
@@ -137,28 +135,31 @@ namespace ezg {
             if (_hit._damage > 0.f) {
                 m_hp -= _hit._damage;
 
-                speed_y = -0.1f;
+                speed_y = -80.f;
                 setStat(EntityStat::InAir);
 
-                m_effects[EffectType::Wounded]._time_effect = 200.f;
+                m_effects[EffectType::Wounded]._time_effect = 0.15f;
                 m_effects[EffectType::Wounded]._power = 1 + _hit._damage / 2000.f;
             }
 
-            m_effects[_hit._effect._type] = _hit._effect;
+            for (int i = 0; i < 4; i++) {
+                m_effects[_hit._effect[i]._type] = _hit._effect[i];
+            }
+
         }
     }
 
 
     void Hero::upPosition(float time, Direction _dir) noexcept {
 
-        if (_effectIsActive_(EffectType::Freezing)) {
-            time /= 1.5;
-        }
+        //if (_effectIsActive_(EffectType::Freezing)) {
+        //   speed_x /= 1.5;
+        //}
         if (_dir == Direction::Vertical) {
 
             if (is_gravity && m_status == EntityStat::InAir) {
 
-                speed_y += 0.0005f * time;
+                speed_y += acceleration_of_gravity * time;
                 move(0, speed_y * time);
             }
             if (!is_gravity || m_status == EntityStat::onStairs) {
@@ -179,45 +180,69 @@ namespace ezg {
     }
 
 
+#define _eff_ eff.second
     void Hero::upEffect(float _time) {
 
-        for (auto& ef : m_effects) {
-            if (ef.second._time_effect > 0.f) {
+        for (auto& eff : m_effects) {
+            if (eff.second._time_effect > 0.f) {
+                
+                if (_eff_._type == EffectType::Discarding) {
+                    speed_x += _eff_._power * std::cos(_eff_._property);
+                    speed_y = _eff_._power * std::sin(_eff_._property);
+                }
+                else if (_eff_._type == EffectType::Freezing) {
+                    speed_x /= _eff_._power;
+                }
 
-                ef.second._time_effect -= _time;
+                _eff_._time_effect -= _time;
             }
             else {
-                ef.second._time_effect = 0;
+
+                if (_eff_._type == EffectType::Poisoning && static_cast<int>(_eff_._property) > 0) {
+                    getHit(Hit{_eff_._power});
+
+                    _eff_._property--;
+                    _eff_._time_effect = 1.f;
+                }
+                else if (_eff_._type == EffectType::OnFire && static_cast<int>(_eff_._property) > 0) {
+                    getHit(Hit{ _eff_._power });
+
+                    _eff_._property--;
+                    _eff_._time_effect = 1.f;
+                }
+
             }
         }
 
-        if (_effectIsActive_(EffectType::Wounded)) {
+        
+        //if (_effectIsActive_(EffectType::Discarding)) {
+        //    Effect& eff = m_effects.at(EffectType::Discarding);
 
-            if (m_direction == Direction::Left) {
+        //    speed_x -= eff._power * std::cos(eff._property);
+        //    speed_y  = eff._power * std::sin(eff._property);
+        //}
+        //if (_effectIsActive_(EffectType::Poisoning)) {
+        //    Effect& eff = m_effects.at(EffectType::Poisoning);
 
-                speed_x = 0.1f * m_effects.at(EffectType::Wounded)._power;
-            }
-            else {
-                speed_x = -0.1f * m_effects.at(EffectType::Wounded)._power;
-            }
-        }
-        else {
+        //    getHit(Hit{eff._power});
+        //}
+        //else {
 
-           /* if (_effectIsActive_(EffectType::Freezing)) {
+        //   /* if (_effectIsActive_(EffectType::Freezing)) {
 
-                speed_x /= 1.5;
-                speed_y /= 1.5;
+        //        speed_x /= 1.5;
+        //        speed_y /= 1.5;
 
-            }*/
-            if (_effectIsActive_(EffectType::OnFire) && !_effectIsActive_(EffectType::Immunity)) {
+        //    }*/
+        //    if (_effectIsActive_(EffectType::OnFire) && !_effectIsActive_(EffectType::Immunity)) {
 
-                getHit(Hit{ 5 * m_effects[EffectType::OnFire]._power, Effect{EffectType::Immunity, 1.f, 900.f} });
-            }
-            if (_effectIsActive_(EffectType::Poisoning) && !_effectIsActive_(EffectType::Immunity)) {
+        //        getHit(Hit{ 5 * m_effects[EffectType::OnFire]._power, Effect{EffectType::Immunity, 1.f, 900.f} });
+        //    }
+        //    if (_effectIsActive_(EffectType::Poisoning) && !_effectIsActive_(EffectType::Immunity)) {
 
-                getHit(Hit{ 5 * m_effects[EffectType::Poisoning]._power, Effect{EffectType::Immunity, 1.f, 900.f} });
-            }
-        }
+        //        getHit(Hit{ 5 * m_effects[EffectType::Poisoning]._power, Effect{EffectType::Immunity, 1.f, 900.f} });
+        //    }
+        //}
 
     }
 
@@ -228,9 +253,9 @@ namespace ezg {
             m_animation.activate(static_cast<int>(EntityAnimation::Idle));
         }
 
-        speed_x = 0;
+        //upEffect(_time);
 
-        upEffect(_time);
+        speed_x = 0;
 
         m_animation.update(_time);
 
@@ -321,7 +346,7 @@ namespace ezg {
                 if (_dir == Direction::Vertical) {
 
                     if (speed_y > 0 && 
-                        (std::fabs(_entity->getPosY() - (m_hit_box.top + m_hit_box.height)) < 1.5f) || speed_y > 0.1f) 
+                        (std::fabs(_entity->getPosY() - (m_hit_box.top + m_hit_box.height)) < 1.5f) || speed_y > 100.f) 
                     {
                         m_hit_box.top = _entity->getPosY() - m_hit_box.height;
 
@@ -431,7 +456,7 @@ namespace ezg {
     }
 
 
-    bool Hero::_effectIsActive_(EffectType _eff) noexcept {
+    bool Hero::_effectIsActive_(EffectType _eff) const noexcept {
 
         auto res = m_effects.find(_eff);
 

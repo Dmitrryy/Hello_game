@@ -95,8 +95,9 @@ namespace ezg {
 
 
 
-        inline const size_t getWidth () const noexcept { return m_width;  }
-        inline const size_t getHeight() const noexcept { return m_height; }
+        size_t getWidth () const noexcept { return m_width;  }
+        size_t getHeight() const noexcept { return m_height; }
+        sf::Vector2u getTileSize() const noexcept { return m_tile_size; }
 
 
         void clear();

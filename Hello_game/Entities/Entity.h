@@ -40,7 +40,57 @@ namespace ezg {
 		, MushroomRed		
 		, MushroomBlue
 	};
+
+	enum class EffectType {
+		  Normal
+		//, Gravity
+		, Discarding
+		, Wounded
+		//, Immunity
+		, Walking
+		, Stop
+		, Attack
+		, Poisoning
+		, OnFire
+		, Freezing
+	};
 	////////////////////////////////////////////////
+
+
+	struct Effect {
+
+		Effect(EffectType _tp = EffectType::Normal, float _prop = 0.f, float _pow = 0.f, float _time = 0.f) noexcept
+			: _type(_tp)
+			, _power(_pow)
+			, _property(_prop)
+			, _time_effect(_time)
+		{}
+
+		EffectType _type;
+
+		float _power;
+		//Discording - corner; 
+		//Poisoning && OnFire - number of gifts
+		float _property;
+		float _time_effect;
+
+	};
+
+
+	struct Hit {
+
+		Hit(float _dmg = 0.f, Effect _eff1 = Effect(), Effect _eff2 = Effect(), Effect _eff3 = Effect(), Effect _eff4 = Effect()) noexcept
+			: _damage(_dmg)
+			//, _dir(Direction::Non)
+			, _effect{ _eff1, _eff2, _eff3, _eff4 }
+		{}
+
+		float _damage;
+		//Direction _dir;
+
+		Effect _effect[4];
+
+	};
 
 
 	///////////////////////////////////////////

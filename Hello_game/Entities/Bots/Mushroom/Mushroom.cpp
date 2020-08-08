@@ -66,10 +66,12 @@ namespace ezg {
 			if (_hit._damage > 0.f) {
 				m_hp -= _hit._damage;
 
-				m_effects[EffectType::Wounded]._time_effect = 600.f;
+				m_effects[EffectType::Wounded]._time_effect = 0.8f;
 			}
 
-			m_effects[_hit._effect._type] = _hit._effect;
+			for (int i = 0; i < 4; i++) {
+				m_effects[_hit._effect[i]._type] = _hit._effect[i];
+			}
 		}
 
 	}
@@ -109,7 +111,7 @@ namespace ezg {
 	void Mushroom::setStat(EntityAnimation _stat) {
 
 		if (static_cast<int>(_stat) != m_animation.getActive()) {
-			m_time = 700.f;
+			m_time = 0.7f;
 			m_animation.activate(static_cast<int>(_stat));
 		}
 

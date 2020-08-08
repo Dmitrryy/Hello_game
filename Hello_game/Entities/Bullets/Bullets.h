@@ -40,7 +40,7 @@ namespace ezg {
 		void setSpeed(float _x, float _y) noexcept { speed_x = _x; /**/ speed_y = _y; }
 
 
-		virtual Hit getHit() const noexcept = 0;
+		virtual Hit getHit() noexcept = 0;
 
 
 		void upPosition(float time, Direction _dir) noexcept override {
@@ -97,9 +97,9 @@ namespace ezg {
 		}
 
 
-		Hit getHit() const noexcept override {
-
-			return Hit( m_damage, Effect(EffectType::OnFire, 5.f, 6000.f) );
+		Hit getHit() noexcept override {
+			setAlive(false);
+			return Hit( m_damage, Effect(EffectType::OnFire, 5.f, 10.f, 2.f) );
 		}
 
 
@@ -108,7 +108,7 @@ namespace ezg {
 			m_time += _time;
 
 			//life time is limited
-			if (m_time > 1100.f) {
+			if (m_time > 5.f) {
 				m_alive = false;
 			}
 		}
@@ -148,9 +148,9 @@ namespace ezg {
 		}
 
 
-		Hit getHit() const noexcept override {
-
-			return Hit( m_damage, Effect(EffectType::Freezing, 1.f, 8000.f) );
+		Hit getHit() noexcept override {
+			setAlive(false);
+			return Hit( m_damage, Effect(EffectType::Freezing, 0.f, 1.5f, 20.f) );
 		}
 
 
@@ -159,7 +159,7 @@ namespace ezg {
 			m_time += _time;
 
 			//life time is limited
-			if (m_time > 1000.f) {
+			if (m_time > 5.f) {
 				m_alive = false;
 			}
 		}
@@ -200,8 +200,8 @@ namespace ezg {
 		}
 
 
-		Hit getHit() const noexcept override {
-
+		Hit getHit() noexcept override {
+			setAlive(false);
 			return Hit{ m_damage, Effect() };
 		}
 
@@ -211,7 +211,7 @@ namespace ezg {
 			m_time += _time;
 
 			//life time is limited
-			if (m_time > 1000.f) {
+			if (m_time > 5.f) {
 				m_alive = false;
 			}
 		}

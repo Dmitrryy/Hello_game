@@ -19,11 +19,11 @@ namespace ezg {
         , m_mood(GameMood::NotInitialized)
         , m_view(sf::FloatRect(0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT))
         , m_window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Hello Game (ezg)")
+        , m_cnslIsActive(false)
     {
 
         _initialize_();
-        m_window.setFramerateLimit(150);
-        
+        m_window.setFramerateLimit(100);
 
     }
     NodeGame::~NodeGame()
@@ -42,10 +42,7 @@ namespace ezg {
         m_window.setView(m_view);
         m_window.setKeyRepeatEnabled(false);
 
-        //std::cout << m_view.getSize().x << std::endl;
         m_view.zoom(0.2f);
-        //std::cout << m_view.getSize().x << std::endl;
-        //m_view.setViewport(sf::FloatRect(0, 0, 0.5, 0.5));
 
         m_hero.setWidth(HERO_WIDTH);
         m_hero.setHeight(HERO_HEIGHT);
@@ -56,26 +53,26 @@ namespace ezg {
         }
         {
             m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Walk));
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(0, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(8, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(16, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(24, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 8, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 8, 8, 8), 100.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(0, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(8, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(16, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(24, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 8, 8, 8), 0.1f);
 
             m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Jump));
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(0, 80, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(8, 80, 8, 8), 120.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(16, 80, 8, 8), 500.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(24, 80, 8, 8), 4000.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(0, 80, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(8, 80, 8, 8), 0.12f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(16, 80, 8, 8), 0.5f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(24, 80, 8, 8), 5.f);
 
             m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Idle));
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 56, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 56, 8, 8), 400.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 56, 8, 8), 100.f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(24, 56, 8, 8), 400.f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 56, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 56, 8, 8), 0.4f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 56, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(24, 56, 8, 8), 0.4f);
         }
 
 
@@ -90,6 +87,55 @@ namespace ezg {
         _addPauseMenu_();
         _addDeathMenu_();
 
+        {
+            m_debug_cnsl.setTexture("Resource/Images/cnsl_bg.png");
+            m_debug_cnsl.setFont(FONT_FNAME);
+
+            auto _bg(std::make_unique<menu::Image>());
+            _bg->setSize(sf::Vector2f(0.4f, 0.7f));
+            _bg->setTextureRect(sf::IntRect(0, 0, 200, 100));
+            m_debug_cnsl.addImage(std::move(_bg));
+
+
+            sf::Text tmp_txt;
+            tmp_txt.setFont(m_debug_cnsl.getFont());
+            tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
+            tmp_txt.setCharacterSize(30);
+            tmp_txt.setScale(0.15f, 0.15f);
+
+            auto _txt = std::make_unique<menu::Text>();
+            _txt->setPosition(sf::Vector2f(0.005f, 0.f));
+            _txt->setText(tmp_txt);
+            _txt->setText(
+                std::string("Debug console.\n\n") +
+                "FPS\n" 
+                "Game speed\n" 
+                "Game mood\n"
+                "number of objects\n"
+                "m_time\n"
+                "Resolution of the window\n" 
+                "Viev:\n"
+                "        coordinates(center)\n" 
+                "        size\n"
+                "Hero:\n"
+                "        coordinates\n" 
+                "        speed\n"
+                "        health\n"
+                "        status\n"
+                "        is gravity\n"
+                "        effects\n"
+                "Map:\n"
+                "        size(in tile)\n"
+                "        tile size\n"
+            );
+
+            auto _txt2 = std::make_unique<menu::Text>();
+            _txt2->setText(tmp_txt);
+            _txt2->setPosition(sf::Vector2f(0.2f, 0.f));
+
+            m_debug_cnsl.addOtherItem(std::move(_txt));
+            m_debug_cnsl.addOtherItem(std::move(_txt2));
+        }
 
         changeMood(GameMood::MainMenu);
     }
@@ -194,17 +240,39 @@ namespace ezg {
        
         m_menus.create(TipeMenu::Death); 
 
-       /* m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, "Restart", 0.5f, 0.55f);
-        ButtonDeath(MenuButton::Restart).setTextColor(MENU_DEATH_FONT_COLOR);
-        ButtonDeath(MenuButton::Restart).setTextSize(MENU_DEATH_FONT_SIZE);
+        if (!m_menus.atMenu(TipeMenu::Death).setTexture(MENU_BACKGROUND_DEATH_FNAME)) {
+            assert(0);
+        }
 
-        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::toMainMenu, "Menu", 0.5f, 0.65f);
-        ButtonDeath(MenuButton::toMainMenu).setTextColor(MENU_DEATH_FONT_COLOR);
-        ButtonDeath(MenuButton::toMainMenu).setTextSize(MENU_DEATH_FONT_SIZE);*/
+        menu::Button _but;
+        _but.setSize({ 0.15f, 0.095f });
+        sf::Text _txt;
+        _txt.setCharacterSize(MAIN_MENU_FONT_SIZE);
+        _txt.setFillColor(MAIN_MENU_FONT_COLOR);
 
-        //if (!m_menus.atMenu(TipeMenu::Death).setBackGround(MENU_BACKGROUND_DEATH_FNAME)) {
-        //    assert(0);
-        //}
+        sf::Text _hl_txt = _txt;
+        _hl_txt.setFillColor(sf::Color::Blue);
+        sf::Text _pr_txt = _txt;
+        _pr_txt.setFillColor(sf::Color::Black);
+
+        _but.setDefText(_txt);
+        _but.setHighlightingText(_hl_txt);
+        _but.setPressedText(_pr_txt);
+        _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
+
+        _but.setString("Restart");
+        _but.setPosition({ 0.5f, 0.55f });
+        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, _but);
+
+        _but.setString("Menu");
+        _but.setPosition({ 0.5f, 0.65f });
+        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::toMainMenu, _but);
+
+
+        auto _bg(std::make_unique<menu::Image>());
+        _bg->setSize(sf::Vector2f(1.f, 1.f));
+        _bg->setTextureRect(sf::IntRect(0, 0, 1920, 1080));
+        m_menus.atMenu(TipeMenu::Death).addImage(std::move(_bg));
 
     }
 
@@ -214,8 +282,6 @@ namespace ezg {
         m_window.clear();
 
         m_window.setView(m_view);
-
-        //printf("%d\n", m_mood);
 
         switch (m_mood) 
         {
@@ -267,6 +333,10 @@ namespace ezg {
 
             break;
 
+        }
+
+        if (m_cnslIsActive) {
+            m_debug_cnsl.draw(m_window);
         }
 
         m_window.display();
@@ -539,6 +609,10 @@ namespace ezg {
                         break;
 
 
+                    case sf::Keyboard::F1:
+                        m_cnslIsActive = !m_cnslIsActive;
+                        break;
+
                     }
                     break; //case sf::Event::KeyPressed:
 
@@ -573,6 +647,9 @@ namespace ezg {
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {
                         changeMood(GameMood::Game);
+                    }
+                    else if (event.key.code == sf::Keyboard::F1) {
+                        m_cnslIsActive = !m_cnslIsActive;
                     }
                     break;
 
@@ -617,6 +694,13 @@ namespace ezg {
                 }
                 switch (event.type)
                 {
+
+                case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::F1) {
+                        m_cnslIsActive = !m_cnslIsActive;
+                    }
+                    break;
+
 
                 case sf::Event::Closed:
                     m_mood = GameMood::Exit;
@@ -715,13 +799,16 @@ namespace ezg {
 
     void NodeGame::update() {
 
-        float _period = m_clock.getElapsedTime().asSeconds();
-        m_clock.restart();
+        const sf::Time _time = m_clock.restart();
+        auto _period = _time.asSeconds();
 
-        //printf("%g\n",  _period );
+        updateDbConsole(_period);
 
         _period *= GAME_SPEED_CONTROLLER;
         m_time += _period;
+
+
+
 //************************************************************
 // алгоритм(для каждого элемента):
 //      1. смещаем все элементы по х (устанавливаем on_ground = false т.к. персонаж может упасть)
@@ -735,7 +822,7 @@ namespace ezg {
         {
         case GameMood::Game:
 
-            //std::cout << m_entities.size() << std::endl;
+            m_hero.upEffect(_period);
 
             upAllPosition(_period, Direction::Horixontal);
             allColision(Direction::Horixontal);
@@ -746,9 +833,8 @@ namespace ezg {
 
             allOtherUpdate(_period);
 
-            //std::cout << static_cast<float>(_period) << std::endl;
-            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * _period / 600.f,
-                (getPosHeroY() - m_view.getCenter().y) * _period / 600.f ));
+            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * _period,
+                (getPosHeroY() - m_view.getCenter().y) * _period));
 
             if (m_hero.getStat() == EntityStat::Death) {
                 changeMood(GameMood::Death);
@@ -784,7 +870,7 @@ namespace ezg {
                 if (elem1 != elem2) {
                     elem1->colision(elem2, _dir);
                 }
-                //Entity::colision(elem1, elem2, _dir);
+
             }
         }
 
@@ -806,12 +892,84 @@ namespace ezg {
             }
         }
 
-        m_entities.remove_if([](auto elem) {
+        m_entities.remove_if([](auto elem) noexcept {
             return elem == nullptr;
             });
 
-        //std::cout << m_entities.size() << std::endl;
     }
 
+
+    void NodeGame::updateDbConsole(float _time) {
+
+        if (m_cnslIsActive) {
+            
+            menu::Item& txt = m_debug_cnsl.atItem(2);
+
+            if (txt.getType() == menu::Item::Type::Text) {
+                auto ptr_txt = dynamic_cast<menu::Text*>(&txt);
+                
+                std::string str;
+                str.reserve(200);
+
+                str = "\n\n";
+                str +=
+                    //FPS
+                    std::to_string(static_cast<int>(1.f / _time)) + '\n' +
+                    //Game speed
+                    std::to_string(GAME_SPEED_CONTROLLER) + '\n' +
+                    //Game mood
+                    std::to_string(static_cast<int>(m_mood)) + '\n' +
+                    //number of objects
+                    std::to_string(m_entities.size()) + '\n' +
+                    //m_time
+                    std::to_string(m_time) + '\n' +
+                    //Resolution of the window
+                    std::to_string(m_window.getSize().x) + 'x' + std::to_string(m_window.getSize().y) + "\n\n" +
+
+                    //coordinates(center) of the viev
+                    "(" + std::to_string(static_cast<int>(m_view.getCenter().x)) +
+                    " , " + std::to_string(static_cast<int>(m_view.getCenter().y)) + ")\n" +
+                    //size of the view
+                    "(" + std::to_string(static_cast<int>(m_view.getSize().x)) +
+                    " , " + std::to_string(static_cast<int>(m_view.getSize().y)) + ")\n\n" +
+
+                    //coordinates of the Hero
+                    "(" + std::to_string(static_cast<int>(m_hero.getPosX())) +
+                    " , " + std::to_string(static_cast<int>(m_hero.getPosY())) + ")\n" +
+                    //speed of the Hero
+                    "(" + std::to_string(m_hero.getSpeed().x) +
+                    " , " + std::to_string(m_hero.getSpeed().y) + ")\n" +
+                    //HP Hero
+                    std::to_string(m_hero.getHP()) + '\n' +
+                    //stat Hero
+                    std::to_string(static_cast<int>(m_hero.getStat())) + '\n' +
+                    //is gravity hero
+                    std::to_string(m_hero.isGravity()) + "\n";
+
+                {   //effects Hero
+                    const auto& hero_eff = m_hero.getEffects();
+                    for (const auto& eff : hero_eff) {
+                        if (eff.second._time_effect > 0.f) {
+                            str += std::to_string(static_cast<int>(eff.first)) + "(T: " +
+                                std::to_string(eff.second._time_effect) + ")    ";
+                        }
+                    }
+                    str += '\n';
+                }
+
+                str += '\n' +
+                    //size map(on tile)
+                    std::to_string(m_map.getWidth()) + 'x' + std::to_string(m_map.getHeight()) + "\n" +
+                    //size a tile
+                    std::to_string(m_map.getTileSize().x) + 'x' + std::to_string(m_map.getTileSize().y) + "\n";
+
+                std::cout << str.size() << '\n';
+                ptr_txt->setText(str);
+            }
+            else { assert(0); }
+
+        }
+
+    }
 
 } //namecpace ezg

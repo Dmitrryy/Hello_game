@@ -8,8 +8,8 @@ namespace ezg {
 
 
 
-#define SNAKE_RALLBACK_JUMP 800.f
-#define SNAKE_DURATION_WOUNDED 300.f
+#define SNAKE_RALLBACK_JUMP 1.f
+#define SNAKE_DURATION_WOUNDED 0.1f
 
 	class Snake final : public ezg::Entity
 	{

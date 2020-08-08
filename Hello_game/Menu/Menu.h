@@ -14,6 +14,7 @@ namespace menu {
 			  Button
 			, Image
 			, Text
+			, Unknowm
 		};
 
 	protected:
@@ -23,6 +24,8 @@ namespace menu {
 
 
 	public:
+
+		virtual ~Item() = default;
 
 		//////////////////////////////////////////////////////////////////////////////
 		//draw a item in _target, with view _view
@@ -62,6 +65,7 @@ namespace menu {
 	{
 	public:
 
+		//default constructor
 		Image(sf::Vector2f _position = sf::Vector2f(0.0, 0.0), sf::Vector2f _size = sf::Vector2f(0.0, 0.0)) noexcept
 			: Item(Item::Type::Image, _position, _size)
 		{
@@ -70,31 +74,13 @@ namespace menu {
 
 	public:
 
-
-		void draw(sf::RenderTarget& _target) override {
-			const sf::View _view = _target.getView();
-
-			const sf::Vector2f _view_center = _view.getCenter();
-			const sf::Vector2f _view_size = _view.getSize();
-
-			const sf::Vector2f bt_pos(_view_center.x - _view_size.x * (0.5f - m_position.x),
-				_view_center.y - _view_size.y * (0.5f - m_position.y));
-
-			m_rec = sf::FloatRect(sf::Vector2f(bt_pos.x - m_size.x * _view_size.x / 2.f, bt_pos.y - m_size.y * _view_size.y / 2.f)
-				, sf::Vector2f(m_size.x * _view_size.x, m_size.y * _view_size.y));
-			
-			m_sprite.setPosition(bt_pos);
-			m_sprite.setScale(m_rec.width / m_sprite.getTextureRect().width, m_rec.height / m_sprite.getTextureRect().height);
-
-			_target.draw(m_sprite);
-		}
+		//////////////////////////////////////////////////////////////////////////////
+		//draw a Image in _target
+		void draw(sf::RenderTarget& _target) override;
+		//////////////////////////////////////////////////////////////////////////////
 
 
-		void setTextureRect(sf::IntRect _rec) {
-			m_sprite.setTextureRect(_rec);
-		}
-
-
+		void setTextureRect(sf::IntRect _rec) { m_sprite.setTextureRect(_rec); }
 		void setTexture(const sf::Texture& _tx) { m_sprite.setTexture(_tx); }
 
 
@@ -110,14 +96,21 @@ namespace menu {
 	{
 	public:
 
+		//default constructor
 		Text(const std::string& _str = std::string(), sf::Vector2f _position = sf::Vector2f(0.f, 0.f))
 			: Item(Item::Type::Text, _position, sf::Vector2f(0.f, 0.f))
 		{
 			m_txt.setString(_str);
 		}
 
-		void setText(const std::string& _str) { m_txt.setString(_str); }
-		void setText(const sf::Text& _txt) { m_txt = _txt; }
+		//////////////////////////////////////////////////////////////////////////////
+		//draw a Text in _target
+		void draw (sf::RenderTarget& _target) override;
+		//////////////////////////////////////////////////////////////////////////////
+
+
+		void setText (const std::string& _str) { m_txt.setString(_str); }
+		void setText (const sf::Text& _txt)    { m_txt = _txt; }
 
 
 	private:
@@ -131,7 +124,6 @@ namespace menu {
 	class Button : public Item
 	{
 	public:
-
 		enum class Stat {
 			  Default
 			, HighLight
@@ -140,7 +132,6 @@ namespace menu {
 
 
 	public:
-
 		//////////////////////////////////////////////////////////////////////////////
 		//befoult constructor
 		//_position - button center position, but not in coordinates (pixels): [0.f, 1.f]
@@ -159,9 +150,8 @@ namespace menu {
 
 
 	public:
-
 		//////////////////////////////////////////////////////////////////////////////
-		//draw a button in _target, with view _view
+		//draw a button in _target
 		void draw(sf::RenderTarget& _target) override;
 		//////////////////////////////////////////////////////////////////////////////
 
@@ -252,11 +242,17 @@ namespace menu {
 		void addOtherItem(std::unique_ptr<Item>&& _item) { m_other_items.push_back(_item.release()); }
 		void addImage(std::unique_ptr<Image>&& _im) { _im->setTexture(m_texture); m_other_items.push_back(_im.release()); }
 		//////////////////////////////////////////////////////////////////////////////
+		Item& atItem(int _id) {
+			
+			if (_id < m_other_items.size() && _id >= 0) {
+				return *(m_other_items.at(_id));
+			}
+			else { throw std::invalid_argument("invalid Item id: " + std::to_string(_id)); }
+		}
 
 
 		//////////////////////////////////////////////////////////////////////////////
-		//access button number _id_button
-		//Button& atButton(int _id_button) { return m_buttons.at(_id_button); }
+		const sf::Font& getFont() { return m_font; }
 		//////////////////////////////////////////////////////////////////////////////
 
 

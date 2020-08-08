@@ -6,7 +6,7 @@
 
 namespace ezg {
 
-#define MUSHROOM_DURATION_WOUNDED 300.f
+#define MUSHROOM_DURATION_WOUNDED 0.5f
 
 
 	class Mushroom : public ezg::Entity
@@ -89,7 +89,7 @@ namespace ezg {
 
 		bool _effectIsActive_(EffectType _eff) const {
 
-			auto res = m_effects.find(_eff);
+			const auto res = m_effects.find(_eff);
 
 			if (res != m_effects.end()) {
 				return res->second._time_effect > 0.f;

@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "Player.h"
 
 
@@ -214,36 +216,6 @@ namespace ezg {
             }
         }
 
-        
-        //if (_effectIsActive_(EffectType::Discarding)) {
-        //    Effect& eff = m_effects.at(EffectType::Discarding);
-
-        //    speed_x -= eff._power * std::cos(eff._property);
-        //    speed_y  = eff._power * std::sin(eff._property);
-        //}
-        //if (_effectIsActive_(EffectType::Poisoning)) {
-        //    Effect& eff = m_effects.at(EffectType::Poisoning);
-
-        //    getHit(Hit{eff._power});
-        //}
-        //else {
-
-        //   /* if (_effectIsActive_(EffectType::Freezing)) {
-
-        //        speed_x /= 1.5;
-        //        speed_y /= 1.5;
-
-        //    }*/
-        //    if (_effectIsActive_(EffectType::OnFire) && !_effectIsActive_(EffectType::Immunity)) {
-
-        //        getHit(Hit{ 5 * m_effects[EffectType::OnFire]._power, Effect{EffectType::Immunity, 1.f, 900.f} });
-        //    }
-        //    if (_effectIsActive_(EffectType::Poisoning) && !_effectIsActive_(EffectType::Immunity)) {
-
-        //        getHit(Hit{ 5 * m_effects[EffectType::Poisoning]._power, Effect{EffectType::Immunity, 1.f, 900.f} });
-        //    }
-        //}
-
     }
 
 
@@ -308,7 +280,7 @@ namespace ezg {
             switch (_entity->getType())
             {
 /////////////////////////////Solid
-            case TypeEntity::Solid: {
+            case EntityType::Solid: {
 
                 if (_dir == Direction::Horixontal) {
 
@@ -341,7 +313,7 @@ namespace ezg {
 
 
 /////////////////////////////SolidAbove
-            case TypeEntity::SolidAbove: {
+            case EntityType::SolidAbove: {
 
                 if (_dir == Direction::Vertical) {
 
@@ -361,7 +333,7 @@ namespace ezg {
                 
 
 /////////////////////////////Stairs
-            case TypeEntity::Stairs: {
+            case EntityType::Stairs: {
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
                     setStat(EntityStat::onStairs);
@@ -384,7 +356,7 @@ namespace ezg {
 
 
 /////////////////////////////Needle
-            case TypeEntity::Needle: 
+            case EntityType::Needle: 
             {
                 //is it safe?!?
                 const gsl::not_null<Needle*> bl = dynamic_cast<Needle*>(_entity);
@@ -393,8 +365,8 @@ namespace ezg {
 
             }
 /////////////////////////////RedBullet
-            case TypeEntity::RedBullet:
-            case TypeEntity::BlueBullet: 
+            case EntityType::RedBullet:
+            case EntityType::BlueBullet: 
             {
                 //is it safe?!?
                 const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_entity);
@@ -409,7 +381,7 @@ namespace ezg {
             }
            
         }
-        if ((_entity->getType() == TypeEntity::MushroomRed || _entity->getType() == TypeEntity::MushroomBlue) 
+        if ((_entity->getType() == EntityType::MushroomRed || _entity->getType() == EntityType::MushroomBlue) 
             && _dir == Direction::Horixontal) 
         {
             const gsl::not_null<Mushroom*> mr = dynamic_cast<Mushroom*>(_entity);
@@ -420,13 +392,13 @@ namespace ezg {
                 mr->setStat(EntityAnimation::Idle);
             }
         }
-        else if (_entity->getType() == TypeEntity::Bee && _dir == Direction::Horixontal) 
+        else if (_entity->getType() == EntityType::Bee && _dir == Direction::Horixontal) 
         {
             const gsl::not_null<Bee*> bee = dynamic_cast<Bee*>(_entity);
 
             getHit(bee->attack(m_hit_box));
         }
-        else if (_entity->getType() == TypeEntity::Snake && _dir == Direction::Horixontal) 
+        else if (_entity->getType() == EntityType::Snake && _dir == Direction::Horixontal) 
         {
             const gsl::not_null<Snake*> snake = dynamic_cast<Snake*>(_entity);
 
@@ -464,6 +436,42 @@ namespace ezg {
             return false;
         }
         return res->second._time_effect > 0.f;
+    }
+
+
+    std::string Hero::debugString() {
+
+        using std::setw;
+        using std::endl;
+        using std::setfill;
+
+        std::ostringstream out;
+        out.setf(std::ios::left | std::ios::boolalpha);
+
+        out << setw(13) << setfill('\t') << "Type" << "Hero" << endl
+            << setw(12) << "Hp" << m_hp << endl
+            << setw(14) << "status" << "  " << m_status << endl
+            << setw(18) << "is gravity " << is_gravity << endl
+            << setw(17) << "coordinates" << "(" << m_hit_box.left << ", " << m_hit_box.top << ")\n"
+            << setw(13) << "size" << "  w: " << m_hit_box.width << ", h: " << m_hit_box.height << '\n'
+            << setw(13) << "speed" << "  (" << speed_x << ", " << speed_y << ")\n"
+            << "effects:" << endl;
+        {   //effects
+            bool is_one = false;
+            for (const auto& eff : m_effects) {
+                if (eff.second._time_effect > 0.f) {
+                    is_one = true;
+                    out << "    " << eff.first << "(time: " << std::setprecision(4) << eff.second._time_effect
+                        << " power: " << eff.second._power
+                        << " property: " << eff.second._property << ')' << endl;
+                }
+            }
+            if (!is_one) {
+                out << "    nop" << std::endl;
+            }
+        }
+        //std::cout << out.str().size() << endl;
+        return out.str();
     }
 
 } //namespace ezg

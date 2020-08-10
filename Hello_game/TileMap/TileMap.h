@@ -111,6 +111,9 @@ namespace ezg {
         void setTileSize (sf::Vector2u _size)   noexcept { m_tile_size = _size; }
 
 
+        std::string debugString();
+
+
     private:
 
         Layer* _readXML_ (tinyxml2::XMLElement* _layer);

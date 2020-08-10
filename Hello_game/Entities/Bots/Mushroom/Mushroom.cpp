@@ -1,10 +1,12 @@
+#include <iomanip>
+
 #include "Mushroom.h"
 
 #include "../../Bullets/Bullets.h"
 
 namespace ezg {
 
-	Mushroom::Mushroom(TypeEntity _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture)
+	Mushroom::Mushroom(EntityType _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture)
 		: Entity(_tipe, place_x, place_y, 6, 6)
 		, m_direction(Direction::Right)
 		, m_damage(20)
@@ -47,7 +49,7 @@ namespace ezg {
 
 	void Mushroom::colision(gsl::not_null <Entity*> _lhs, Direction _dir) /*final override*/ {
 
-		if (_lhs->getType() == TypeEntity::HeroBullet) {
+		if (_lhs->getType() == EntityType::HeroBullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
 				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs.get());
@@ -126,6 +128,45 @@ namespace ezg {
 		m_hit_box.height = _rec.height;
 
 
+	}
+
+
+	std::string Mushroom::DebugStr() {
+
+		using std::setw;
+		using std::endl;
+		using std::setfill;
+
+		std::ostringstream out;
+		out.setf(std::ios::left | std::ios::boolalpha);
+
+		out << setw(13) << setfill('\t') << "Type" << "Mushroom" << endl
+			<< setw(12) << "ID" << m_id << endl
+			<< setw(14) << "alive" << m_alive << std::endl
+			<< setw(12) << "Hp" << m_hp << std::endl
+			<< setw(18) << "is gravity " << is_gravity << std::endl
+			<< setw(17) << "coordinates" << "(" << m_hit_box.left << ", " << m_hit_box.top << ")\n"
+			<< setw(13) << "size" << "  w: " << m_hit_box.width << ", h: " << m_hit_box.height << '\n'
+			<< setw(14) << "damage" << m_damage << std::endl
+			<< setw(13) << "area" << "  x:" << m_area_attack.left << ", y:" << m_area_attack.top
+			<< "w:" << m_area_attack.width << ", h:" << m_area_attack.height << std::endl
+			<< "effects:" << std::endl;
+		{   //effects
+			bool is_one = false;
+			for (const auto& eff : m_effects) {
+				if (eff.second._time_effect > 0.f) {
+					is_one = true;
+					out << "    " << eff.first << "(time: " << std::setprecision(4) << eff.second._time_effect
+						<< " power: " << eff.second._power
+						<< " property: " << eff.second._property << ')' << endl;
+				}
+			}
+			if (!is_one) {
+				out << "    nop" << std::endl;
+			}
+		}
+
+		return out.str();
 	}
 
 } // namespace ezg

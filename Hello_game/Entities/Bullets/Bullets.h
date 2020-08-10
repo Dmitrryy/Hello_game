@@ -10,7 +10,7 @@ namespace ezg {
 	{
 	protected:
 
-		Bullet(TypeEntity _tipe, float place_x, float place_y) noexcept
+		Bullet(EntityType _tipe, float place_x, float place_y) noexcept
 			: Entity(_tipe, place_x, place_y, 1, 1)
 			, m_time(0)
 			, m_damage(20)
@@ -27,7 +27,7 @@ namespace ezg {
 		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) final {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				if (_lhs->getType() == TypeEntity::Solid) {
+				if (_lhs->getType() == EntityType::Solid) {
 					setAlive(false);
 				}
 			}
@@ -73,13 +73,13 @@ namespace ezg {
 	public:
 
 		RedBullet() noexcept
-			: Bullet(TypeEntity::RedBullet, 0, 0)
+			: Bullet(EntityType::RedBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
 		RedBullet(float place_x, float place_y) noexcept
-			: Bullet(TypeEntity::RedBullet, place_x, place_y)
+			: Bullet(EntityType::RedBullet, place_x, place_y)
 		{
 			is_gravity = false;
 		}
@@ -124,13 +124,13 @@ namespace ezg {
 	public:
 
 		BlueBullet() noexcept
-			: Bullet(TypeEntity::BlueBullet, 0, 0)
+			: Bullet(EntityType::BlueBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
 		BlueBullet(float place_x, float place_y) noexcept
-			: Bullet(TypeEntity::BlueBullet, place_x, place_y)
+			: Bullet(EntityType::BlueBullet, place_x, place_y)
 		{
 			is_gravity = false;
 		}
@@ -175,13 +175,13 @@ namespace ezg {
 	public:
 
 		HeroBullet() noexcept
-			: Bullet(TypeEntity::HeroBullet, 0, 0)
+			: Bullet(EntityType::HeroBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
 		HeroBullet(float place_x, float place_y) noexcept
-			: Bullet(TypeEntity::HeroBullet, place_x, place_y)
+			: Bullet(EntityType::HeroBullet, place_x, place_y)
 
 		{
 			is_gravity = false;

@@ -17,7 +17,7 @@ namespace ezg {
 	public:
 
 		Solid(float place_x, float place_y, float width, float height) noexcept
-			: Entity(TypeEntity::Solid, place_x, place_y, width, height)
+			: Entity(EntityType::Solid, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}
@@ -42,7 +42,7 @@ namespace ezg {
 	public:
 
 		SolidAbove(float place_x, float place_y, float width, float height) noexcept
-			: Entity(TypeEntity::SolidAbove, place_x, place_y, width, height)
+			: Entity(EntityType::SolidAbove, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}
@@ -65,7 +65,7 @@ namespace ezg {
 	public:
 
 		Stairs(float place_x, float place_y, float width, float height) noexcept
-			: Entity(TypeEntity::Stairs, place_x, place_y, width, height)
+			: Entity(EntityType::Stairs, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}

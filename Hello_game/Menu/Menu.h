@@ -14,13 +14,14 @@ namespace menu {
 			  Button
 			, Image
 			, Text
+			, DataInt
 			, Unknowm
 		};
 
 	protected:
 
 		//service
-		Item(Item::Type _type, sf::Vector2f _pos, sf::Vector2f _size);
+		Item(Item::Type _type, sf::Vector2f _pos = sf::Vector2f(0.0, 0.0), sf::Vector2f _size = sf::Vector2f(0.0, 0.0));
 
 
 	public:
@@ -58,6 +59,26 @@ namespace menu {
 		sf::FloatRect  m_rec;
 
 	}; //class Item
+
+
+	class DataInt : public Item
+	{
+	public:
+
+		DataInt(int _new = 0.f)
+			: Item(Item::Type::DataInt)
+			, m_data(_new)
+		{}
+
+
+		void draw(sf::RenderTarget& _target) override { /*nop*/ }
+
+		void set(int _new) { m_data = _new; }
+		int  get() { return m_data; }
+
+	private:
+		int m_data;
+	};
 
 
 
@@ -157,6 +178,7 @@ namespace menu {
 
 
 		/////////////////////////////text settings////////////////////////////////////
+		void setText             (const sf::Text& _txt) { setDefText(_txt); setHighlightingText(_txt); setPressedText(_txt); }
 		void setDefText          (const sf::Text& _new_text) { m_defTxt = _new_text; }
 		void setHighlightingText (const sf::Text& _new_text) { m_highlightingTxt = _new_text; }
 		void setPressedText      (const sf::Text& _new_text) { m_pressedTxt = _new_text; }
@@ -177,7 +199,7 @@ namespace menu {
 		void setTexture(const sf::Texture& _new_tx);
 		//
 		void setDefTextureRect         (sf::IntRect _rec) { m_def_BG.setTextureRect(_rec); }
-		void setHighlTextureRect(sf::IntRect _rec) { m_highlighting_BG.setTextureRect(_rec); }
+		void setHighlTextureRect       (sf::IntRect _rec) { m_highlighting_BG.setTextureRect(_rec); }
 		void setPressedTextureRect     (sf::IntRect _rec) { m_pressed_BG.setTextureRect(_rec); }
 		//////////////////////////////////////////////////////////////////////////////
 
@@ -238,14 +260,15 @@ namespace menu {
 		//	_id		- button identifier (key)
 		//  _button - already configured button
 		void addButton(int _id, const Button& _button);
+		void addButton(int _id, std::unique_ptr<Button>&& _bt);
 		//
 		void addOtherItem(std::unique_ptr<Item>&& _item) { m_other_items.push_back(_item.release()); }
 		void addImage(std::unique_ptr<Image>&& _im) { _im->setTexture(m_texture); m_other_items.push_back(_im.release()); }
 		//////////////////////////////////////////////////////////////////////////////
-		Item& atItem(int _id) {
+		Item* atItem(int _id) {
 			
 			if (_id < m_other_items.size() && _id >= 0) {
-				return *(m_other_items.at(_id));
+				return m_other_items.at(_id);
 			}
 			else { throw std::invalid_argument("invalid Item id: " + std::to_string(_id)); }
 		}
@@ -333,11 +356,13 @@ namespace menu {
 
 
 		bool setFont(const std::string& _fname) { return m_font.loadFromFile(_fname); }
-
+		const sf::Font& getFont() noexcept { return m_font; }
 
 		//////////////////////////////////////////////////////////////////////////////
 		//activate less with number _id_menu
 		bool activate(int _id_menu);
+		//
+		bool isActive(int& _id_menu);
 		//////////////////////////////////////////////////////////////////////////////
 
 

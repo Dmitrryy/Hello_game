@@ -1,3 +1,4 @@
+#include <iomanip>
 
 #include "NodeGame.h"
 
@@ -87,55 +88,223 @@ namespace ezg {
         _addPauseMenu_();
         _addDeathMenu_();
 
+        //set Console (MenuManager)
         {
-            m_debug_cnsl.setTexture("Resource/Images/cnsl_bg.png");
             m_debug_cnsl.setFont(FONT_FNAME);
+            
+            //Main page
+            {
+                m_debug_cnsl.create(ConsoleType::Main);
+                m_debug_cnsl.atMenu(ConsoleType::Main).setTexture("Resource/Images/console_db.png");
 
-            auto _bg(std::make_unique<menu::Image>());
-            _bg->setSize(sf::Vector2f(0.4f, 0.7f));
-            _bg->setTextureRect(sf::IntRect(0, 0, 200, 100));
-            m_debug_cnsl.addImage(std::move(_bg));
+                //set background
+                {
+                    auto _bg(std::make_unique<menu::Image>());
+                    _bg->setSize(sf::Vector2f(0.4f, 0.7f));
+                    _bg->setTextureRect(sf::IntRect(0, 0, 100, 100));
+                    m_debug_cnsl.atMenu(ConsoleType::Main).addImage(std::move(_bg));
+                }
+
+                //set text
+                sf::Text tmp_txt;
+                tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
+                tmp_txt.setFont(m_debug_cnsl.getFont());
+                tmp_txt.setCharacterSize(30);
+                tmp_txt.setScale(0.15f, 0.15f);
+                {
+                    //_txt2 - item(id = 1) for data (text)
+                    auto _txt = std::make_unique<menu::Text>();
+                    _txt->setText(tmp_txt);
+                    _txt->setPosition(sf::Vector2f(0.005f, 0.05f));
+
+                    m_debug_cnsl.atMenu(ConsoleType::Main).addOtherItem(std::move(_txt));
+                }
 
 
-            sf::Text tmp_txt;
-            tmp_txt.setFont(m_debug_cnsl.getFont());
-            tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
-            tmp_txt.setCharacterSize(30);
-            tmp_txt.setScale(0.15f, 0.15f);
+                menu::Button _but;
+                _but.setSize({ 0.05f, 0.03f });
 
-            auto _txt = std::make_unique<menu::Text>();
-            _txt->setPosition(sf::Vector2f(0.005f, 0.f));
-            _txt->setText(tmp_txt);
-            _txt->setText(
-                std::string("Debug console.\n\n") +
-                "FPS\n" 
-                "Game speed\n" 
-                "Game mood\n"
-                "number of objects\n"
-                "m_time\n"
-                "Resolution of the window\n" 
-                "Viev:\n"
-                "        coordinates(center)\n" 
-                "        size\n"
-                "Hero:\n"
-                "        coordinates\n" 
-                "        speed\n"
-                "        health\n"
-                "        status\n"
-                "        is gravity\n"
-                "        effects\n"
-                "Map:\n"
-                "        size(in tile)\n"
-                "        tile size\n"
-            );
+                _but.texture(true);
+                _but.setDefTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setHighlTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setPressedTextureRect(sf::IntRect(115, 31, 85, 31));
+                _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
 
-            auto _txt2 = std::make_unique<menu::Text>();
-            _txt2->setText(tmp_txt);
-            _txt2->setPosition(sf::Vector2f(0.2f, 0.f));
+                tmp_txt.setScale(0.15f, 0.15f);
+                tmp_txt.setFillColor(sf::Color::White);
+                _but.setText(tmp_txt);
 
-            m_debug_cnsl.addOtherItem(std::move(_txt));
-            m_debug_cnsl.addOtherItem(std::move(_txt2));
-        }
+                {//button to Main(pressed)
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setDefTextureRect(sf::IntRect(115, 31, 85, 31));
+                    _but1->setPosition({ 0.025f, 0.015f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("main");
+                    m_debug_cnsl.atMenu(ConsoleType::Main).addOtherItem(std::move(_but1));
+                }
+                {//button to Hero
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.075f, 0.015f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("Hero");
+                    m_debug_cnsl.atMenu(ConsoleType::Main).addButton(ConsoleButton::toHero, std::move(_but1));
+                }
+                {//button to Entities
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.125f, 0.015f });
+                    _but1->setPositionTxt({ 0.17f, 0.2f });
+                    _but1->setString("entities");
+                    m_debug_cnsl.atMenu(ConsoleType::Main).addButton(ConsoleButton::toEntities, std::move(_but1));
+                }
+            }
+            //Hero page
+            {
+                m_debug_cnsl.create(ConsoleType::Hero);
+                m_debug_cnsl.atMenu(ConsoleType::Hero).setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
+
+                //set background
+                {
+                    auto _bg(std::make_unique<menu::Image>());
+                    _bg->setSize(sf::Vector2f(0.4f, 0.7f));
+                    _bg->setTextureRect(sf::IntRect(0, 0, 100, 100));
+                    m_debug_cnsl.atMenu(ConsoleType::Hero).addImage(std::move(_bg));
+                }
+                //set text
+                sf::Text tmp_txt;
+                tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
+                tmp_txt.setFont(m_debug_cnsl.getFont());
+                tmp_txt.setCharacterSize(30);
+                tmp_txt.setScale(0.15f, 0.15f);
+
+                {//_txt - item(id = 1) for data (text)
+                    auto _txt = std::make_unique<menu::Text>();
+                    _txt->setText(tmp_txt);
+                    _txt->setPosition(sf::Vector2f(0.005f, 0.05f));
+
+                    m_debug_cnsl.atMenu(ConsoleType::Hero).addOtherItem(std::move(_txt));
+                }
+
+                //set button
+                menu::Button _but;
+                _but.setSize({ 0.05f, 0.03f });
+
+                _but.texture(true);
+                _but.setDefTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setHighlTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setPressedTextureRect(sf::IntRect(115, 31, 85, 31));
+                _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
+
+                tmp_txt.setScale(0.15f, 0.15f);
+                tmp_txt.setFillColor(sf::Color::White);
+                _but.setText(tmp_txt);
+
+                {//button to Main
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.025f, 0.015f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("main");
+                    m_debug_cnsl.atMenu(ConsoleType::Hero).addButton(ConsoleButton::toMain, std::move(_but1));
+                }
+                {//button to Hero(pressed)
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setDefTextureRect(sf::IntRect(115, 31, 85, 31));
+                    _but1->setPosition({ 0.075f, 0.015f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("Hero");
+                    m_debug_cnsl.atMenu(ConsoleType::Hero).addOtherItem(std::move(_but1));
+                }
+                {//button to Entities
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.125f, 0.015f });
+                    _but1->setPositionTxt({ 0.17f, 0.2f });
+                    _but1->setString("entities");
+                    m_debug_cnsl.atMenu(ConsoleType::Hero).addButton(ConsoleButton::toEntities, std::move(_but1));
+                }
+
+            }
+            //Entities page
+            {
+                m_debug_cnsl.create(ConsoleType::Entities);
+                m_debug_cnsl.atMenu(ConsoleType::Entities).setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
+
+                //set background
+                {
+                    auto _bg(std::make_unique<menu::Image>());
+                    _bg->setSize(sf::Vector2f(0.4f, 0.7f));
+                    _bg->setTextureRect(sf::IntRect(0, 0, 100, 100));
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addImage(std::move(_bg));
+                }
+
+                //set text
+                sf::Text tmp_txt;
+                tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
+                tmp_txt.setFont(m_debug_cnsl.getFont());
+                tmp_txt.setCharacterSize(30);
+                tmp_txt.setScale(0.15f, 0.15f);
+                {//id_entiti - item(id = 1) with id of entity
+                    auto id_entiti = std::make_unique<menu::DataInt>();
+                    id_entiti->set(19);
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addOtherItem(std::move(id_entiti));
+                }
+                {//_txt - item(id = 2) for data (text)
+                    auto _txt = std::make_unique<menu::Text>();
+                    _txt->setText(tmp_txt);
+                    _txt->setPosition(sf::Vector2f(0.005f, 0.05f));
+
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addOtherItem(std::move(_txt));
+                }
+                //set button
+                menu::Button _but;
+                _but.setSize({ 0.05f, 0.03f });
+
+                _but.texture(true);
+                _but.setDefTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setHighlTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setPressedTextureRect(sf::IntRect(115, 31, 85, 31));
+                _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
+
+                tmp_txt.setScale(0.15f, 0.15f);
+                tmp_txt.setFillColor(sf::Color::White);
+                _but.setText(tmp_txt);
+
+                {//button to Main
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.025f, 0.015f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("main");
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::toMain, std::move(_but1));
+                }
+                {//button to Hero
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.075f, 0.015f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("Hero");
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::toHero, std::move(_but1));
+                }
+                {//button to Entities(pressed)
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setDefTextureRect(sf::IntRect(115, 31, 85, 31));
+                    _but1->setPosition({ 0.125f, 0.015f });
+                    _but1->setPositionTxt({ 0.17f, 0.2f });
+                    _but1->setString("entities");
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addOtherItem(std::move(_but1));
+                }
+                {
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.225f, 0.685f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("next");
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::Next, std::move(_but1));
+                }
+                {
+                    auto _but1 = std::make_unique<menu::Button>(_but);
+                    _but1->setPosition({ 0.175f, 0.685f });
+                    _but1->setPositionTxt({ 0.3f, 0.3f });
+                    _but1->setString("pref");
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::Pref, std::move(_but1));
+                }
+            }
+        }//end set Concole
 
         changeMood(GameMood::MainMenu);
     }
@@ -336,7 +505,7 @@ namespace ezg {
         }
 
         if (m_cnslIsActive) {
-            m_debug_cnsl.draw(m_window);
+            m_debug_cnsl.drawActive(m_window);
         }
 
         m_window.display();
@@ -419,12 +588,13 @@ namespace ezg {
 
                 while (obj != nullptr) {
 
+                    //const int64_t id = obj->Int64Attribute("id");
                     const int64_t x = obj->Int64Attribute("x");
                     const int64_t y = obj->Int64Attribute("y");
 
                     const int64_t width = obj->Int64Attribute("width");
                     const int64_t height = obj->Int64Attribute("height");
-
+                    //todo вынести в Entity
                     if (obj->Attribute("type") == nullptr) {
 
                         std::cout << "unknown tipe object" << std::endl;
@@ -580,7 +750,7 @@ namespace ezg {
         sf::Event event;
         while (m_window.pollEvent(event))
         {
-
+            checkEventDbConsole(event);
             switch (m_mood)
             {
 ///////////////////////////Game///////////////////////////////////
@@ -606,11 +776,6 @@ namespace ezg {
                     case sf::Keyboard::LControl:
                     case sf::Keyboard::RControl:
                         addObject(std::move(m_hero.fire()));
-                        break;
-
-
-                    case sf::Keyboard::F1:
-                        m_cnslIsActive = !m_cnslIsActive;
                         break;
 
                     }
@@ -647,9 +812,6 @@ namespace ezg {
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {
                         changeMood(GameMood::Game);
-                    }
-                    else if (event.key.code == sf::Keyboard::F1) {
-                        m_cnslIsActive = !m_cnslIsActive;
                     }
                     break;
 
@@ -694,13 +856,6 @@ namespace ezg {
                 }
                 switch (event.type)
                 {
-
-                case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::F1) {
-                        m_cnslIsActive = !m_cnslIsActive;
-                    }
-                    break;
-
 
                 case sf::Event::Closed:
                     m_mood = GameMood::Exit;
@@ -799,13 +954,13 @@ namespace ezg {
 
     void NodeGame::update() {
 
-        const sf::Time _time = m_clock.restart();
-        auto _period = _time.asSeconds();
+        m_period = m_clock.restart().asSeconds();
+        //m_period = _time.asSeconds();
 
-        updateDbConsole(_period);
+        updateDbConsole(m_period);
 
-        _period *= GAME_SPEED_CONTROLLER;
-        m_time += _period;
+        m_period *= GAME_SPEED_CONTROLLER;
+        m_time += m_period;
 
 
 
@@ -822,19 +977,19 @@ namespace ezg {
         {
         case GameMood::Game:
 
-            m_hero.upEffect(_period);
+            m_hero.upEffect(m_period);
 
-            upAllPosition(_period, Direction::Horixontal);
+            upAllPosition(m_period, Direction::Horixontal);
             allColision(Direction::Horixontal);
 
 
-            upAllPosition(_period, Direction::Vertical);
+            upAllPosition(m_period, Direction::Vertical);
             allColision(Direction::Vertical);
 
-            allOtherUpdate(_period);
+            allOtherUpdate(m_period);
 
-            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * _period,
-                (getPosHeroY() - m_view.getCenter().y) * _period));
+            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * m_period,
+                (getPosHeroY() - m_view.getCenter().y) * m_period));
 
             if (m_hero.getStat() == EntityStat::Death) {
                 changeMood(GameMood::Death);
@@ -899,77 +1054,159 @@ namespace ezg {
     }
 
 
+    void NodeGame::checkEventDbConsole(const sf::Event& _event) {
+
+
+        if (_event.type == sf::Event::KeyPressed) {
+
+            if (_event.key.code == sf::Keyboard::F1) {
+                m_cnslIsActive = !m_cnslIsActive;
+                m_debug_cnsl.activate(ConsoleType::Main);
+            }
+
+        }
+
+        if (m_cnslIsActive) {
+
+            int id = 0;
+            m_debug_cnsl.isActive(id);
+            if (id == ConsoleType::Main) {
+                if (m_debug_cnsl.checkPressing(_event, m_window, id)) {
+                    if (id == ConsoleButton::toEntities) {
+                        m_debug_cnsl.activate(ConsoleType::Entities);
+                    }
+                    else if (id == ConsoleButton::toHero) {
+                        m_debug_cnsl.activate(ConsoleType::Hero);
+                    }
+                }
+            }
+            else if (id == ConsoleType::Entities) {
+                if (m_debug_cnsl.checkPressing(_event, m_window, id)) {
+                    if (id == ConsoleButton::toMain) {
+                        m_debug_cnsl.activate(ConsoleType::Main);
+                    }
+                    else if (id == ConsoleButton::toHero) {
+                        m_debug_cnsl.activate(ConsoleType::Hero);
+                    }
+                    else if (id == ConsoleButton::Next) {
+                        gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
+                        id_entity->set(id_entity->get() + 1);
+                    }
+                    else if (id == ConsoleButton::Pref) {
+                        gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
+                        id_entity->set(id_entity->get() - 1);
+                    }
+                }
+            }
+            else if (id == ConsoleType::Hero) {
+                if (m_debug_cnsl.checkPressing(_event, m_window, id)) {
+                    if (id == ConsoleButton::toMain) {
+                        m_debug_cnsl.activate(ConsoleType::Main);
+                    }
+                    else if (id == ConsoleButton::toEntities) {
+                        m_debug_cnsl.activate(ConsoleType::Entities);
+                    }
+                }
+            }
+
+        }
+
+    }
+
+
     void NodeGame::updateDbConsole(float _time) {
 
         if (m_cnslIsActive) {
             
-            menu::Item& txt = m_debug_cnsl.atItem(2);
+            int id = -1;
+            m_debug_cnsl.isActive(id);
+            if (id == ConsoleType::Main) {
+                menu::Item* txt = m_debug_cnsl.atMenu(ConsoleType::Main).atItem(1);
 
-            if (txt.getType() == menu::Item::Type::Text) {
-                auto ptr_txt = dynamic_cast<menu::Text*>(&txt);
-                
-                std::string str;
-                str.reserve(200);
+                if (txt->getType() == menu::Item::Type::Text) {
+                    auto ptr_txt = dynamic_cast<menu::Text*>(txt);
 
-                str = "\n\n";
-                str +=
-                    //FPS
-                    std::to_string(static_cast<int>(1.f / _time)) + '\n' +
-                    //Game speed
-                    std::to_string(GAME_SPEED_CONTROLLER) + '\n' +
-                    //Game mood
-                    std::to_string(static_cast<int>(m_mood)) + '\n' +
-                    //number of objects
-                    std::to_string(m_entities.size()) + '\n' +
-                    //m_time
-                    std::to_string(m_time) + '\n' +
-                    //Resolution of the window
-                    std::to_string(m_window.getSize().x) + 'x' + std::to_string(m_window.getSize().y) + "\n\n" +
-
-                    //coordinates(center) of the viev
-                    "(" + std::to_string(static_cast<int>(m_view.getCenter().x)) +
-                    " , " + std::to_string(static_cast<int>(m_view.getCenter().y)) + ")\n" +
-                    //size of the view
-                    "(" + std::to_string(static_cast<int>(m_view.getSize().x)) +
-                    " , " + std::to_string(static_cast<int>(m_view.getSize().y)) + ")\n\n" +
-
-                    //coordinates of the Hero
-                    "(" + std::to_string(static_cast<int>(m_hero.getPosX())) +
-                    " , " + std::to_string(static_cast<int>(m_hero.getPosY())) + ")\n" +
-                    //speed of the Hero
-                    "(" + std::to_string(m_hero.getSpeed().x) +
-                    " , " + std::to_string(m_hero.getSpeed().y) + ")\n" +
-                    //HP Hero
-                    std::to_string(m_hero.getHP()) + '\n' +
-                    //stat Hero
-                    std::to_string(static_cast<int>(m_hero.getStat())) + '\n' +
-                    //is gravity hero
-                    std::to_string(m_hero.isGravity()) + "\n";
-
-                {   //effects Hero
-                    const auto& hero_eff = m_hero.getEffects();
-                    for (const auto& eff : hero_eff) {
-                        if (eff.second._time_effect > 0.f) {
-                            str += std::to_string(static_cast<int>(eff.first)) + "(T: " +
-                                std::to_string(eff.second._time_effect) + ")    ";
-                        }
-                    }
-                    str += '\n';
+                    ptr_txt->setText(localDebugString() + '\n' + m_map.debugString());
                 }
-
-                str += '\n' +
-                    //size map(on tile)
-                    std::to_string(m_map.getWidth()) + 'x' + std::to_string(m_map.getHeight()) + "\n" +
-                    //size a tile
-                    std::to_string(m_map.getTileSize().x) + 'x' + std::to_string(m_map.getTileSize().y) + "\n";
-
-                std::cout << str.size() << '\n';
-                ptr_txt->setText(str);
+                else { assert(0); }
             }
-            else { assert(0); }
+            else if (id == ConsoleType::Entities) {
+                gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(2));
+                gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
+
+                auto ent = std::find_if(m_entities.cbegin(), m_entities.cend(), [i = id_entity->get()](auto _enttity) {
+                    return i == _enttity->getID();
+                    });
+                
+                if (ent != m_entities.cend()) {
+
+                    txt->setText((*ent)->DebugStr());
+                }
+                else {
+                    txt->setText("not founded: " + std::to_string(id_entity->get()));
+                }
+            }
+            else if (id == ConsoleType::Hero) {
+                gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(m_debug_cnsl.atMenu(ConsoleType::Hero).atItem(1));
+
+                txt->setText(m_hero.debugString());
+            }
 
         }
 
+    }
+
+
+    std::string NodeGame::localDebugString() {
+
+        using std::setw;
+        using std::endl;
+        using std::setfill;
+
+        std::ostringstream out;
+        out.setf(std::ios::left | std::ios::boolalpha);
+
+        out << setw(13) << setfill('\t') << "FPS" << 1.f / m_period << endl
+            << setw(16) << "game speed" << "  " << GAME_SPEED_CONTROLLER << endl
+            << setw(15) << "game mood" << "  " << m_mood << endl
+            << setw(20) << "number of objects" << "   " << m_entities.size() << endl
+            << setw(14) << "m_time" << " " << m_time << endl
+            << setw(20) << "window resolution" << "  " << m_window.getSize().x << 'x' << m_window.getSize().y << endl
+            << setw(17) << "mouse coord" << "(" << sf::Mouse::getPosition().x << ", " << sf::Mouse::getPosition().y << ") || ("
+              << static_cast<int>(m_window.mapPixelToCoords(sf::Mouse::getPosition()).x) << ", " 
+              << static_cast<int>(m_window.mapPixelToCoords(sf::Mouse::getPosition()).y) << ')' << endl << endl
+            << "Viev:" << endl
+            << setw(22) << "coordinates(center)" << " (" << static_cast<int>(m_view.getCenter().x) << ", " << static_cast<int>(m_view.getCenter().y) << ')' << endl
+            << setw(14) << "size" << static_cast<int>(m_view.getSize().x) << 'x' << static_cast<int>(m_view.getSize().y) << endl;
+
+        return out.str();
+    }
+
+
+#define GMcase(a) case GameMood::a: \
+res = #a; \
+break;
+    std::string enumName(GameMood _en) {
+
+        std::string res;
+
+        switch (_en)
+        {
+            GMcase(NotInitialized);
+            GMcase(Loading);
+            GMcase(MainMenu);
+            GMcase(Pause);
+            GMcase(Restart);
+            GMcase(Game);
+            GMcase(Death);
+            GMcase(Exit);
+        }
+
+        return res;
+    }
+    std::ostream& operator<<(std::ostream& _stream, GameMood _en) {
+        _stream << enumName(_en);
+        return _stream;
     }
 
 } //namecpace ezg

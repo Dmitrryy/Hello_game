@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "../../../config.h"
+
 #include "../../Entity.h"
 
 
@@ -39,7 +39,9 @@ namespace ezg {
 		//checks if _rec is in scope, if so, it attacks.
 		Hit attack(sf::FloatRect _rec);
 		/////////////////////////////////////////////////////////
-
+		float countRadius();
+		float countAcceleration();
+		sf::Vector2f countSpeed();
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
@@ -57,6 +59,7 @@ namespace ezg {
 		//updates time for effects
 		void upEffect(float _time) noexcept;
 		/////////////////////////////////////////////////////////
+		void setEffect(const Effect& _eff);
 
 
 		/////////////////////////////////////////////////////////
@@ -78,6 +81,8 @@ namespace ezg {
 		void setDirection(Direction _dir) noexcept { m_direction = _dir; }
 
 
+		std::string DebugStr() override;
+
 
 	private:
 
@@ -86,7 +91,7 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//directs acceleration to a point (_x, _y)
-		void _goto_(float _x, float _y) noexcept;
+		void _goto_(float _x, float _y, float _time) noexcept;
 		/////////////////////////////////////////////////////////
 
 

@@ -24,17 +24,20 @@ namespace ezg {
 		, Attack
 	};
 	//available game object types
-	enum class TypeEntity {
+	enum class EntityType {
 		  Solid
 		, SolidAbove
 		, Stairs
 
+		//, Trap
 		, Needle
 
+		, Bullet
 		, HeroBullet
 		, RedBullet
 		, BlueBullet
 
+		, Bot
 		, Bee
 		, Snake		
 		, MushroomRed		
@@ -42,24 +45,36 @@ namespace ezg {
 	};
 
 	enum class EffectType {
-		  Normal
+		  Nop
 		//, Gravity
 		, Discarding
 		, Wounded
+		, Aggression
 		//, Immunity
 		, Walking
+		, NoJump
 		, Stop
 		, Attack
 		, Poisoning
 		, OnFire
 		, Freezing
 	};
+
+	std::string enumName(EntityStat _en);
+	std::string enumName(EntityAnimation _en);
+	std::string enumName(EntityType _en);
+	std::string enumName(EffectType _en);
+
+	std::ostream& operator<<(std::ostream& _stream, EntityStat _en);
+	std::ostream& operator<<(std::ostream& _stream, EntityAnimation _en);
+	std::ostream& operator<<(std::ostream& _stream, EntityType _en);
+	std::ostream& operator<<(std::ostream& _stream, EffectType _en);
 	////////////////////////////////////////////////
 
 
 	struct Effect {
 
-		Effect(EffectType _tp = EffectType::Normal, float _prop = 0.f, float _pow = 0.f, float _time = 0.f) noexcept
+		explicit Effect(EffectType _tp = EffectType::Nop, float _prop = 0.f, float _pow = 0.f, float _time = 0.f) noexcept
 			: _type(_tp)
 			, _power(_pow)
 			, _property(_prop)
@@ -107,8 +122,8 @@ namespace ezg {
 
 		virtual ~Entity() = default;
 
-		Entity (TypeEntity _tipe) noexcept;
-		Entity (TypeEntity _tipe, float pos_x, float pos_y, float _width, float _height) noexcept;
+		Entity (EntityType _tipe, int _id = 0) noexcept;
+		Entity (EntityType _tipe, float pos_x, float pos_y, float _width, float _height) noexcept;
 
 
 	public:
@@ -117,8 +132,9 @@ namespace ezg {
 		inline const float          getPosX    () const noexcept { return m_hit_box.left;  }
 		inline const float          getPosY    () const noexcept { return m_hit_box.top;   }
 		inline const sf::FloatRect  getHitBox  () const noexcept { return m_hit_box;       }
-		inline const TypeEntity     getType    () const noexcept { return m_tipe;          }
-
+		inline const EntityType     getType    () const noexcept { return m_tipe;          }
+		int getID() const noexcept { return m_id; }
+		int setID() noexcept { return m_id; }
 
 		//does gravity affect an object
 		inline const bool isGravity () const noexcept { return is_gravity; }
@@ -152,6 +168,9 @@ namespace ezg {
 		static bool intersection(sf::CircleShape _circle, sf::Vector2f _point);
 
 
+		virtual std::string DebugStr() { return "empty. id: " + std::to_string(m_id); };
+
+
 	protected:
 
 		//set hit box...
@@ -167,7 +186,10 @@ namespace ezg {
 
 	protected:
 
-		TypeEntity		m_tipe;
+		EntityType		m_tipe;
+		int             m_id;
+		static int      __id__;
+
 		bool			m_alive;
 
 		bool			is_gravity;
@@ -175,5 +197,7 @@ namespace ezg {
 		sf::FloatRect	m_hit_box;
 		
 	}; // class Entity
+
+
 
 } //namespace ezg

@@ -1,6 +1,10 @@
-﻿#include "Bee.h"
+﻿#include <sstream>
+#include <iomanip>
+
+#include "Bee.h"
 
 #include "../../Bullets/Bullets.h"
+
 
 namespace ezg {
 
@@ -8,7 +12,7 @@ namespace ezg {
 
 
 	Bee::Bee(float place_x, float place_y, sf::IntRect _area, float _radius, const sf::Texture& _texture)
-		: Entity(TypeEntity::Bee, place_x, place_y, 8, 8)
+		: Entity(EntityType::Bee, place_x, place_y, 8, 8)
 		, m_direction(Direction::Right)
 		, m_damage(30)
 		, m_acceleration(60.f)
@@ -26,8 +30,6 @@ namespace ezg {
 
 		m_goto.x = std::rand() % static_cast<int>(m_area.width) + static_cast<int>(m_area.left);
 		m_goto.y = std::rand() % static_cast<int>(m_area.height) + static_cast<int>(m_area.top);
-
-		m_effects[EffectType::Walking]._time_effect = 5000.f;
 	}
 
 
@@ -58,7 +60,7 @@ namespace ezg {
 	void Bee::colision(gsl::not_null <Entity*> _lhs, Direction _dir) /*final override*/ {
 
 
-		if (_lhs->getType() == TypeEntity::HeroBullet) {
+		if (_lhs->getType() == EntityType::HeroBullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
 				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs.get());
@@ -72,29 +74,24 @@ namespace ezg {
 
 	Hit Bee::attack(sf::FloatRect _rec) {
 
-		sf::CircleShape _circle(m_radius);
-		if (_effectIsActive_(EffectType::Attack)) {
-			_circle.setRadius(_circle.getRadius() * 2);
-		}
+		sf::CircleShape _circle(countRadius());
+
 		_circle.setPosition(m_hit_box.left, m_hit_box.top);
 
 		const float _x = _rec.left;
 		const float _y = _rec.top;
 
-		if (intersection(_circle, sf::Vector2f(_x, _y)) && !_effectIsActive_(EffectType::Wounded)) {
-			m_effects[EffectType::Walking]._time_effect = 0.f;
-			m_effects[EffectType::Attack]._time_effect = 1.f;
+		if (intersection(_circle, sf::Vector2f(_x, _y))) {
+			setEffect(Effect(EffectType::Aggression, 0.f, 1.8f, 4.f));
+			setEffect(Effect(EffectType::Attack, 0.f, 0.f, 1.5f));
 
-			_goto_(_x, _y);
+			m_goto = sf::Vector2f(_x, _y);
 
 			if (_rec.intersects(m_hit_box)) {
 				speed_x /= -1.3;
 				speed_y /= -1.3;
 				return Hit{ m_damage };
 			}
-		}
-		else if (!_effectIsActive_(EffectType::Wounded) && !_effectIsActive_(EffectType::Walking)) {
-			m_effects[EffectType::Walking]._time_effect = 100.f;
 		}
 
 		return Hit();
@@ -105,15 +102,13 @@ namespace ezg {
 
 		if (!_effectIsActive_(EffectType::Wounded)) {
 
-			if (_hit._damage > 0.f) {
-				m_hp -= _hit._damage;
+			m_hp -= _hit._damage;
 
-
-				m_effects[EffectType::Wounded]._time_effect = 0.5f;
-			}
+			setEffect(Effect(EffectType::Wounded, 0.f, 1.f + _hit._damage / 200.f, 0.2f));
+			setEffect(Effect(EffectType::Aggression, 0.f, 2.f, 4.f));
 
 			for (int i = 0; i < 4; i++) {
-				m_effects[_hit._effect[i]._type] = _hit._effect[i];
+				setEffect(_hit._effect[i]);
 			}
 		}
 
@@ -122,56 +117,95 @@ namespace ezg {
 
 	void Bee::upPosition(float _time, Direction _dir) noexcept /*override*/ {
 
-		//printf("%d %d\n", _effectIsActive_(EffectType::Walking), _effectIsActive_(EffectType::Stop));
-
-		if (_effectIsActive_(EffectType::Walking) && !_effectIsActive_(EffectType::Stop)) {
-
-			if (_dir == Direction::Horixontal) {
-				_goto_(m_goto.x, m_goto.y);
-
-				if (m_hit_box.intersects(sf::FloatRect(m_goto.x, m_goto.y, 4, 4))) {
-					m_effects[EffectType::Stop]._time_effect = 2.f;
-
-					m_goto.x = std::rand() % static_cast<int>(m_area.width) + static_cast<int>(m_area.left);
-					m_goto.y = std::rand() % static_cast<int>(m_area.height) + static_cast<int>(m_area.top);
-				}
-			}
-
-		}
-		//if (_effectIsActive_(EffectType::Attack)) {
-		//	_time *= 1.f;
-		//}
-
 		if (_dir == Direction::Horixontal) {
 			moveIt(speed_x * _time, 0);
 		}
 		else if (_dir == Direction::Vertical) {
+
+			_goto_(m_goto.x, m_goto.y, _time);
+
 			moveIt(0, speed_y * _time);
 		}
 
 	}
 
 
+#define _eff_ eff.second
 	void Bee::upEffect(float _time) noexcept {
 
-		for (auto& ef : m_effects) {
-			if (ef.second._time_effect > 0.f) {
+		for (auto& eff : m_effects) {
+			if (eff.second._time_effect > 0.f) {
 
-				ef.second._time_effect -= _time;
+				if (eff.first == EffectType::Discarding) {
+					speed_x += _eff_._power * std::cos(_eff_._property);
+					speed_y = _eff_._power * std::sin(_eff_._property);
+				}
+				else if (eff.first == EffectType::Freezing) {
+					speed_x /= _eff_._power;
+				}
+				else if (eff.first == EffectType::Attack && _eff_._time_effect - _time <= 0.0000005f) {
+					m_goto = sf::Vector2f(getPosX(), getPosY());
+				}
+
+				_eff_._time_effect -= _time;
+			}
+			else {
+
+				if (eff.first == EffectType::Poisoning && static_cast<int>(_eff_._property) > 0) {
+					getHit(Hit{ _eff_._power });
+
+					_eff_._property--;
+					_eff_._time_effect = 1.f;
+				}
+				else if (eff.first == EffectType::OnFire && static_cast<int>(_eff_._property) > 0) {
+					getHit(Hit{ _eff_._power });
+
+					_eff_._property--;
+					_eff_._time_effect = 1.f;
+				}
+				else if (eff.first == EffectType::Aggression) {
+					_eff_ = Effect();
+				}
+
 			}
 		}
 
+	}
 
-		if (_effectIsActive_(EffectType::Stop)) {
 
-			speed_x -= m_acceleration * _time / 1.5f;
-			if (speed_x < 0.f) { speed_x = 0.f; }
+	void Bee::setEffect(const Effect& _eff) {
 
-			speed_y -= m_acceleration * _time / 1.5f;
-			if (speed_y < 0.f) { speed_y = 0.f; }
+		using ET = EffectType;
+
+		if (_eff._type == ET::Aggression) {
+			m_effects[ET::Aggression]._power = std::max(m_effects[ET::Aggression]._power, _eff._power);
+			m_effects[ET::Aggression]._time_effect = std::max(m_effects[ET::Aggression]._time_effect, _eff._time_effect);
 		}
-		if (m_effects[EffectType::Attack]._time_effect < 0.1f && _effectIsActive_(EffectType::Attack)) {
-			m_effects[EffectType::Stop]._time_effect = 1.5f;
+		else if (_eff._type == ET::Attack) {
+			m_effects[ET::Attack] = _eff;
+			m_effects[ET::Walking] = Effect();
+		}
+		else if (_eff._type == ET::Freezing) {
+			if (_effectIsActive_(ET::OnFire)) {
+				m_effects[ET::OnFire] = Effect();
+			}
+			else {
+				m_effects[ET::Freezing] = _eff;
+			}
+		}
+		else if (_eff._type == ET::OnFire) {
+			if (_effectIsActive_(ET::Freezing)) {
+				m_effects[ET::Freezing] = Effect();
+			}
+			else {
+				m_effects[ET::OnFire] = _eff;
+			}
+		}
+		else if (_eff._type == ET::Poisoning) {
+			m_effects[ET::Poisoning] = _eff;
+		}
+		else {
+			m_effects[_eff._type] = _eff;
 		}
 
 	}
@@ -180,15 +214,45 @@ namespace ezg {
 	void Bee::otherUpdate(float _time) noexcept /*override*/ {
 
 
-		upEffect(_time);
-
 		m_animation.update(_time);
-
 		if (m_acceleration * std::cos(m_corner) >= 0) {
 			setDirection(Direction::Right);
 		}
 		else {
 			setDirection(Direction::Left);
+		}
+
+		upEffect(_time);
+
+		{
+			if (!_effectIsActive_(EffectType::Attack)) {
+				//_property == 1 - snack walking
+				//--//--    == 0 - stay
+				if (!_effectIsActive_(EffectType::Walking)) {
+
+					if (m_effects[EffectType::Walking]._property == 0.f) {
+						setEffect(Effect(EffectType::Walking, 1.f, 0.f, 10.f));
+						
+						m_goto.x = std::rand() % static_cast<int>(m_area.width) + static_cast<int>(m_area.left);
+						m_goto.y = std::rand() % static_cast<int>(m_area.height) + static_cast<int>(m_area.top);
+					}
+					else {
+						//rallback
+						setEffect(Effect(EffectType::Walking, 0.f, 0.f, 5.f));
+					}
+
+				}
+				else {
+					if (m_effects[EffectType::Walking]._property == 0.f) {
+						//stops
+						m_goto.x = m_hit_box.left;
+						m_goto.y = m_hit_box.top;
+					}
+					else if (m_hit_box.contains(m_goto)) {
+						setEffect(Effect(EffectType::Walking, 0.f, 0.f, 5.f));
+					}
+				}
+			}
 		}
 
 		if (m_hp <= 0) {
@@ -198,7 +262,7 @@ namespace ezg {
 	}
 
 
-	void Bee::_goto_(float _x, float _y) noexcept {
+	void Bee::_goto_(float _x, float _y, float _time) noexcept {
 
 		//             @ . .|_y
 		//             .\   |
@@ -210,36 +274,85 @@ namespace ezg {
 		//                  |
 		//                  |
 		//                  ↓y
+		if (!m_hit_box.contains(sf::Vector2f(_x, _y))) {
+			const float diff_x = _x - (m_hit_box.left + m_hit_box.width / 2.f);
+			const float diff_y = _y - (m_hit_box.top + m_hit_box.height / 2.f);
 
-		const float diff_x = _x - m_hit_box.left;
-		const float diff_y = _y - m_hit_box.top;
 
+			m_corner = std::atan(diff_y / diff_x);
 
-		m_corner = std::atan(diff_y / diff_x);
+			if (diff_y < 0.f && diff_x < 0.f) {
+				m_corner -= 3.141592;
+			}
+			else if (diff_x < 0.f && diff_y > 0.f) {
+				m_corner = 3.141592 + m_corner;
+			}
 
-		if (diff_y < 0.f && diff_x < 0.f) {
-			m_corner -= 3.141592;
+			speed_x += m_acceleration * std::cos(m_corner) * _time;
+			speed_y += m_acceleration * std::sin(m_corner) * _time;
+
+			//slow down at the goal level (by y).
+			//otherwise it can spin like a planet around the sun.
+			if (std::fabs(diff_y) < 4) {
+				speed_y /= 1.09f;
+				//speed_x *= 1.05f;
+			}
+
+			const float excess = std::sqrt(speed_x * speed_x + speed_y * speed_y - BEE_MAX_SPEED * BEE_MAX_SPEED);
+			if (excess > 0) {
+				speed_x -= excess * std::cos(m_corner);
+				speed_y -= excess * std::sin(m_corner);
+			}
 		}
-		else if (diff_x < 0.f && diff_y > 0.f) {
-			m_corner = 3.141592 + m_corner;
+		else {
+			//speed_x = speed_y = 0.f;
+			if (speed_x > 0.f) {
+				speed_x -= m_acceleration * _time * std::fabs(speed_x) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_x = (speed_x >= 0) ? speed_x : 0;
+			}
+			else {
+				speed_x += m_acceleration * _time * std::fabs(speed_x) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_x = (speed_x <= 0) ? speed_x : 0;
+			}
+			if (speed_y > 0.f) {
+				speed_y -= m_acceleration * _time * std::fabs(speed_y) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_y = (speed_y >= 0) ? speed_y : 0;
+			}
+			else {
+				speed_y += m_acceleration * _time * std::fabs(speed_y) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_y = (speed_y <= 0) ? speed_y : 0;
+			}
 		}
 
-		speed_x += m_acceleration * std::cos(m_corner);
-		speed_y += m_acceleration * std::sin(m_corner);
+	}
 
-		//slow down at the goal level (by y).
-		//otherwise it can spin like a planet around the sun.
-		if (std::fabs(diff_y) < 5) {
-			speed_y /= 1.07f;
-			//speed_x *= 1.05f;
+
+	float Bee::countRadius() {
+		float res = m_radius;
+
+		if (_effectIsActive_(EffectType::Aggression)) {
+			res *= m_effects[EffectType::Aggression]._power;
 		}
 
-		const float excess = std::sqrt(speed_x * speed_x + speed_y * speed_y - BEE_MAX_SPEED * BEE_MAX_SPEED);
-		if (excess > 0) {
-			speed_x -= excess * std::cos(m_corner);
-			speed_y -= excess * std::sin(m_corner);
+		return res;
+	}
+	float Bee::countAcceleration() {
+		float res = m_acceleration;
+
+		if (_effectIsActive_(EffectType::Freezing)) {
+			res /= m_effects[EffectType::Freezing]._power;
 		}
 
+		return res;
+	}
+	sf::Vector2f Bee::countSpeed() {
+		sf::Vector2f res(speed_x, speed_y);
+
+		if (_effectIsActive_(EffectType::Freezing)) {
+			res /= m_effects[EffectType::Freezing]._power;
+		}
+
+		return res;
 	}
 
 
@@ -251,6 +364,50 @@ namespace ezg {
 		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 16, 8, 8), 0.16f);
 		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 16, 8, 8), 0.16f);
 
+	}
+
+
+	std::string Bee::DebugStr() /*override*/ {
+
+		using std::setw;
+		using std::endl;
+		using std::setfill;
+
+		std::ostringstream out;
+		out.setf(std::ios::left | std::ios::boolalpha);
+
+		out << setw(13) << setfill('\t') << "Type" << "Bee" << endl
+			<< setw(12) << "ID" << m_id << endl
+			<< setw(14) << "alive" << m_alive << std::endl
+			<< setw(12) << "Hp" << m_hp << std::endl
+			<< setw(18) << "is gravity " << is_gravity << std::endl
+			<< setw(17) << "coordinates" << "(" << m_hit_box.left << ", " << m_hit_box.top << ")\n"
+			<< setw(13) << "size" << "  w: " << m_hit_box.width << ", h: " << m_hit_box.height << '\n'
+			<< setw(13) << "speed" << "  (" << speed_x << ", " << speed_y << ")\n"
+			<< setw(18) << "acceleration" << m_acceleration << std::endl
+			<< setw(21) << "angle to the goal" << m_corner << std::endl
+			<< setw(13) << "goto" << " (" << m_goto.x << ", " << m_goto.y << ")\n"
+			<< setw(14) << "damage" << m_damage << std::endl
+			<< setw(19) << "vision radius" << countRadius() << "(def: " << m_radius << ')' << std::endl
+			<< setw(13) << "area" << "  x:" << m_area.left << ", y:" << m_area.top
+			  << ", w:" << m_area.width << ", h:" << m_area.height << std::endl
+			<< "effects:" << std::endl;
+		{   //effects
+			bool is_one = false;
+			for (const auto& eff : m_effects) {
+				if (eff.second._time_effect > 0.f) {
+					is_one = true;
+					out << "    " << eff.first << "(time: " << std::setprecision(4) << eff.second._time_effect
+						<< " power: " << eff.second._power
+						<< " property: " << eff.second._property << ')' << endl;
+				}
+			}
+			if (!is_one) {
+				out << "    nop" << std::endl;
+			}
+		}
+
+		return out.str();
 	}
 
 } //namespace ezg

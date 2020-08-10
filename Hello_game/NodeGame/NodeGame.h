@@ -16,6 +16,20 @@
 
 namespace ezg {
 
+    enum class GameMood {
+        NotInitialized
+        , Loading
+        , MainMenu
+        , Pause
+        , Restart
+        , Game
+        , Death
+        , Exit
+    };
+
+    std::string enumName(GameMood _en);
+    std::ostream& operator<<(std::ostream& _stream, GameMood _en);
+
 
     class NodeGame
     {
@@ -57,6 +71,9 @@ namespace ezg {
 
         inline const GameMood getMood    () const noexcept { return m_mood; }
 
+        
+        std::string localDebugString();
+
 
     private:
 
@@ -82,9 +99,6 @@ namespace ezg {
         }
 
 
-        void updateDbConsole(float _time);
-
-
         void clear();
 
 
@@ -96,23 +110,40 @@ namespace ezg {
         void _addDeathMenu_();
 
 
+        enum ConsoleType {
+              Main
+            , Hero
+            , Entities
+        };
+        enum ConsoleButton {
+              toMain
+            , toHero
+            , toEntities
+            , Next
+            , Pref
+        };
+        void checkEventDbConsole(const sf::Event& _event);
+        void updateDbConsole(float _time);
+
+
     private:
 
         GameMood               m_mood;
 
         sf::Clock              m_clock;
         double                 m_time;
+        float                  m_period;
 
         sf::View               m_view;
         sf::RenderWindow       m_window;
 
-        Hero                   m_hero;            
+        ezg::Hero                   m_hero;            
         TileMap                m_map;
 
         std::list < Entity* >  m_entities; // an array with other elements of the game (enemies, bullets, etc.)
 
         menu::MenuManager      m_menus;
-        menu::Menu             m_debug_cnsl;
+        menu::MenuManager      m_debug_cnsl;
         bool                   m_cnslIsActive;
 
         sf::Texture            m_enemy_texture;

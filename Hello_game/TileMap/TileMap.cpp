@@ -1,5 +1,5 @@
-
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <cassert>
 
@@ -7,7 +7,6 @@
 #define GSL_THROW_ON_CONTRACT_VIOLATION
 
 #include "TileMap.h"
-
 
 namespace ezg {
 
@@ -255,6 +254,26 @@ namespace ezg {
 
 
         return returnable;
+    }
+
+
+    std::string TileMap::debugString() {
+
+        using std::setw;
+        using std::endl;
+        using std::setfill;
+        
+        std::ostringstream out;
+        out.setf(std::ios::left | std::ios::boolalpha);
+
+        out << setw(7) << setfill('\t') << "TileMap:" << endl
+            << setw(18) << "set background" << "    " << (m_backGround != nullptr) << endl
+            << setw(19) << "set frontground" << "   " << (m_frontGround != nullptr) << endl
+            << setw(16) << "num layers" << "   " << m_map.size() << endl
+            << setw(14) << "size" << m_width << 'x' << m_height << endl
+            << setw(17) << "tile size" << "  " << m_tile_size.x << 'x' << m_tile_size.y << endl;
+
+        return out.str();
     }
 
 } // namespace ezg

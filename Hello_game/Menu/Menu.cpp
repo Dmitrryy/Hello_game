@@ -81,11 +81,7 @@ namespace menu {
 		const sf::Vector2f txt_pos(m_rec.left + m_rec.width * m_pos_Txt.x, m_rec.top + m_rec.height * m_pos_Txt.y);
 
 
-		//sf::RectangleShape _r;
-		//_r.setSize(sf::Vector2f(m_rec.width, m_rec.height));
-		//_r.setPosition(sf::Vector2f(m_rec.left, m_rec.top));
-		//_r.setFillColor(sf::Color::Red);
-		//_target.draw(_r);
+
 			
 
 		sf::Sprite* tmp_sp  = &m_def_BG;
@@ -116,14 +112,20 @@ namespace menu {
 
 		if (activeTx) {
 			tmp_sp->setPosition(bt_pos);
+			tmp_sp->setOrigin(tmp_sp->getTextureRect().width / 2.f, tmp_sp->getTextureRect().height / 2.f);
 			tmp_sp->setScale(m_rec.width / tmp_sp->getTextureRect().width, m_rec.height / tmp_sp->getTextureRect().height);
-			//tmp_sp->setOrigin(tmp_sp->getGlobalBounds().width / 2.f, tmp_sp->getGlobalBounds().height / 2.f);
 			_target.draw(*tmp_sp);
 		}
 		//printf("%f\n", tmp_txt->getScale().y);
 		tmp_txt->setPosition(txt_pos);
 		tmp_txt->setOrigin(tmp_txt->getGlobalBounds().width / 2.f + tmp_txt->getLocalBounds().left,
 			tmp_txt->getGlobalBounds().height / 2.f + tmp_txt->getLocalBounds().top);
+
+		//sf::RectangleShape _r;
+		//_r.setSize(sf::Vector2f(m_rec.width, m_rec.height));
+		//_r.setPosition(sf::Vector2f(m_rec.left, m_rec.top));
+		//_r.setFillColor(sf::Color::Red);
+		//_target.draw(_r);
 
 		_target.draw(*tmp_txt);
 	}
@@ -200,7 +202,28 @@ namespace menu {
 		res->setFont(m_font);
 		res->setTexture(m_texture);
 
-		m_buttons[_id] = res;
+		if (m_buttons[_id] == nullptr) {
+			m_buttons[_id] = res;
+		}
+		else {
+			delete m_buttons[_id];
+			m_buttons[_id] = res;
+		}
+
+	}
+
+	void Menu::addButton(int _id, std::unique_ptr<Button>&& _bt) {
+
+		_bt->setFont(m_font);
+		_bt->setTexture(m_texture);
+
+		if (m_buttons[_id] == nullptr) {
+			m_buttons[_id] = _bt.release();
+		}
+		else {
+			delete m_buttons[_id];
+			m_buttons[_id] = _bt.release();
+		}
 	}
 
 
@@ -409,6 +432,13 @@ namespace menu {
 
 		return true;
 
+	}
+
+
+	bool MenuManager::isActive(int& _id_menu) {
+
+		_id_menu = (is_active) ? m_active : 0;
+		return is_active;
 	}
 
 } //namespace menu

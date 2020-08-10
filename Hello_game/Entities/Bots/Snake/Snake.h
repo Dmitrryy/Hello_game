@@ -30,34 +30,38 @@ namespace ezg {
 
 
 		Hit attack(sf::FloatRect _rec);
+		float countRadius();
+		float countAccelerationX();
+		sf::Vector2f countSpeed();
+
+		void  jump(float _factor = 1.f);
 
 
-	private: float m_rallback_jump = 0.f;
-	public: void  jump();
+		void jumpOff();
 
 
-		  void jumpOff();
+		void setStat(EntityStat _new);
 
 
-		  void setStat(EntityStat _new);
+		void setEffect(const Effect& _new_effect);
 
 
-		  void setEffect(EffectType _new_effect);
+		void getHit(Hit _hit) noexcept;
 
 
-		  void getHit(Hit _hit) noexcept;
+		void upEffect(float _time) noexcept;
 
 
-		  void upEffect(float _time) noexcept;
+		void upPosition(float time, Direction _dir) noexcept;
 
 
-		  void upPosition(float time, Direction _dir) noexcept;
+		void otherUpdate(float _time);
 
 
-		  void otherUpdate(float _time);
+		bool _effectIsActive_(EffectType _eff) const noexcept;
 
 
-		  void Stop() { setEffect(EffectType::Normal); }
+		std::string DebugStr() override;
 
 
 	private:
@@ -83,7 +87,7 @@ namespace ezg {
 		Animation		m_animation;
 
 		EntityStat		m_status;
-		EffectType	m_effect;
+		std::map < EffectType, Effect >	    m_effects;
 		Direction		m_direction;
 
 		float			m_damage;

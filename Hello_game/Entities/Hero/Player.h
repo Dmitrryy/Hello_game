@@ -113,6 +113,10 @@ namespace ezg {
 		//the function returns the hero to its original state
 		void restart();
 
+
+		std::string debugString();
+
+
 	private:
 
 

@@ -21,7 +21,7 @@ namespace ezg {
 		// _texture - texture... (its copy is kept. do not allow the destruction of the original)
 		//
 		//it is protected because constructor can only call derived classes
-		Mushroom(TypeEntity _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
+		Mushroom(EntityType _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
 		/////////////////////////////////////////////////////////
 
 
@@ -72,6 +72,9 @@ namespace ezg {
 
 
 		sf::FloatRect getArea() const noexcept { return m_area_attack; }
+
+
+		std::string DebugStr() override;
 
 
 	private:

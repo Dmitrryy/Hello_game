@@ -41,7 +41,7 @@ static int WINDOW_WIDTH = 16 * 100;
 static int WINDOW_HEIGHT = 9 * 100;
 //
 //font
-#define FONT_FNAME              "Resource/pix.ttf"
+#define FONT_FNAME              "Resource/calibri.ttf"
 //#define FONT_DEFAULT_SIZE       50
 #define FONT_DEFAULT_COLOR      sf::Color(255, 255, 255)
 //
@@ -98,19 +98,6 @@ namespace ezg {
     class Snake;
 
 
-
-    enum class GameMood {
-          NotInitialized
-        //, Loading
-        , MainMenu
-        , Pause
-        , Restart
-        , Game
-        , Death
-        , Exit
-    };
-
-
     /////////////////////////////////////////////
     //existing menu pages
     enum TipeMenu {
@@ -130,12 +117,12 @@ namespace ezg {
 
 
 
-    enum class Bullets
-    {
-        HeroBullet
-        , BlueBullet
-        , RedBullet
-    };
+    //enum class Bullets
+    //{
+    //    HeroBullet
+    //    , BlueBullet
+    //    , RedBullet
+    //};
 
 
     enum class Direction {

@@ -7,19 +7,19 @@
 namespace ezg {
 
 
-	class Hero
+	class Hero : public Entity
 	{
 
 	public:
 
 		//default constructor
 		Hero() noexcept
-			: m_hp(0)
-			, is_gravity(true)
+			: Entity(Type::Hero)
+			, m_hp(0)
 			, speed_x(0)
 			, speed_y(0)
 			, m_direction(Direction::Right)
-			, m_status(EntityStat::InAir)
+			, m_status(Stat::InAir)
 		{ /* nop */ }
 
 		//draws a hero texture
@@ -42,7 +42,7 @@ namespace ezg {
 
 
 		//determines the interaction of the hero with other objects
-		std::unique_ptr<Entity> colision(Entity* const _entity, Direction _dir);
+		std::unique_ptr<Entity>  colision(Entity* _entity, Direction _dir) override;
 
 
 		//////////////////////////////////////////////////
@@ -76,14 +76,14 @@ namespace ezg {
 
 		//returns a reference to the class Animation. 
 		//used to define the animation for the hero.
-		inline Animation& atAnimation() noexcept { return m_animation; }
+		inline ezg::Animation& atAnimation() noexcept { return m_animation; }
 
 
 		//////////////////////////////////////////////////
 		//set functions:
 		//void setEffect(const Effect& _effect) noexcept { m_effects[_effect._type] = _effect; }
 		//activates the desired animation when setting a new hero state
-		void setStat    (EntityStat _new);
+		void setStat    (Stat _new);
 		//
 		void setHp      (float _hp)          noexcept { m_hp = _hp; }
 		//
@@ -104,9 +104,9 @@ namespace ezg {
 		float getHP() const noexcept { return m_hp; }
 		bool isGravity() const noexcept { return is_gravity; }
 		//
-		inline const EntityStat getStat() const noexcept { return m_status; }
+		inline const Stat getStat() const noexcept { return m_status; }
 		//
-		const std::map<EffectType, Effect>& getEffects() const noexcept { return m_effects; }
+		const std::map<Effect::Type, Effect>& getEffects() const noexcept { return m_effects; }
 		//////////////////////////////////////////////////
 
 
@@ -120,22 +120,22 @@ namespace ezg {
 	private:
 
 
-		bool _effectIsActive_(EffectType _eff) const noexcept;
+		bool _effectIsActive_(Effect::Type _eff) const noexcept;
 
 	private:
 
-		Animation		m_animation;
+		ezg::Animation		m_animation;
 
-		EntityStat		m_status;
-		std::map<EffectType, Effect> m_effects;
+		Stat		m_status;
+		std::map<Effect::Type, Effect> m_effects;
 		Direction		m_direction;
 
-		bool			is_gravity;
+		//bool			is_gravity;
 
 		float			speed_x;
 		float			speed_y;
 
-		sf::FloatRect	m_hit_box;
+		//sf::FloatRect	m_hit_box;
 
 		float			m_hp;
 

@@ -4,7 +4,7 @@ namespace ezg {
 
 	int Entity::__id__ = 0;
 
-	Entity::Entity (EntityType _tipe, int _id) noexcept
+	Entity::Entity (Type _tipe, int _id) noexcept
 		: m_tipe     (_tipe)
 		, m_id       (__id__)
 		, is_gravity (true)
@@ -14,7 +14,7 @@ namespace ezg {
 	}
 
 
-	Entity::Entity (EntityType _tipe, float pos_x, float pos_y, float _width, float _height) noexcept
+	Entity::Entity (Type _tipe, float pos_x, float pos_y, float _width, float _height) noexcept
 		: m_hit_box  (pos_x, pos_y, _width, _height) //-_-
 		, is_gravity (true)
 		, m_id       (__id__)
@@ -48,10 +48,13 @@ namespace ezg {
 		return res;
 	}
 
-#define EScase(a) case EntityStat::a: \
+
+
+
+#define EScase(a) case Entity::Stat::a: \
  res = #a; \
  break;
-	std::string enumName(EntityStat _en) {
+	std::string enumName(Entity::Stat _en) {
 
 		std::string res;
 
@@ -71,10 +74,10 @@ namespace ezg {
 		return res;
 	}
 
-#define EAcase(a) case EntityAnimation::a: \
+#define EAcase(a) case Entity::Animation::a: \
  res = #a; \
  break;
-	std::string enumName(EntityAnimation _en) {
+	std::string enumName(Entity::Animation _en) {
 
 		std::string res;
 
@@ -94,10 +97,10 @@ namespace ezg {
 		return res;
 	}
 
-#define Ecase(a) case EntityType::a: \
+#define Ecase(a) case Entity::Type::a: \
  res = #a; \
  break;
-	std::string enumName(EntityType _en) {
+	std::string enumName(Entity::Type _en) {
 
 		std::string res;
 
@@ -128,10 +131,10 @@ namespace ezg {
 		return res;
 	}
 
-#define ETcase(a) case EffectType::a: \
+#define ETcase(a) case Entity::Effect::Type::a: \
  res = #a; \
  break;
-	std::string enumName(EffectType _en) {
+	std::string enumName(Entity::Effect::Type _en) {
 
 		std::string res;
 
@@ -139,13 +142,14 @@ namespace ezg {
 		{
 			ETcase(Nop);
 			ETcase(Attack);
+			ETcase(CantFire);
 			ETcase(Aggression);
 			ETcase(Discarding);
 			ETcase(Freezing);
 			ETcase(OnFire);
 			ETcase(Poisoning);
 			ETcase(Stop);
-			ETcase(NoJump);
+			ETcase(CantJump);
 			ETcase(Walking);
 			ETcase(Wounded);
 
@@ -158,19 +162,19 @@ namespace ezg {
 
 
 
-	std::ostream& operator<<(std::ostream& _stream, EntityStat _en) {
+	std::ostream& operator<<(std::ostream& _stream, Entity::Stat _en) {
 		_stream << enumName(_en);
 		return _stream;
 	}
-	std::ostream& operator<<(std::ostream& _stream, EntityAnimation _en) {
+	std::ostream& operator<<(std::ostream& _stream, Entity::Animation _en) {
 		_stream << enumName(_en);
 		return _stream;
 	}
-	std::ostream& operator<<(std::ostream& _stream, EntityType _en) {
+	std::ostream& operator<<(std::ostream& _stream, Entity::Type _en) {
 		_stream << enumName(_en);
 		return _stream;
 	}
-	std::ostream& operator<<(std::ostream& _stream, EffectType _en) {
+	std::ostream& operator<<(std::ostream& _stream, Entity::Effect::Type _en) {
 		_stream << enumName(_en);
 		return _stream;
 	}

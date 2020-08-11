@@ -27,7 +27,7 @@ namespace ezg {
         }
 
         //painted red if the hero is injured
-        if (_effectIsActive_(EffectType::Wounded)) {
+        if (_effectIsActive_(Effect::Type::Wounded)) {
             _sprite.setColor(sf::Color(220, 0, 0));
         }
 
@@ -39,13 +39,13 @@ namespace ezg {
 
     void Hero::checkKeyBoard() {
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) 
-            && m_status == EntityStat::onStairs) {
+            && m_status == Stat::onStairs) {
 
             speed_y += -80.f;
 
         }
         if ((sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            && m_status == EntityStat::onStairs) {
+            && m_status == Stat::onStairs) {
 
             speed_y += 80.f;
 
@@ -75,7 +75,7 @@ namespace ezg {
                 jumpOff();
             }
             else if (_event.key.code == sf::Keyboard::Space) {
-                if (m_status == EntityStat::onStairs) {
+                if (m_status == Stat::onStairs) {
                     jumpOff();
                 }
                 else {
@@ -91,10 +91,10 @@ namespace ezg {
 
     void Hero::jump() {
 
-        if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
+        if (m_status == Stat::onSolid || m_status == Stat::onSolidAbove) {
 
             speed_y = -115.f;
-            setStat(EntityStat::InAir);
+            setStat(Stat::InAir);
         }
 
     }
@@ -102,10 +102,10 @@ namespace ezg {
 
     void Hero::jumpOff() {
 
-        if (m_status == EntityStat::onSolidAbove || m_status == EntityStat::onStairs) {
+        if (m_status == Stat::onSolidAbove || m_status == Stat::onStairs) {
 
             move(0.f, 1.5f);
-            setStat(EntityStat::InAir);
+            setStat(Stat::InAir);
         }
 
     }
@@ -132,16 +132,16 @@ namespace ezg {
 
     void Hero::getHit(Hit _hit) {
 
-        if (!_effectIsActive_(EffectType::Wounded)) {
+        if (!_effectIsActive_(Effect::Type::Wounded)) {
             
             if (_hit._damage > 0.f) {
                 m_hp -= _hit._damage;
 
                 speed_y = -80.f;
-                setStat(EntityStat::InAir);
+                setStat(Stat::InAir);
 
-                m_effects[EffectType::Wounded]._time_effect = 0.15f;
-                m_effects[EffectType::Wounded]._power = 1 + _hit._damage / 2000.f;
+                m_effects[Effect::Type::Wounded]._time_effect = 0.15f;
+                m_effects[Effect::Type::Wounded]._power = 1 + _hit._damage / 2000.f;
             }
 
             for (int i = 0; i < 4; i++) {
@@ -159,12 +159,12 @@ namespace ezg {
         //}
         if (_dir == Direction::Vertical) {
 
-            if (is_gravity && m_status == EntityStat::InAir) {
+            if (is_gravity && m_status == Stat::InAir) {
 
                 speed_y += acceleration_of_gravity * time;
                 move(0, speed_y * time);
             }
-            if (!is_gravity || m_status == EntityStat::onStairs) {
+            if (!is_gravity || m_status == Stat::onStairs) {
 
                 move(0, speed_y * time);
             }
@@ -173,9 +173,9 @@ namespace ezg {
 
             move(speed_x * time, 0);
 
-            if (is_gravity && speed_x != 0 && m_status != EntityStat::onStairs) {
+            if (is_gravity && speed_x != 0 && m_status != Stat::onStairs) {
 
-                m_status = EntityStat::InAir;
+                m_status = Stat::InAir;
             }
         }
 
@@ -188,11 +188,11 @@ namespace ezg {
         for (auto& eff : m_effects) {
             if (eff.second._time_effect > 0.f) {
                 
-                if (_eff_._type == EffectType::Discarding) {
+                if (_eff_._type == Effect::Type::Discarding) {
                     speed_x += _eff_._power * std::cos(_eff_._property);
                     speed_y = _eff_._power * std::sin(_eff_._property);
                 }
-                else if (_eff_._type == EffectType::Freezing) {
+                else if (_eff_._type == Effect::Type::Freezing) {
                     speed_x /= _eff_._power;
                 }
 
@@ -200,13 +200,13 @@ namespace ezg {
             }
             else {
 
-                if (_eff_._type == EffectType::Poisoning && static_cast<int>(_eff_._property) > 0) {
+                if (_eff_._type == Effect::Type::Poisoning && static_cast<int>(_eff_._property) > 0) {
                     getHit(Hit{_eff_._power});
 
                     _eff_._property--;
                     _eff_._time_effect = 1.f;
                 }
-                else if (_eff_._type == EffectType::OnFire && static_cast<int>(_eff_._property) > 0) {
+                else if (_eff_._type == Effect::Type::OnFire && static_cast<int>(_eff_._property) > 0) {
                     getHit(Hit{ _eff_._power });
 
                     _eff_._property--;
@@ -221,8 +221,8 @@ namespace ezg {
 
     void Hero::otherUpdate(float _time) {
 
-        if (speed_x == 0.f && speed_y == 0.f && m_animation.getActive() != static_cast<int>(EntityAnimation::Idle)) {
-            m_animation.activate(static_cast<int>(EntityAnimation::Idle));
+        if (speed_x == 0.f && speed_y == 0.f && m_animation.getActive() != static_cast<int>(Animation::Idle)) {
+            m_animation.activate(static_cast<int>(Animation::Idle));
         }
 
         //upEffect(_time);
@@ -232,33 +232,33 @@ namespace ezg {
         m_animation.update(_time);
 
         if (m_hp <= 0) {
-            setStat(EntityStat::Death);
+            setStat(Stat::Death);
         }
 
     }
 
 
-    void Hero::setStat(EntityStat _new) {
+    void Hero::setStat(Stat _new) {
 
-        if (_new == EntityStat::InAir) {
+        if (_new == Stat::InAir) {
 
-            if (m_animation.getActive() != static_cast<int>(EntityAnimation::Jump)) {
+            if (m_animation.getActive() != static_cast<int>(Animation::Jump)) {
 
-                m_animation.activate(static_cast<int>(EntityAnimation::Jump));
+                m_animation.activate(static_cast<int>(Animation::Jump));
             }
         }
-        else if (_new == EntityStat::onSolid || _new == EntityStat::onSolidAbove) {
+        else if (_new == Stat::onSolid || _new == Stat::onSolidAbove) {
 
-            if (m_animation.getActive() != static_cast<int>(EntityAnimation::Walk)) {
+            if (m_animation.getActive() != static_cast<int>(Animation::Walk)) {
 
-                m_animation.activate(static_cast<int>(EntityAnimation::Walk));
+                m_animation.activate(static_cast<int>(Animation::Walk));
             }
         }
-        else if (_new == EntityStat::onStairs) {
+        else if (_new == Stat::onStairs) {
 
-            if (m_animation.getActive() != static_cast<int>(EntityAnimation::Walk)) {
+            if (m_animation.getActive() != static_cast<int>(Animation::Walk)) {
 
-                m_animation.activate(static_cast<int>(EntityAnimation::Walk));
+                m_animation.activate(static_cast<int>(Animation::Walk));
             }
         }
 
@@ -268,19 +268,18 @@ namespace ezg {
 
     
     std::unique_ptr<Entity> 
-    Hero::colision(Entity* const _entity, Direction _dir) {
+    Hero::colision(Entity* _entity, Direction _dir) {
 
-        if (_entity == nullptr) {
-            return nullptr;
-        }
+        if (_entity == nullptr) { return nullptr; }
 
         std::unique_ptr<Entity> result = nullptr;
+
         if (m_hit_box.intersects(_entity->getHitBox())) {
 
             switch (_entity->getType())
             {
 /////////////////////////////Solid
-            case EntityType::Solid: {
+            case Type::Solid: {
 
                 if (_dir == Direction::Horixontal) {
 
@@ -297,7 +296,7 @@ namespace ezg {
                     if (speed_y > 0) {
                         m_hit_box.top = _entity->getPosY() - m_hit_box.height;
 
-                        setStat(EntityStat::onSolid);
+                        setStat(Stat::onSolid);
                         speed_y = 0;
                     }
                     if (speed_y < 0) {
@@ -313,7 +312,7 @@ namespace ezg {
 
 
 /////////////////////////////SolidAbove
-            case EntityType::SolidAbove: {
+            case Type::SolidAbove: {
 
                 if (_dir == Direction::Vertical) {
 
@@ -324,7 +323,7 @@ namespace ezg {
 
                         speed_y = 0;
 
-                        setStat(EntityStat::onSolidAbove);
+                        setStat(Stat::onSolidAbove);
                     }
 
                 }
@@ -333,19 +332,19 @@ namespace ezg {
                 
 
 /////////////////////////////Stairs
-            case EntityType::Stairs: {
+            case Type::Stairs: {
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                    setStat(EntityStat::onStairs);
+                    setStat(Stat::onStairs);
                 }
 
-                if (m_status == EntityStat::onStairs) {
+                if (m_status == Stat::onStairs) {
 
                     const float center_x = m_hit_box.left + m_hit_box.width / 2;
                     const float center_y = m_hit_box.top + m_hit_box.height / 2;
 
                     if (!_entity->getHitBox().contains(center_x, center_y)) {
-                        setStat(EntityStat::InAir);
+                        setStat(Stat::InAir);
                     }
                     else if (_dir == Direction::Vertical) {
                         speed_y = 0;
@@ -356,17 +355,17 @@ namespace ezg {
 
 
 /////////////////////////////Needle
-            case EntityType::Needle: 
-            {
-                //is it safe?!?
-                const gsl::not_null<Needle*> bl = dynamic_cast<Needle*>(_entity);
-                getHit(bl->getDamage());
-                break; // case Needle
+            //case EntityType::Needle: 
+            //{
+            //    //is it safe?!?
+            //    const gsl::not_null<Needle*> bl = dynamic_cast<Needle*>(_entity);
+            //    getHit(bl->getDamage());
+            //    break; // case Needle
 
-            }
+            //}
 /////////////////////////////RedBullet
-            case EntityType::RedBullet:
-            case EntityType::BlueBullet: 
+            case Type::RedBullet:
+            case Type::BlueBullet: 
             {
                 //is it safe?!?
                 const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_entity);
@@ -381,29 +380,6 @@ namespace ezg {
             }
            
         }
-        if ((_entity->getType() == EntityType::MushroomRed || _entity->getType() == EntityType::MushroomBlue) 
-            && _dir == Direction::Horixontal) 
-        {
-            const gsl::not_null<Mushroom*> mr = dynamic_cast<Mushroom*>(_entity);
-            if (m_hit_box.intersects(mr->getArea())) {
-                result = mr->fire(getPosX(), getPosY());
-            }
-            else {
-                mr->setStat(EntityAnimation::Idle);
-            }
-        }
-        else if (_entity->getType() == EntityType::Bee && _dir == Direction::Horixontal) 
-        {
-            const gsl::not_null<Bee*> bee = dynamic_cast<Bee*>(_entity);
-
-            getHit(bee->attack(m_hit_box));
-        }
-        else if (_entity->getType() == EntityType::Snake && _dir == Direction::Horixontal) 
-        {
-            const gsl::not_null<Snake*> snake = dynamic_cast<Snake*>(_entity);
-
-            getHit(snake->attack(m_hit_box));
-        }
 
         return result;
 
@@ -412,7 +388,7 @@ namespace ezg {
 
     void Hero::restart() {
 
-        setStat(EntityStat::InAir);
+        setStat(Stat::InAir);
 
         for (auto& ef : m_effects) {
             ef.second._power = ef.second._time_effect = 0.f;
@@ -428,7 +404,7 @@ namespace ezg {
     }
 
 
-    bool Hero::_effectIsActive_(EffectType _eff) const noexcept {
+    bool Hero::_effectIsActive_(Effect::Type _eff) const noexcept {
 
         auto res = m_effects.find(_eff);
 

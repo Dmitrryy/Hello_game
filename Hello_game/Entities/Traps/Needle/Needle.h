@@ -18,7 +18,7 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
-		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) noexcept override { /* nop */ }
+		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) noexcept override;
 		/////////////////////////////////////////////////////////
 
 

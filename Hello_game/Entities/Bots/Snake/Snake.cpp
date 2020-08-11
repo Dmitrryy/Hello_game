@@ -2,6 +2,7 @@
 
 #include "Snake.h"
 
+#include "../../Hero/Player.h"
 #include "../../Bullets/Bullets.h"
 
 namespace ezg {
@@ -9,7 +10,7 @@ namespace ezg {
 #define MAX_SPEED_SNAKE 55.f
 
 	Snake::Snake(float place_x, float place_y, float _distance_attack, const sf::Texture& _texture)
-		: Entity(EntityType::Snake, place_x, place_y, 8, 8)
+		: Entity(Type::Snake, place_x, place_y, 8, 8)
 		, m_direction(Direction::Right)
 		, m_damage(40)
 		, m_time_effect(0)
@@ -19,13 +20,13 @@ namespace ezg {
 		, speed_y(0)
 		, m_accelerationx(80.f)
 		, m_distance_attack(_distance_attack)
-		, m_status(EntityStat::InAir)
+		, m_status(Stat::InAir)
 	{
 		is_gravity = true;
 
 		m_animation.setTexture(_texture);
 		_setAnimations_();
-		m_animation.activate(static_cast<int>(EntityAnimation::Walk));
+		m_animation.activate(static_cast<int>(Animation::Walk));
 
 		m_goto.x = std::rand() % 100 + m_hit_box.left - 50;
 	}
@@ -46,7 +47,7 @@ namespace ezg {
 		}
 
 		//painted Red if the hero is injured
-		if (_effectIsActive_(EffectType::Wounded)) {
+		if (_effectIsActive_(Effect::Type::Wounded)) {
 			_sprite.setColor(sf::Color::Red);
 		}
 
@@ -55,7 +56,7 @@ namespace ezg {
 	}
 
 
-	Hit Snake::attack(sf::FloatRect _rec) {
+	Entity::Hit Snake::attack(sf::FloatRect _rec) {
 
 		sf::CircleShape _circle(countRadius());
 		_circle.setPosition(m_hit_box.left + m_hit_box.width / 2, m_hit_box.top + m_hit_box.height / 2);
@@ -64,8 +65,8 @@ namespace ezg {
 		const float _y = _rec.top;
 
 		if (Entity::intersection(_circle, sf::Vector2f(_x, _y))) {
-			setEffect(Effect(EffectType::Aggression, 0.f, 1.8f, 4.f));
-			setEffect(Effect(EffectType::Attack, 0.f, 0.f, 1.5f));
+			setEffect(Effect(Effect::Type::Aggression, 0.f, 1.8f, 4.f));
+			setEffect(Effect(Effect::Type::Attack, 0.f, 0.f, 1.5f));
 
 			//_goto_(_x, _y);
 			m_goto.x = _x;
@@ -84,8 +85,8 @@ namespace ezg {
 				else if (diff_x < 0.f && diff_y > 0.f) {
 					m_corner = 3.141592 + m_corner;
 				}
-				return Hit{ m_damage, Effect{EffectType::Discarding, m_corner, 100.f, 0.15f}, 
-									  Effect{EffectType::Poisoning, 5, 10.f, 2.f} };
+				return Hit{ m_damage, Effect{Effect::Type::Discarding, m_corner, 100.f, 0.15f}, 
+									  Effect{Effect::Type::Poisoning, 5, 10.f, 2.f} };
 			}
 		}
 
@@ -97,13 +98,13 @@ namespace ezg {
 
 		if (_dir == Direction::Vertical) {
 
-			if (is_gravity && m_status == EntityStat::InAir) {
+			if (is_gravity && m_status == Stat::InAir) {
 
 				speed_y += acceleration_of_gravity * time;
 
 				m_hit_box.top += countSpeed().y * time;
 			}
-			if (!is_gravity || m_status == EntityStat::onStairs) {
+			if (!is_gravity || m_status == Stat::onStairs) {
 
 				m_hit_box.top += countSpeed().y * time;
 			}
@@ -114,18 +115,20 @@ namespace ezg {
 
 			m_hit_box.left += countSpeed().x * time;
 
-			if (is_gravity && speed_x != 0 && m_status != EntityStat::onStairs) {
+			if (is_gravity && speed_x != 0 && m_status != Stat::onStairs) {
 
-				m_status = EntityStat::InAir;
+				m_status = Stat::InAir;
 			}
 		}
 
 	}
 
 
-	void Snake::colision(gsl::not_null <Entity*> _lhs, Direction _dir) /*final override*/ {
+	std::unique_ptr<Entity> Snake::colision(Entity* _lhs, Direction _dir) /*final override*/ {
 
-		if (_lhs->getType() == EntityType::Solid) {
+		std::unique_ptr<Entity> result = nullptr;
+
+		if (_lhs->getType() == Type::Solid) {
 
 			if (getHitBox().intersects(_lhs->getHitBox())) {
 
@@ -146,7 +149,7 @@ namespace ezg {
 					if (speed_y > 0) {
 						m_hit_box.top = _lhs->getPosY() - m_hit_box.height;
 
-						setStat(EntityStat::onSolid);
+						setStat(Stat::onSolid);
 						speed_y = 0;
 					}
 					if (speed_y < 0) {
@@ -158,7 +161,7 @@ namespace ezg {
 
 			}
 		}
-		else if (_lhs->getType() == EntityType::SolidAbove) {
+		else if (_lhs->getType() == Type::SolidAbove) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
 				if (_dir == Direction::Vertical) {
@@ -168,31 +171,38 @@ namespace ezg {
 
 						speed_y = 0;
 
-						setStat(EntityStat::onSolidAbove);
+						setStat(Stat::onSolidAbove);
 					}
 
 				}
 			}
 
 		}
-		else if (_lhs->getType() == EntityType::HeroBullet || _lhs->getType() == EntityType::BlueBullet) {
+		else if (_lhs->getType() == Type::Hero) {
+
+			const gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
+			_hr->getHit(attack(_hr->getHitBox()));
+
+		}
+		else if (_lhs->getType() == Type::HeroBullet || _lhs->getType() == Type::BlueBullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs.get());
+				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
 				getHit(bl->getHit());
 			}
 		}
 
+		return result;
 	}
 
 
 	void Snake::jump(float _factor /*= 1.f*/) {
 
-		if (!_effectIsActive_(EffectType::NoJump)) {
-			if (m_status == EntityStat::onSolid || m_status == EntityStat::onSolidAbove) {
+		if (!_effectIsActive_(Effect::Type::CantJump)) {
+			if (m_status == Stat::onSolid || m_status == Stat::onSolidAbove) {
 				speed_y = -110.f * _factor;
-				setStat(EntityStat::InAir);
-				setEffect(Effect(EffectType::NoJump, 0.f, 0.f, 1.f));
+				setStat(Stat::InAir);
+				setEffect(Effect(Effect::Type::CantJump, 0.f, 0.f, 1.f));
 			}
 		}
 
@@ -201,9 +211,9 @@ namespace ezg {
 
 	void Snake::jumpOff() {
 
-		if (m_status == EntityStat::onSolidAbove) {
+		if (m_status == Stat::onSolidAbove) {
 			moveIt(0.f, 1.f);
-			setStat(EntityStat::InAir);
+			setStat(Stat::InAir);
 		}
 
 	}
@@ -215,11 +225,11 @@ namespace ezg {
 		for (auto& eff : m_effects) {
 			if (eff.second._time_effect > 0.f) {
 
-				if (eff.first == EffectType::Discarding) {
+				if (eff.first == Effect::Type::Discarding) {
 					speed_x += _eff_._power * std::cos(_eff_._property);
 					speed_y = _eff_._power * std::sin(_eff_._property);
 				}
-				else if (eff.first == EffectType::Attack && _eff_._time_effect - _time <= 0.0000005f) {
+				else if (eff.first == Effect::Type::Attack && _eff_._time_effect - _time <= 0.0000005f) {
 					m_goto = sf::Vector2f(getPosX(), getPosY());
 				}
 
@@ -227,32 +237,31 @@ namespace ezg {
 			}
 			else {
 
-				if (eff.first == EffectType::Poisoning && static_cast<int>(_eff_._property) > 0) {
+				if (eff.first == Effect::Type::Poisoning && static_cast<int>(_eff_._property) > 0) {
 					getHit(Hit{ _eff_._power });
 
 					_eff_._property--;
 					_eff_._time_effect = 1.f;
 				}
-				else if (eff.first == EffectType::OnFire && static_cast<int>(_eff_._property) > 0) {
+				else if (eff.first == Effect::Type::OnFire && static_cast<int>(_eff_._property) > 0) {
 					getHit(Hit{ _eff_._power });
 
 					_eff_._property--;
 					_eff_._time_effect = 1.f;
 				}
-				else if (eff.first == EffectType::Aggression) {
+				else if (eff.first == Effect::Type::Aggression) {
 					_eff_ = Effect();
 				}
 
 			}
 		}
-		std::cout << std::endl;
 	}
 
 
 	void Snake::otherUpdate(float _time) {
 
-		if (speed_x == 0.f && speed_y == 0.f && m_animation.getActive() != static_cast<int>(EntityAnimation::Idle)) {
-			m_animation.activate(static_cast<int>(EntityAnimation::Idle));
+		if (speed_x == 0.f && speed_y == 0.f && m_animation.getActive() != static_cast<int>(Animation::Idle)) {
+			m_animation.activate(static_cast<int>(Animation::Idle));
 		}
 		if (speed_x > 0) {
 			m_direction = Direction::Right;
@@ -263,31 +272,31 @@ namespace ezg {
 
 
 		{//walking script
-			if (!_effectIsActive_(EffectType::Attack)) {
+			if (!_effectIsActive_(Effect::Type::Attack)) {
 				//_property == 1 - snack walking
 				//--//--    == 0 - stay
-				if (!_effectIsActive_(EffectType::Walking)) {
+				if (!_effectIsActive_(Effect::Type::Walking)) {
 
-					if (m_effects[EffectType::Walking]._property == 0.f) {
-						setEffect(Effect(EffectType::Walking, 1.f, 0.f, 5.f));
+					if (m_effects[Effect::Type::Walking]._property == 0.f) {
+						setEffect(Effect(Effect::Type::Walking, 1.f, 0.f, 5.f));
 
 						m_goto.x = std::rand() % 100 + m_hit_box.left - 50;
 						m_goto.y = m_hit_box.top;
 					}
 					else {
 						//rallback
-						setEffect(Effect(EffectType::Walking, 0.f, 0.f, 2.f));
+						setEffect(Effect(Effect::Type::Walking, 0.f, 0.f, 2.f));
 					}
 
 				}
 				else {
-					if (m_effects[EffectType::Walking]._property == 0.f) {
+					if (m_effects[Effect::Type::Walking]._property == 0.f) {
 						//stops
 						m_goto.x = m_hit_box.left;
 						m_goto.y = m_hit_box.top;
 					}
 					else if (m_hit_box.contains(m_goto)) {
-						setEffect(Effect(EffectType::Walking, 0.f, 0.f, 2.f));
+						setEffect(Effect(Effect::Type::Walking, 0.f, 0.f, 2.f));
 					}
 				}
 			}
@@ -309,11 +318,11 @@ namespace ezg {
 
 	void Snake::getHit(Hit _hit) noexcept {
 
-		if (!_effectIsActive_(EffectType::Wounded)) {
+		if (!_effectIsActive_(Effect::Type::Wounded)) {
 			m_hp -= _hit._damage;
 			speed_y = -70.f;
-			setEffect(Effect(EffectType::Wounded, 0.f, 1.f + _hit._damage / 200.f, 0.2f));
-			setEffect(Effect(EffectType::Aggression, 0.f, 2.f, 4.f));
+			setEffect(Effect(Effect::Type::Wounded, 0.f, 1.f + _hit._damage / 200.f, 0.2f));
+			setEffect(Effect(Effect::Type::Aggression, 0.f, 2.f, 4.f));
 
 			for (int i = 0; i < 4; i++) {
 				setEffect(_hit._effect[i]);
@@ -325,7 +334,7 @@ namespace ezg {
 
 	void Snake::setEffect(const Effect& _eff) {
 
-		using ET = EffectType;
+		using ET = Effect::Type;
 
 		if (_eff._type == ET::Aggression) {
 			m_effects[ET::Aggression]._power = std::max(m_effects[ET::Aggression]._power, _eff._power);
@@ -361,7 +370,7 @@ namespace ezg {
 	}
 
 
-	void Snake::setStat(EntityStat _new) {
+	void Snake::setStat(Stat _new) {
 
 		//if (_new == EntityStat::InAir) {
 
@@ -370,11 +379,11 @@ namespace ezg {
 		//		m_animation.activate(EntityAnimation::Jump);
 		//	}
 		//}
-		if (_new == EntityStat::onSolid || _new == EntityStat::onSolidAbove) {
+		if (_new == Stat::onSolid || _new == Stat::onSolidAbove) {
 
-			if (m_animation.getActive() != static_cast<int>(EntityAnimation::Walk)) {
+			if (m_animation.getActive() != static_cast<int>(Animation::Walk)) {
 
-				m_animation.activate(static_cast<int>(EntityAnimation::Walk));
+				m_animation.activate(static_cast<int>(Animation::Walk));
 			}
 		}
 		//else if (_new == EntityStat::onStairs) {
@@ -432,8 +441,8 @@ namespace ezg {
 	float Snake::countRadius() {
 		float res = m_distance_attack;
 
-		if (_effectIsActive_(EffectType::Aggression)) {
-			res *= m_effects[EffectType::Aggression]._power;
+		if (_effectIsActive_(Effect::Type::Aggression)) {
+			res *= m_effects[Effect::Type::Aggression]._power;
 		}
 
 		return res;
@@ -441,8 +450,8 @@ namespace ezg {
 	float Snake::countAccelerationX() {
 		float res = m_accelerationx;
 
-		if (_effectIsActive_(EffectType::Freezing)) {
-			res /= m_effects[EffectType::Freezing]._power;
+		if (_effectIsActive_(Effect::Type::Freezing)) {
+			res /= m_effects[Effect::Type::Freezing]._power;
 		}
 
 		return res;
@@ -450,15 +459,15 @@ namespace ezg {
 	sf::Vector2f Snake::countSpeed() {
 		sf::Vector2f res(speed_x, speed_y);
 
-		if (_effectIsActive_(EffectType::Freezing)) {
-			res.x /= m_effects[EffectType::Freezing]._power;
+		if (_effectIsActive_(Effect::Type::Freezing)) {
+			res.x /= m_effects[Effect::Type::Freezing]._power;
 		}
 
 		return res;
 	}
 
 
-	bool Snake::_effectIsActive_(EffectType _eff) const noexcept {
+	bool Snake::_effectIsActive_(Effect::Type _eff) const noexcept {
 
 		auto res = m_effects.find(_eff);
 
@@ -471,20 +480,20 @@ namespace ezg {
 
 	void Snake::_setAnimations_() {
 
-		m_animation.addAnimation(static_cast<int>(EntityAnimation::Idle));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 40, 8, 8), 0.2f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 40, 8, 8), 0.2f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 40, 8, 8), 0.2f);
+		m_animation.addAnimation(static_cast<int>(Animation::Idle));
+		m_animation.addFrame(static_cast<int>(Animation::Idle), sf::IntRect(0, 40, 8, 8), 0.2f);
+		m_animation.addFrame(static_cast<int>(Animation::Idle), sf::IntRect(8, 40, 8, 8), 0.2f);
+		m_animation.addFrame(static_cast<int>(Animation::Idle), sf::IntRect(16, 40, 8, 8), 0.2f);
 
-		m_animation.addAnimation(static_cast<int>(EntityAnimation::Walk));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 40, 8, 8), 0.16f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 40, 8, 8), 0.16f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 40, 8, 8), 0.16f);
+		m_animation.addAnimation(static_cast<int>(Animation::Walk));
+		m_animation.addFrame(static_cast<int>(Animation::Walk), sf::IntRect(32, 40, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(Animation::Walk), sf::IntRect(40, 40, 8, 8), 0.16f);
+		m_animation.addFrame(static_cast<int>(Animation::Walk), sf::IntRect(48, 40, 8, 8), 0.16f);
 
-		m_animation.addAnimation(static_cast<int>(EntityAnimation::Attack));
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(88, 40, 8, 8), 0.1f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(96, 40, 8, 8), 0.1f);
-		m_animation.addFrame(static_cast<int>(EntityAnimation::Attack), sf::IntRect(104, 40, 8, 8), 0.1f);
+		m_animation.addAnimation(static_cast<int>(Animation::Attack));
+		m_animation.addFrame(static_cast<int>(Animation::Attack), sf::IntRect(88, 40, 8, 8), 0.1f);
+		m_animation.addFrame(static_cast<int>(Animation::Attack), sf::IntRect(96, 40, 8, 8), 0.1f);
+		m_animation.addFrame(static_cast<int>(Animation::Attack), sf::IntRect(104, 40, 8, 8), 0.1f);
 
 	}
 

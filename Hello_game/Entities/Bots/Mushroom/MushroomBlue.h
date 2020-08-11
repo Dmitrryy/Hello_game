@@ -9,9 +9,10 @@ namespace ezg {
 	public:
 
 		MushroomBlue(float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture)
-			: Mushroom(EntityType::MushroomBlue, place_x, place_y, _area, _texture)
+			: Mushroom(Type::MushroomBlue, place_x, place_y, _area, _texture)
 		{
 			_setAnimations_();
+			m_animation.activate(static_cast<int>(Animation::Idle));
 		}
 
 		/////////////////////////////////////////////////////////

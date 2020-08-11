@@ -21,7 +21,7 @@ namespace ezg {
 		// _texture - texture... (its copy is kept. do not allow the destruction of the original)
 		//
 		//it is protected because constructor can only call derived classes
-		Mushroom(EntityType _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
+		Mushroom(Type _tipe, float place_x, float place_y, sf::IntRect _area, const sf::Texture& _texture);
 		/////////////////////////////////////////////////////////
 
 
@@ -29,13 +29,13 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//draws a bot
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const noexcept override;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		/////////////////////////////////////////////////////////
 
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
-		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) final override;
+		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) final override;
 		/////////////////////////////////////////////////////////
 
 
@@ -43,6 +43,7 @@ namespace ezg {
 		//shooting function. returns an object to a bullet
 		virtual std::unique_ptr<Entity> fire(float _x, float _y) = 0;
 		/////////////////////////////////////////////////////////
+		std::unique_ptr<Entity> attack(float _x, float _y);
 
 
 		/////////////////////////////////////////////////////////
@@ -55,6 +56,7 @@ namespace ezg {
 		//updates time for effects
 		void upEffect(float _time) noexcept;
 		/////////////////////////////////////////////////////////
+		void setEffect(const Effect& _new_effect);
 
 
 		/////////////////////////////////////////////////////////
@@ -67,7 +69,7 @@ namespace ezg {
 
 
 		void setDirection(Direction _dir) noexcept { m_direction = _dir; }
-		void setStat(EntityAnimation _stat);
+		//void setStat(EntityAnimation _stat);
 		//void setEffect(EffectType _effect) noexcept { m_effect = _effect; }
 
 
@@ -90,7 +92,7 @@ namespace ezg {
 		/////////////////////////////////////////////////////////
 
 
-		bool _effectIsActive_(EffectType _eff) const {
+		bool _effectIsActive_(Effect::Type _eff) const {
 
 			const auto res = m_effects.find(_eff);
 
@@ -108,8 +110,10 @@ namespace ezg {
 
 		float m_hp;
 
-		Animation m_animation;
-		std::map<EffectType, Effect>	m_effects;
+		float speed;
+
+		ezg::Animation m_animation;
+		std::map<Effect::Type, Effect>	m_effects;
 		Direction m_direction;
 
 		float m_damage;

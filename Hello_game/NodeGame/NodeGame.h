@@ -137,7 +137,7 @@ namespace ezg {
         sf::View               m_view;
         sf::RenderWindow       m_window;
 
-        ezg::Hero                   m_hero;            
+        ezg::Hero              m_hero;            
         TileMap                m_map;
 
         std::list < Entity* >  m_entities; // an array with other elements of the game (enemies, bullets, etc.)

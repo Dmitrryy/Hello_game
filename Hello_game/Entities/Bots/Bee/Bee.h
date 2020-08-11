@@ -45,7 +45,7 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
-		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) final override;
+		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) final override;
 		/////////////////////////////////////////////////////////
 
 
@@ -95,7 +95,7 @@ namespace ezg {
 		/////////////////////////////////////////////////////////
 
 
-		bool _effectIsActive_(EffectType _eff) const {
+		bool _effectIsActive_(Effect::Type _eff) const {
 
 			auto res = m_effects.find(_eff);
 
@@ -119,8 +119,8 @@ namespace ezg {
 		float			m_acceleration;
 		float			m_corner;
 
-		Animation		m_animation;
-		std::map<EffectType, Effect>	m_effects;
+		ezg::Animation	m_animation;
+		std::map<Effect::Type, Effect>	m_effects;
 		Direction		m_direction;
 
 		float			m_damage;

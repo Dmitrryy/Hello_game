@@ -10,7 +10,7 @@ namespace ezg {
 	{
 	protected:
 
-		Bullet(EntityType _tipe, float place_x, float place_y) noexcept
+		Bullet(Type _tipe, float place_x, float place_y) noexcept
 			: Entity(_tipe, place_x, place_y, 1, 1)
 			, m_time(0)
 			, m_damage(20)
@@ -24,14 +24,17 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
-		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) final {
+		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) final {
+
+			if (_lhs == nullptr) { return nullptr; }
+			std::unique_ptr<Entity> result = nullptr;
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				if (_lhs->getType() == EntityType::Solid) {
+				if (_lhs->getType() == Type::Solid) {
 					setAlive(false);
 				}
 			}
-
+			return result;
 		}
 		/////////////////////////////////////////////////////////
 
@@ -73,13 +76,13 @@ namespace ezg {
 	public:
 
 		RedBullet() noexcept
-			: Bullet(EntityType::RedBullet, 0, 0)
+			: Bullet(Type::RedBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
 		RedBullet(float place_x, float place_y) noexcept
-			: Bullet(EntityType::RedBullet, place_x, place_y)
+			: Bullet(Type::RedBullet, place_x, place_y)
 		{
 			is_gravity = false;
 		}
@@ -99,7 +102,7 @@ namespace ezg {
 
 		Hit getHit() noexcept override {
 			setAlive(false);
-			return Hit( m_damage, Effect(EffectType::OnFire, 5.f, 10.f, 2.f) );
+			return Hit( m_damage, Effect(Effect::Type::OnFire, 5.f, 10.f, 2.f) );
 		}
 
 
@@ -124,13 +127,13 @@ namespace ezg {
 	public:
 
 		BlueBullet() noexcept
-			: Bullet(EntityType::BlueBullet, 0, 0)
+			: Bullet(Type::BlueBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
 		BlueBullet(float place_x, float place_y) noexcept
-			: Bullet(EntityType::BlueBullet, place_x, place_y)
+			: Bullet(Type::BlueBullet, place_x, place_y)
 		{
 			is_gravity = false;
 		}
@@ -150,7 +153,7 @@ namespace ezg {
 
 		Hit getHit() noexcept override {
 			setAlive(false);
-			return Hit( m_damage, Effect(EffectType::Freezing, 0.f, 1.5f, 20.f) );
+			return Hit( m_damage, Effect(Effect::Type::Freezing, 0.f, 1.5f, 20.f) );
 		}
 
 
@@ -175,13 +178,13 @@ namespace ezg {
 	public:
 
 		HeroBullet() noexcept
-			: Bullet(EntityType::HeroBullet, 0, 0)
+			: Bullet(Type::HeroBullet, 0, 0)
 		{
 			is_gravity = false;
 		}
 
 		HeroBullet(float place_x, float place_y) noexcept
-			: Bullet(EntityType::HeroBullet, place_x, place_y)
+			: Bullet(Type::HeroBullet, place_x, place_y)
 
 		{
 			is_gravity = false;

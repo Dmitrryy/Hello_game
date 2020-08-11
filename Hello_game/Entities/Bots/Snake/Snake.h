@@ -25,7 +25,7 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
-		void colision(gsl::not_null <Entity*> _lhs, Direction _dir) final override;
+		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) final override;
 		/////////////////////////////////////////////////////////
 
 
@@ -40,7 +40,7 @@ namespace ezg {
 		void jumpOff();
 
 
-		void setStat(EntityStat _new);
+		void setStat(Stat _new);
 
 
 		void setEffect(const Effect& _new_effect);
@@ -58,7 +58,7 @@ namespace ezg {
 		void otherUpdate(float _time);
 
 
-		bool _effectIsActive_(EffectType _eff) const noexcept;
+		bool _effectIsActive_(Effect::Type _eff) const noexcept;
 
 
 		std::string DebugStr() override;
@@ -84,10 +84,10 @@ namespace ezg {
 		float			speed_y;
 		float			m_accelerationx;
 
-		Animation		m_animation;
+		ezg::Animation		m_animation;
 
-		EntityStat		m_status;
-		std::map < EffectType, Effect >	    m_effects;
+		Stat		m_status;
+		std::map < Effect::Type, Effect >	    m_effects;
 		Direction		m_direction;
 
 		float			m_damage;

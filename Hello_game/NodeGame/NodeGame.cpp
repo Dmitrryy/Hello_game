@@ -24,7 +24,7 @@ namespace ezg {
     {
 
         _initialize_();
-        m_window.setFramerateLimit(100);
+        //m_window.setFramerateLimit(100);
 
     }
     NodeGame::~NodeGame()
@@ -53,27 +53,27 @@ namespace ezg {
             assert(0);
         }
         {
-            m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Walk));
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(0, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(8, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(16, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(24, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(32, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(40, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(48, 8, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Walk), sf::IntRect(56, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addAnimation(static_cast<int>(Entity::Animation::Walk));
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(0, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(8, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(16, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(24, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(32, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(40, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(48, 8, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Walk), sf::IntRect(56, 8, 8, 8), 0.1f);
 
-            m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Jump));
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(0, 80, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(8, 80, 8, 8), 0.12f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(16, 80, 8, 8), 0.5f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Jump), sf::IntRect(24, 80, 8, 8), 5.f);
+            m_hero.atAnimation().addAnimation(static_cast<int>(Entity::Animation::Jump));
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Jump), sf::IntRect(0, 80, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Jump), sf::IntRect(8, 80, 8, 8), 0.12f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Jump), sf::IntRect(16, 80, 8, 8), 0.5f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Jump), sf::IntRect(24, 80, 8, 8), 5.f);
 
-            m_hero.atAnimation().addAnimation(static_cast<int>(EntityAnimation::Idle));
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(0, 56, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(8, 56, 8, 8), 0.4f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(16, 56, 8, 8), 0.1f);
-            m_hero.atAnimation().addFrame(static_cast<int>(EntityAnimation::Idle), sf::IntRect(24, 56, 8, 8), 0.4f);
+            m_hero.atAnimation().addAnimation(static_cast<int>(Entity::Animation::Idle));
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Idle), sf::IntRect(0, 56, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Idle), sf::IntRect(8, 56, 8, 8), 0.4f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Idle), sf::IntRect(16, 56, 8, 8), 0.1f);
+            m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Idle), sf::IntRect(24, 56, 8, 8), 0.4f);
         }
 
 
@@ -309,8 +309,6 @@ namespace ezg {
         changeMood(GameMood::MainMenu);
     }
 
-
-#define ButtonMain(a) m_menus.atMenu(TipeMenu::Main).atButton(a)
     void NodeGame::_addMainMenu_() {
 
 
@@ -319,8 +317,6 @@ namespace ezg {
         if (!m_menus.atMenu(TipeMenu::Main).setTexture(MENU_BACKGROUND1_FNAME)) {
             assert(0);
         }
-
-
 
         menu::Button _but;
         _but.setSize({ 0.15f, 0.095f});
@@ -357,8 +353,6 @@ namespace ezg {
 
     }
 
-
-#define ButtonPause(a) m_menus.atMenu(TipeMenu::Pause).atButton(a)
     void NodeGame::_addPauseMenu_() {
 
         m_menus.create(TipeMenu::Pause);
@@ -403,8 +397,6 @@ namespace ezg {
         m_menus.atMenu(TipeMenu::Pause).addImage(std::move(_bg));
     }
 
-
-#define ButtonDeath(a) m_menus.atMenu(TipeMenu::Death).atButton(a)
     void NodeGame::_addDeathMenu_() {
        
         m_menus.create(TipeMenu::Death); 
@@ -527,8 +519,6 @@ namespace ezg {
         if (mapXML == nullptr) {
             throw std::invalid_argument("not found a 'map' in XML file");
         }
-
-
 
         {   //fix the card size (in tiles)
             const int64_t width = mapXML->Int64Attribute("width");
@@ -991,7 +981,7 @@ namespace ezg {
             m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * m_period,
                 (getPosHeroY() - m_view.getCenter().y) * m_period));
 
-            if (m_hero.getStat() == EntityStat::Death) {
+            if (m_hero.getStat() == Entity::Stat::Death) {
                 changeMood(GameMood::Death);
             }
             break;
@@ -1017,6 +1007,7 @@ namespace ezg {
         for (const gsl::not_null < Entity* > elem : m_entities) {
 
             addObject(m_hero.colision(elem, _dir));
+            addObject(elem->colision(&m_hero, _dir));
         }
 
         for (const gsl::not_null < Entity* > elem1 : m_entities) {

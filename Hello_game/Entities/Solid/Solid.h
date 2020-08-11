@@ -13,18 +13,17 @@ namespace ezg {
 	///////////////////////////////////////////////
 	class Solid final : public ezg::Entity 
 	{
-
 	public:
 
 		Solid(float place_x, float place_y, float width, float height) noexcept
-			: Entity(EntityType::Solid, place_x, place_y, width, height)
+			: Entity(Type::Solid, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}
 
 		void draw (sf::RenderTarget&, sf::RenderStates) const noexcept override { /* nop */	}
 
-		void colision (gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
+		std::unique_ptr<Entity> colision(Entity*, Direction) noexcept override { return nullptr; }
 
 		void otherUpdate (float) noexcept override { /* nop */ }
 
@@ -42,14 +41,14 @@ namespace ezg {
 	public:
 
 		SolidAbove(float place_x, float place_y, float width, float height) noexcept
-			: Entity(EntityType::SolidAbove, place_x, place_y, width, height)
+			: Entity(Type::SolidAbove, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}
 
 		void draw (sf::RenderTarget&, sf::RenderStates) const noexcept override { /* nop */ }
 
-		void colision (gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
+		std::unique_ptr<Entity> colision(Entity*, Direction) noexcept override { return nullptr; }
 
 		void otherUpdate (float) noexcept override { /* nop */ }
 	};
@@ -65,14 +64,14 @@ namespace ezg {
 	public:
 
 		Stairs(float place_x, float place_y, float width, float height) noexcept
-			: Entity(EntityType::Stairs, place_x, place_y, width, height)
+			: Entity(Type::Stairs, place_x, place_y, width, height)
 		{
 			is_gravity = false;
 		}
 
 		void draw (sf::RenderTarget&, sf::RenderStates) const noexcept override { /* nop */ }
 
-		void colision (gsl::not_null<Entity*>, Direction) noexcept override { /* nop */ }
+		std::unique_ptr<Entity> colision(Entity*, Direction) noexcept override { return nullptr; }
 
 		void otherUpdate (float) noexcept override { /* nop */ }
 	};

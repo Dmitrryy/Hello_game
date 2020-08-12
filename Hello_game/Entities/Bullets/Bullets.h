@@ -3,15 +3,25 @@
 #include "../../config.h"
 #include "../Entity.h"
 
+#include "../Solid/Solid.h"
+
 namespace ezg {
 
 
 	class Bullet : public ezg::Entity
 	{
+	public:
+
+		enum class Type {
+			  HeroBullet
+			, RedBullet
+			, BlueBullet
+		};
+
 	protected:
 
 		Bullet(Type _tipe, float place_x, float place_y) noexcept
-			: Entity(_tipe, place_x, place_y, 1, 1)
+			: Entity(Entity::Type::Bullet, place_x, place_y, 1, 1)
 			, m_time(0)
 			, m_damage(20)
 			, speed_x(0)
@@ -30,8 +40,13 @@ namespace ezg {
 			std::unique_ptr<Entity> result = nullptr;
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				if (_lhs->getType() == Type::Solid) {
-					setAlive(false);
+				if (_lhs->getType() == Entity::Type::Landscape) {
+
+					const gsl::not_null<Landscape*> lndscp = dynamic_cast<Landscape*>(_lhs);
+					if (lndscp->getType() == Landscape::Type::Solid) {
+						setAlive(false);
+					}
+
 				}
 			}
 			return result;
@@ -56,8 +71,11 @@ namespace ezg {
 			}
 		}
 
+		Type getType() { return m_type; }
 
 	protected :
+
+		Type  m_type;
 
 		float m_time;
 

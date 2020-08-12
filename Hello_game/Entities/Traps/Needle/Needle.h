@@ -21,6 +21,7 @@ namespace ezg {
 		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) noexcept override;
 		/////////////////////////////////////////////////////////
 
+		void setDamage(float _damage) { m_damage = _damage; }
 
 		void otherUpdate(float _time)	noexcept override { /* nop */ }
 

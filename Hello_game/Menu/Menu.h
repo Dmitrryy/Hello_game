@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <cassert>
 #include <iostream>
+#include <functional>
 
 namespace menu {
 
@@ -149,6 +150,13 @@ namespace menu {
 			  Default
 			, HighLight
 			, Pressed
+			//, Released
+		};
+		enum class Script {
+			HighLight
+			, UnHightlight
+			, Pressed
+			, Released
 		};
 
 
@@ -171,6 +179,24 @@ namespace menu {
 
 
 	public:
+
+		void hightlight() {
+			if (m_stat != Button::Stat::Pressed && m_stat != Button::Stat::HighLight) {
+				setStat(Button::Stat::HighLight);
+				m_hl_script();
+			}
+		}
+		void unHightlight() {
+			setStat(Button::Stat::Default);
+		}
+		void press() {
+			setStat(Button::Stat::Pressed);
+			m_press_script();
+		}
+		void release() {
+			setStat(Button::Stat::Default);
+			m_repress_script();
+		}
 		//////////////////////////////////////////////////////////////////////////////
 		//draw a button in _target
 		void draw(sf::RenderTarget& _target) override;
@@ -178,37 +204,31 @@ namespace menu {
 
 
 		/////////////////////////////text settings////////////////////////////////////
-		void setText             (const sf::Text& _txt) { setDefText(_txt); setHighlightingText(_txt); setPressedText(_txt); }
-		void setDefText          (const sf::Text& _new_text) { m_defTxt = _new_text; }
-		void setHighlightingText (const sf::Text& _new_text) { m_highlightingTxt = _new_text; }
-		void setPressedText      (const sf::Text& _new_text) { m_pressedTxt = _new_text; }
+		void setText(const sf::Text& _txt, Button::Stat stat = Button::Stat::Default);
 		//[0, 1]
-		void setPositionTxt      (sf::Vector2f _pos) noexcept { m_pos_Txt = _pos; }
+		void setPositionTxt(sf::Vector2f _pos) noexcept { m_pos_Txt = _pos; }
 		//
-		void setString(const std::string& _str);
+		void setString(const std::string& _str, Button::Stat stat = Button::Stat::Default);
 		//
 		void setFont(const sf::Font& _font);
+		//
+		void setScript(Button::Script _type, std::function<void() noexcept> _script);
 		//////////////////////////////////////////////////////////////////////////////
 
 
 		////////////////////////////texture settings//////////////////////////////////
-		void texture    (bool _is) { activeTx = _is; }
-		//
 		//bool setTexture (const std::string& _new_tx) { return m_Tx.loadFromFile(_new_tx); }
 		//dangerous function! possible white rectangle
 		void setTexture(const sf::Texture& _new_tx);
 		//
-		void setDefTextureRect         (sf::IntRect _rec) { m_def_BG.setTextureRect(_rec); }
-		void setHighlTextureRect       (sf::IntRect _rec) { m_highlighting_BG.setTextureRect(_rec); }
-		void setPressedTextureRect     (sf::IntRect _rec) { m_pressed_BG.setTextureRect(_rec); }
+		void setTextureRect(sf::IntRect _rec, Button::Stat _stat = Button::Stat::Default);
 		//////////////////////////////////////////////////////////////////////////////
 
-
-		//////////////////////////////////////////////////////////////////////////////
-		void setStat(Button::Stat _new_stat) noexcept { m_stat = _new_stat; }
-		//
 		Button::Stat getStat() noexcept { return m_stat; }
-		//////////////////////////////////////////////////////////////////////////////
+
+	private:
+
+		void setStat(Button::Stat _new_stat) noexcept { m_stat = _new_stat; }
 
 
 	private:
@@ -224,6 +244,11 @@ namespace menu {
 		sf::Sprite   m_def_BG;
 		sf::Sprite   m_highlighting_BG;
 		sf::Sprite   m_pressed_BG;
+
+		std::function<void() noexcept> m_hl_script;
+		std::function<void() noexcept> m_unhl_script;
+		std::function<void() noexcept> m_press_script;
+		std::function<void() noexcept> m_repress_script;
 	};
 
 
@@ -275,7 +300,7 @@ namespace menu {
 
 
 		//////////////////////////////////////////////////////////////////////////////
-		const sf::Font& getFont() { return m_font; }
+		const sf::Font& getFont() noexcept { return m_font; }
 		//////////////////////////////////////////////////////////////////////////////
 
 
@@ -290,7 +315,7 @@ namespace menu {
 		//set BackGround for ALL window
 		bool setTexture  (std::string _fname)        { return m_texture.loadFromFile(_fname);}
 		void setTexture  (const sf::Texture& _tx)    { m_texture = _tx;}
-		const sf::Texture& getTexture() { return m_texture; }
+		const sf::Texture& getTexture() noexcept { return m_texture; }
 		///////////////////////////////////////////////////////////////////////////////
 
 
@@ -303,10 +328,14 @@ namespace menu {
 
 
 		//////////////////////////////////////////////////////////////////////////////
-		//menu interaction
+		//menu interaction(deprecated)
 		//  true - the button was pressed.
 		//  _id_button - the number of the button pressed.
-		bool checkPressing (const sf::Event& _event, const sf::RenderWindow& _target, int& _id_button);
+		//[[deprecated("use 'bool checkEvent(const sf::Event& _event, const sf::RenderWindow& _window)'")]]
+		bool checkPressing (const sf::Event& _event, const sf::RenderWindow& _window, int& _id_button);
+		//menu interaction.
+		//  runs the corresponding script('Button::setScript(...)') when interacting with the button.
+		bool checkEvent (const sf::Event& _event, const sf::RenderWindow& _window);
 		//////////////////////////////////////////////////////////////////////////////
 
 
@@ -315,11 +344,8 @@ namespace menu {
 
 		sf::Font				m_font;
 		sf::Texture				m_texture;
-		std::map<int, Item*>	m_buttons;
+		std::map<int, Button*>	m_buttons;
 		std::vector<Item*>      m_other_items;
-
-		int						m_highlighted_button;
-		int						m_pressed_button;
 
 		int						m_def_size;
 		sf::Color				m_def_color;
@@ -368,7 +394,10 @@ namespace menu {
 
 		//////////////////////////////////////////////////////////////////////////////
 		//menu interaction
+		[[deprecated("use 'bool checkEvent(const sf::Event& _event, const sf::RenderWindow& _window)'")]]
 		bool checkPressing(const sf::Event& _event, const sf::RenderWindow& _target,  int& _id_button);
+		//
+		bool checkEvent(const sf::Event& _event, const sf::RenderWindow& _window);
 		//////////////////////////////////////////////////////////////////////////////
 
 	private:

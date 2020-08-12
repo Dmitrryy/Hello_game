@@ -61,16 +61,16 @@ namespace ezg {
 
 		std::unique_ptr<Entity> result = nullptr;
 
-		if (_lhs->getType() == Type::HeroBullet) {
+		if (_lhs->getType() == Entity::Type::Bullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
+				const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
 				getHit(bl->getHit());
 			}
 
 		}
-		else if (_lhs->getType() == Type::Hero) {
-			gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
+		else if (_lhs->getType() == Entity::Type::Hero) {
+			const gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
 			_hr->getHit(attack(_hr->getHitBox()));
 			
 		}
@@ -123,15 +123,15 @@ namespace ezg {
 
 
 	void Bee::upPosition(float _time, Direction _dir) noexcept /*override*/ {
-
+		
 		if (_dir == Direction::Horixontal) {
-			moveIt(speed_x * _time, 0);
+			moveIt(countSpeed().x * _time, 0);
 		}
 		else if (_dir == Direction::Vertical) {
 
 			_goto_(m_goto.x, m_goto.y, _time);
 
-			moveIt(0, speed_y * _time);
+			moveIt(0, countSpeed().y * _time);
 		}
 
 	}
@@ -146,9 +146,6 @@ namespace ezg {
 				if (eff.first == Effect::Type::Discarding) {
 					speed_x += _eff_._power * std::cos(_eff_._property);
 					speed_y = _eff_._power * std::sin(_eff_._property);
-				}
-				else if (eff.first == Effect::Type::Freezing) {
-					speed_x /= _eff_._power;
 				}
 				else if (eff.first == Effect::Type::Attack && _eff_._time_effect - _time <= 0.0000005f) {
 					m_goto = sf::Vector2f(getPosX(), getPosY());
@@ -281,6 +278,7 @@ namespace ezg {
 		//                  |
 		//                  |
 		//                  ↓y
+		float acl = countAcceleration();
 		if (!m_hit_box.contains(sf::Vector2f(_x, _y))) {
 			const float diff_x = _x - (m_hit_box.left + m_hit_box.width / 2.f);
 			const float diff_y = _y - (m_hit_box.top + m_hit_box.height / 2.f);
@@ -295,8 +293,8 @@ namespace ezg {
 				m_corner = 3.141592 + m_corner;
 			}
 
-			speed_x += m_acceleration * std::cos(m_corner) * _time;
-			speed_y += m_acceleration * std::sin(m_corner) * _time;
+			speed_x += acl * std::cos(m_corner) * _time;
+			speed_y += acl * std::sin(m_corner) * _time;
 
 			//slow down at the goal level (by y).
 			//otherwise it can spin like a planet around the sun.
@@ -314,19 +312,19 @@ namespace ezg {
 		else {
 			//speed_x = speed_y = 0.f;
 			if (speed_x > 0.f) {
-				speed_x -= m_acceleration * _time * std::fabs(speed_x) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_x -= acl * _time * std::fabs(speed_x) / (std::fabs(speed_x) + std::fabs(speed_y));
 				speed_x = (speed_x >= 0) ? speed_x : 0;
 			}
 			else {
-				speed_x += m_acceleration * _time * std::fabs(speed_x) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_x += acl * _time * std::fabs(speed_x) / (std::fabs(speed_x) + std::fabs(speed_y));
 				speed_x = (speed_x <= 0) ? speed_x : 0;
 			}
 			if (speed_y > 0.f) {
-				speed_y -= m_acceleration * _time * std::fabs(speed_y) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_y -= acl * _time * std::fabs(speed_y) / (std::fabs(speed_x) + std::fabs(speed_y));
 				speed_y = (speed_y >= 0) ? speed_y : 0;
 			}
 			else {
-				speed_y += m_acceleration * _time * std::fabs(speed_y) / (std::fabs(speed_x) + std::fabs(speed_y));
+				speed_y += acl * _time * std::fabs(speed_y) / (std::fabs(speed_x) + std::fabs(speed_y));
 				speed_y = (speed_y <= 0) ? speed_y : 0;
 			}
 		}
@@ -390,14 +388,15 @@ namespace ezg {
 			<< setw(18) << "is gravity " << is_gravity << std::endl
 			<< setw(17) << "coordinates" << "(" << m_hit_box.left << ", " << m_hit_box.top << ")\n"
 			<< setw(13) << "size" << "  w: " << m_hit_box.width << ", h: " << m_hit_box.height << '\n'
-			<< setw(13) << "speed" << "  (" << speed_x << ", " << speed_y << ")\n"
-			<< setw(18) << "acceleration" << m_acceleration << std::endl
+			<< setw(13) << "speed" << "  (" << countSpeed().x << ", " << countSpeed().y << ")\n"
+			<< setw(18) << "acceleration" << countAcceleration() << "(def: " << m_acceleration << ')' << std::endl
 			<< setw(21) << "angle to the goal" << m_corner << std::endl
 			<< setw(13) << "goto" << " (" << m_goto.x << ", " << m_goto.y << ")\n"
 			<< setw(14) << "damage" << m_damage << std::endl
 			<< setw(19) << "vision radius" << countRadius() << "(def: " << m_radius << ')' << std::endl
 			<< setw(13) << "area" << "  x:" << m_area.left << ", y:" << m_area.top
 			  << ", w:" << m_area.width << ", h:" << m_area.height << std::endl
+			<< setw(16) << "animation" << static_cast<Entity::Animation>(m_animation.getActive()) << endl
 			<< "effects:" << std::endl;
 		{   //effects
 			bool is_one = false;

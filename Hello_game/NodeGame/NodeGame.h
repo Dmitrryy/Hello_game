@@ -43,7 +43,7 @@ namespace ezg {
 
     public:
 
-        NodeGame() noexcept;
+        NodeGame();
         ~NodeGame();
 
 
@@ -57,7 +57,7 @@ namespace ezg {
         bool loadLevelXML (const std::string& _fileXML);
         //////////////////////////////////////////////////////
 
-        void checkEvents    () noexcept;
+        void checkEvents    ();
         void checkKeyBoard  ();
 
 
@@ -75,6 +75,8 @@ namespace ezg {
         std::string localDebugString();
 
 
+        void changeMood(GameMood _new);
+
     private:
 
         ////////////////////////////////////////////////////////////////////////
@@ -89,7 +91,7 @@ namespace ezg {
         ////////////////////////////////////////////////////////////////////////
 
 
-        void changeMood(GameMood _new);
+
 
 
         void addObject(std::unique_ptr<Entity>&& _elem) { 

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="left-up" width="50" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="8" nextobjectid="31">
+ <properties>
+  <property name="view spawn(x)" type="int" value="0"/>
+  <property name="view spawn(y)" type="int" value="0"/>
+ </properties>
  <tileset firstgid="1" name="Tiles" tilewidth="8" tileheight="8" tilecount="720" columns="18">
   <image source="Resource/Images/Tiles.png" width="144" height="320"/>
  </tileset>
@@ -24,9 +28,21 @@
   <object id="15" name="solid" type="solid" x="-8" y="-8" width="417.5" height="8"/>
   <object id="16" name="solid" type="solid" x="400" y="0" width="8" height="220.364"/>
   <object id="17" name="stairs" type="stairs" x="319.5" y="80" width="64.75" height="135.5"/>
-  <object id="18" name="needle" type="needle" x="120.909" y="137.455" width="6.54545" height="6.36364"/>
-  <object id="19" name="needle" type="needle" x="25.8125" y="178.125" width="5.1875" height="5.625"/>
-  <object id="20" name="needle" type="needle" x="200.938" y="209.688" width="53.1875" height="6.125"/>
+  <object id="18" name="needle" type="needle" x="120.909" y="137.455" width="6.54545" height="6.36364">
+   <properties>
+    <property name="damage" type="int" value="10"/>
+   </properties>
+  </object>
+  <object id="19" name="needle" type="needle" x="25.8125" y="178.125" width="5.1875" height="5.625">
+   <properties>
+    <property name="damage" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="20" name="needle" type="needle" x="200.938" y="209.688" width="53.1875" height="6.125">
+   <properties>
+    <property name="damage" type="int" value="20"/>
+   </properties>
+  </object>
   <object id="21" name="solid" type="solid" x="121" y="193.063" width="38" height="6"/>
   <object id="29" name="solidabove" type="solidabove" x="94.5" y="168.011" width="224" height="1"/>
  </objectgroup>
@@ -41,17 +57,23 @@
  <objectgroup id="6" name="enemy">
   <object id="25" name="bee" type="bee" x="256" y="80.75" width="136.5" height="106">
    <properties>
+    <property name="damage" type="int" value="10"/>
+    <property name="hp" type="int" value="100"/>
     <property name="radius" type="int" value="40"/>
    </properties>
   </object>
   <object id="26" name="MushroomBlue" type="MushroomBlue" x="86.9627" y="158.886" width="109.455" height="56.7273">
    <properties>
+    <property name="hp" type="int" value="100"/>
     <property name="spawn_x" type="int" value="129"/>
     <property name="spawn_y" type="int" value="210"/>
+    <property name="speed" type="int" value="1"/>
    </properties>
   </object>
   <object id="28" name="snake" type="snake" x="95.5228" y="191.341" width="8" height="8">
    <properties>
+    <property name="damage" type="int" value="10"/>
+    <property name="hp" type="int" value="100"/>
     <property name="radius" type="int" value="50"/>
    </properties>
   </object>

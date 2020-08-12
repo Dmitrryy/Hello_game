@@ -35,7 +35,7 @@ namespace ezg {
 
 		/////////////////////////////////////////////////////////
 		//interaction with other objects
-		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) final override;
+		std::unique_ptr<Entity> colision(Entity* _lhs, Direction _dir) override;
 		/////////////////////////////////////////////////////////
 
 
@@ -67,7 +67,8 @@ namespace ezg {
 		/////////////////////////////////////////////////////////
 
 
-
+		void setSpeedFactor(float _speed) { m_speed = _speed; }
+		void setHP(float _hp) noexcept { m_hp = _hp; }
 		void setDirection(Direction _dir) noexcept { m_direction = _dir; }
 		//void setStat(EntityAnimation _stat);
 		//void setEffect(EffectType _effect) noexcept { m_effect = _effect; }
@@ -110,7 +111,7 @@ namespace ezg {
 
 		float m_hp;
 
-		float speed;
+		float m_speed;
 
 		ezg::Animation m_animation;
 		std::map<Effect::Type, Effect>	m_effects;

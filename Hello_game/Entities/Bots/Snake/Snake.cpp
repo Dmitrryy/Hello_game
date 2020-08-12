@@ -2,6 +2,7 @@
 
 #include "Snake.h"
 
+#include "../../Solid/Solid.h"
 #include "../../Hero/Player.h"
 #include "../../Bullets/Bullets.h"
 
@@ -14,7 +15,7 @@ namespace ezg {
 		, m_direction(Direction::Right)
 		, m_damage(40)
 		, m_time_effect(0)
-		, m_hp(4000)
+		, m_hp(40)
 		, m_goto(0, 0)
 		, speed_x(0)
 		, speed_y(0)
@@ -128,63 +129,67 @@ namespace ezg {
 
 		std::unique_ptr<Entity> result = nullptr;
 
-		if (_lhs->getType() == Type::Solid) {
+		if (_lhs->getType() == Entity::Type::Landscape) {
+			gsl::not_null<Landscape*> lndscp = dynamic_cast<Landscape*>(_lhs);
 
-			if (getHitBox().intersects(_lhs->getHitBox())) {
+			if (lndscp->getType() == Landscape::Type::Solid) {
 
-				if (_dir == Direction::Horixontal) {
+				if (getHitBox().intersects(lndscp->getHitBox())) {
 
-					if (speed_x > 0) {
-						m_hit_box.left = _lhs->getPosX() - m_hit_box.width;
-						jump();
+					if (_dir == Direction::Horixontal) {
+
+						if (speed_x > 0) {
+							m_hit_box.left = lndscp->getPosX() - m_hit_box.width;
+							jump();
+						}
+						if (speed_x < 0) {
+							m_hit_box.left = lndscp->getPosX() + lndscp->getHitBox().width;
+							jump();
+						}
 					}
-					if (speed_x < 0) {
-						m_hit_box.left = _lhs->getPosX() + _lhs->getHitBox().width;
-						jump();
+
+					else if (_dir == Direction::Vertical) {
+
+						if (speed_y > 0) {
+							m_hit_box.top = lndscp->getPosY() - m_hit_box.height;
+
+							setStat(Stat::onSolid);
+							speed_y = 0;
+						}
+						if (speed_y < 0) {
+							m_hit_box.top = lndscp->getPosY() + m_hit_box.height;
+
+							speed_y = 0;
+						}
 					}
+
 				}
+			}
+			else if (lndscp->getType() == Landscape::Type::SolidAbove) {
 
-				else if (_dir == Direction::Vertical) {
+				if (m_hit_box.intersects(lndscp->getHitBox())) {
+					if (_dir == Direction::Vertical) {
 
-					if (speed_y > 0) {
-						m_hit_box.top = _lhs->getPosY() - m_hit_box.height;
+						if (speed_y > 0 && std::fabs(lndscp->getPosY() - (m_hit_box.top + m_hit_box.height)) < 1) {
+							m_hit_box.top = lndscp->getPosY() - m_hit_box.height;
 
-						setStat(Stat::onSolid);
-						speed_y = 0;
-					}
-					if (speed_y < 0) {
-						m_hit_box.top = _lhs->getPosY() + m_hit_box.height;
+							speed_y = 0;
 
-						speed_y = 0;
+							setStat(Stat::onSolidAbove);
+						}
+
 					}
 				}
 
 			}
 		}
-		else if (_lhs->getType() == Type::SolidAbove) {
-
-			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				if (_dir == Direction::Vertical) {
-
-					if (speed_y > 0 && std::fabs(_lhs->getPosY() - (m_hit_box.top + m_hit_box.height)) < 1) {
-						m_hit_box.top = _lhs->getPosY() - m_hit_box.height;
-
-						speed_y = 0;
-
-						setStat(Stat::onSolidAbove);
-					}
-
-				}
-			}
-
-		}
-		else if (_lhs->getType() == Type::Hero) {
+		else if (_lhs->getType() == Entity::Type::Hero) {
 
 			const gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
 			_hr->getHit(attack(_hr->getHitBox()));
 
 		}
-		else if (_lhs->getType() == Type::HeroBullet || _lhs->getType() == Type::BlueBullet) {
+		else if (_lhs->getType() == Entity::Type::Bullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
 				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
@@ -509,19 +514,20 @@ namespace ezg {
 
 		out << setw(13) << setfill('\t') << "Type" << "Snake" << endl
 			<< setw(12) << "ID" << m_id << endl
-			<< setw(14) << "alive" << m_alive << std::endl
-			<< setw(12) << "Hp" << m_hp << std::endl
-			<< setw(14) << "status" << " " << m_status << std::endl
-			<< setw(16) << "direction" << " " << static_cast<int>(m_direction) << std::endl
-			<< setw(18) << "is gravity " << is_gravity << std::endl
+			<< setw(14) << "alive" << m_alive << endl
+			<< setw(12) << "Hp" << m_hp << endl
+			<< setw(14) << "status" << " " << m_status << endl
+			<< setw(16) << "animation" << static_cast<Entity::Animation>(m_animation.getActive()) << endl
+			<< setw(16) << "direction" << " " << static_cast<int>(m_direction) << endl
+			<< setw(18) << "is gravity " << is_gravity << endl
 			<< setw(17) << "coordinates" << "(" << m_hit_box.left << ", " << m_hit_box.top << ")\n"
 			<< setw(13) << "size" << "  w: " << m_hit_box.width << ", h: " << m_hit_box.height << '\n'
 			<< setw(13) << "speed" << "  (" << countSpeed().x << ", " << countSpeed().y << ")\n"
-			<< setw(18) << "acceleration" << countAccelerationX() << "(def: " << m_accelerationx << ')' << std::endl
+			<< setw(18) << "acceleration" << countAccelerationX() << "(def: " << m_accelerationx << ')' << endl
 			<< setw(13) << "goto" << " (" << m_goto.x << ", " << m_goto.y << ")\n"
-			<< setw(14) << "damage" << m_damage << std::endl
-			<< setw(19) << "vision radius" << countRadius() << "(def: " << m_distance_attack << ')' << std::endl
-			<< "effects:" << std::endl;
+			<< setw(14) << "damage" << m_damage << endl
+			<< setw(19) << "vision radius" << countRadius() << "(def: " << m_distance_attack << ')' << endl
+			<< "effects:" << endl;
 		{   //effects
 			bool is_one = false;
 			for (const auto& eff : m_effects) {

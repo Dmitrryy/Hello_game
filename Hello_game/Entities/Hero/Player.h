@@ -86,23 +86,14 @@ namespace ezg {
 		void setStat    (Stat _new);
 		//
 		void setHp      (float _hp)          noexcept { m_hp = _hp; }
-		//
-		void setPosition(float _x, float _y) noexcept { m_hit_box.left = _x; /**/ m_hit_box.top = _y; }
-		//
-		void setWidth   (float _width)       noexcept { m_hit_box.width = _width;   }
-		void setHeight  (float _height)      noexcept { m_hit_box.height = _height; }
 		//////////////////////////////////////////////////
 
 
 		//////////////////////////////////////////////////
 		//get functions:
-		inline const float getPosX() const noexcept { return m_hit_box.left; }
-		inline const float getPosY() const noexcept { return m_hit_box.top;  }
-		//
 		sf::Vector2f getSpeed() const noexcept { return sf::Vector2f(speed_x, speed_y); }
 		//
 		float getHP() const noexcept { return m_hp; }
-		bool isGravity() const noexcept { return is_gravity; }
 		//
 		inline const Stat getStat() const noexcept { return m_status; }
 		//
@@ -130,12 +121,8 @@ namespace ezg {
 		std::map<Effect::Type, Effect> m_effects;
 		Direction		m_direction;
 
-		//bool			is_gravity;
-
 		float			speed_x;
 		float			speed_y;
-
-		//sf::FloatRect	m_hit_box;
 
 		float			m_hp;
 

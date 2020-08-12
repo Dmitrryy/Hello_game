@@ -2,7 +2,7 @@
 
 #include "Player.h"
 
-
+#include "../Solid/Solid.h"
 #include "../Bullets/Bullets.h"
 #include "../Bots/Mushroom/Mushroom.h"
 #include "../Bots/Bee/Bee.h"
@@ -276,114 +276,79 @@ namespace ezg {
 
         if (m_hit_box.intersects(_entity->getHitBox())) {
 
-            switch (_entity->getType())
-            {
-/////////////////////////////Solid
-            case Type::Solid: {
+            if (_entity->getType() == Entity::Type::Landscape) {
+                gsl::not_null<Landscape*> lndscp = dynamic_cast<Landscape*>(_entity);
 
-                if (_dir == Direction::Horixontal) {
+                if (lndscp->getType() == Landscape::Type::Solid) {
+                    if (_dir == Direction::Horixontal) {
 
-                    if (speed_x > 0) {
-                        m_hit_box.left = _entity->getPosX() - m_hit_box.width;
-                    }
-                    if (speed_x < 0) {
-                        m_hit_box.left = _entity->getPosX() + _entity->getHitBox().width;
-                    }
-                }
-
-                else if (_dir == Direction::Vertical) {
-
-                    if (speed_y > 0) {
-                        m_hit_box.top = _entity->getPosY() - m_hit_box.height;
-
-                        setStat(Stat::onSolid);
-                        speed_y = 0;
-                    }
-                    if (speed_y < 0) {
-                        m_hit_box.top = _entity->getPosY() + m_hit_box.height;
-
-                        speed_y = 0;
-                    }
-                }
-
-
-                break;
-            } // case Solid
-
-
-/////////////////////////////SolidAbove
-            case Type::SolidAbove: {
-
-                if (_dir == Direction::Vertical) {
-
-                    if (speed_y > 0 && 
-                        (std::fabs(_entity->getPosY() - (m_hit_box.top + m_hit_box.height)) < 1.5f) || speed_y > 100.f) 
-                    {
-                        m_hit_box.top = _entity->getPosY() - m_hit_box.height;
-
-                        speed_y = 0;
-
-                        setStat(Stat::onSolidAbove);
+                        if (speed_x > 0) {
+                            m_hit_box.left = _entity->getPosX() - m_hit_box.width;
+                        }
+                        if (speed_x < 0) {
+                            m_hit_box.left = _entity->getPosX() + _entity->getHitBox().width;
+                        }
                     }
 
-                }
-                break;
-            } // case SolidAbove
-                
-
-/////////////////////////////Stairs
-            case Type::Stairs: {
-
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                    setStat(Stat::onStairs);
-                }
-
-                if (m_status == Stat::onStairs) {
-
-                    const float center_x = m_hit_box.left + m_hit_box.width / 2;
-                    const float center_y = m_hit_box.top + m_hit_box.height / 2;
-
-                    if (!_entity->getHitBox().contains(center_x, center_y)) {
-                        setStat(Stat::InAir);
-                    }
                     else if (_dir == Direction::Vertical) {
-                        speed_y = 0;
+
+                        if (speed_y > 0) {
+                            m_hit_box.top = _entity->getPosY() - m_hit_box.height;
+
+                            setStat(Stat::onSolid);
+                            speed_y = 0;
+                        }
+                        if (speed_y < 0) {
+                            m_hit_box.top = _entity->getPosY() + m_hit_box.height;
+
+                            speed_y = 0;
+                        }
                     }
                 }
-                break;
-            } // case Stairs
+                else if (lndscp->getType() == Landscape::Type::SolidAbove) {
+                    if (_dir == Direction::Vertical) {
 
+                        if (speed_y > 0 &&
+                            (std::fabs(_entity->getPosY() - (m_hit_box.top + m_hit_box.height)) < 1.5f) || speed_y > 100.f)
+                        {
+                            m_hit_box.top = _entity->getPosY() - m_hit_box.height;
 
-/////////////////////////////Needle
-            //case EntityType::Needle: 
-            //{
-            //    //is it safe?!?
-            //    const gsl::not_null<Needle*> bl = dynamic_cast<Needle*>(_entity);
-            //    getHit(bl->getDamage());
-            //    break; // case Needle
+                            speed_y = 0;
 
-            //}
-/////////////////////////////RedBullet
-            case Type::RedBullet:
-            case Type::BlueBullet: 
-            {
-                //is it safe?!?
+                            setStat(Stat::onSolidAbove);
+                        }
+
+                    }
+                }
+                else if (lndscp->getType() == Landscape::Type::Stairs) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                        setStat(Stat::onStairs);
+                    }
+
+                    if (m_status == Stat::onStairs) {
+
+                        const float center_x = m_hit_box.left + m_hit_box.width / 2;
+                        const float center_y = m_hit_box.top + m_hit_box.height / 2;
+
+                        if (!_entity->getHitBox().contains(center_x, center_y)) {
+                            setStat(Stat::InAir);
+                        }
+                        else if (_dir == Direction::Vertical) {
+                            speed_y = 0;
+                        }
+                    }
+                }
+            }
+            else if (_entity->getType() == Entity::Type::Bullet) {
                 const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_entity);
                 getHit(bl->getHit());
-                break;
-            
-            }
-
-
-            default:
-                break;
             }
            
         }
 
         return result;
 
-    } // Hero::colision
+    }
 
 
     void Hero::restart() {
@@ -427,6 +392,7 @@ namespace ezg {
         out << setw(13) << setfill('\t') << "Type" << "Hero" << endl
             << setw(12) << "Hp" << m_hp << endl
             << setw(14) << "status" << "  " << m_status << endl
+            << setw(16) << "animation" << static_cast<Entity::Animation>(m_animation.getActive()) << std::endl
             << setw(18) << "is gravity " << is_gravity << endl
             << setw(17) << "coordinates" << "(" << m_hit_box.left << ", " << m_hit_box.top << ")\n"
             << setw(13) << "size" << "  w: " << m_hit_box.width << ", h: " << m_hit_box.height << '\n'

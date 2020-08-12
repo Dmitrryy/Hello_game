@@ -12,7 +12,7 @@ namespace ezg {
 		, m_direction(Direction::Right)
 		, m_damage(20)
 		, m_time(0.f)
-		, speed(1.f)
+		, m_speed(1.f)
 		, m_time_effect(0.f)
 		, m_hp(50)
 		, m_area_attack(_area)
@@ -68,12 +68,12 @@ namespace ezg {
 	}
 
 
-	std::unique_ptr<Entity> Mushroom::colision(Entity* _lhs, Direction _dir) /*final override*/ {
+	std::unique_ptr<Entity> Mushroom::colision(Entity* _lhs, Direction _dir) /*override*/ {
 
 		if (_lhs == nullptr) { return nullptr; }
 		std::unique_ptr<Entity> result = nullptr;
 
-		if (_lhs->getType() == Type::HeroBullet || _lhs->getType() == Type::BlueBullet) {
+		if (_lhs->getType() == Entity::Type::Bullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
 				const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
@@ -239,7 +239,7 @@ namespace ezg {
 			<< setw(14) << "damage" << m_damage << std::endl
 			<< setw(13) << "area" << "  x:" << m_area_attack.left << ", y:" << m_area_attack.top
 			<< "w:" << m_area_attack.width << ", h:" << m_area_attack.height << std::endl
-			<< setw(16) << "animation" << m_animation.getActive() << std::endl
+			<< setw(16) << "animation" << static_cast<Entity::Animation>(m_animation.getActive()) << std::endl
 			<< "effects:" << std::endl;
 		{   //effects
 			bool is_one = false;

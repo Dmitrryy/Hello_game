@@ -76,6 +76,9 @@ namespace ezg {
 		void upPosition(float time, Direction _dir) noexcept override;
 		/////////////////////////////////////////////////////////
 
+		void setRadius(float _rad) noexcept { m_radius = _rad; }
+		void setHP(float _hp) noexcept { m_hp = _hp; }
+		void setDamage(float _damage) noexcept { m_damage = _damage; }
 
 
 		void setDirection(Direction _dir) noexcept { m_direction = _dir; }

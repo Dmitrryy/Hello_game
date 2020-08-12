@@ -41,7 +41,9 @@ namespace ezg {
 
 
 		void setStat(Stat _new);
-
+		void setRadius(float _rad) noexcept { m_distance_attack = _rad; }
+		void setHP(float _hp) noexcept { m_hp = _hp; }
+		void setDamage(float _damage) noexcept { m_damage = _damage; }
 
 		void setEffect(const Effect& _new_effect);
 

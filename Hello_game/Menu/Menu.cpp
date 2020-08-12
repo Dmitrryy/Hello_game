@@ -59,6 +59,10 @@ namespace menu {
 		, m_stat(Button::Stat::Default)
 		, m_pos_Txt(0.0, 0.0)
 		, activeTx(false)
+		, m_hl_script([]() noexcept {})
+		, m_unhl_script([]() noexcept {})
+		, m_press_script([]() noexcept {})
+		, m_repress_script([]() noexcept {})
 	{
 
 	}
@@ -80,10 +84,6 @@ namespace menu {
 
 		const sf::Vector2f txt_pos(m_rec.left + m_rec.width * m_pos_Txt.x, m_rec.top + m_rec.height * m_pos_Txt.y);
 
-
-
-			
-
 		sf::Sprite* tmp_sp  = &m_def_BG;
 		sf::Text*   tmp_txt = &m_defTxt;
 		switch (m_stat)
@@ -92,18 +92,15 @@ namespace menu {
 			//nop
 			break;
 
-
 		case Button::Stat::HighLight:
 			tmp_sp  = &m_highlighting_BG;
 			tmp_txt = &m_highlightingTxt;
 			break;
 
-
 		case Button::Stat::Pressed:
 			tmp_sp  = &m_pressed_BG;
 			tmp_txt = &m_pressedTxt;
 			break;
-
 
 		default:
 			assert(0);
@@ -116,7 +113,6 @@ namespace menu {
 			tmp_sp->setScale(m_rec.width / tmp_sp->getTextureRect().width, m_rec.height / tmp_sp->getTextureRect().height);
 			_target.draw(*tmp_sp);
 		}
-		//printf("%f\n", tmp_txt->getScale().y);
 		tmp_txt->setPosition(txt_pos);
 		tmp_txt->setOrigin(tmp_txt->getGlobalBounds().width / 2.f + tmp_txt->getLocalBounds().left,
 			tmp_txt->getGlobalBounds().height / 2.f + tmp_txt->getLocalBounds().top);
@@ -131,10 +127,65 @@ namespace menu {
 	}
 
 
-	void Button::setString(const std::string& _str) {
-		m_defTxt.setString(_str);
-		m_highlightingTxt.setString(_str);
-		m_pressedTxt.setString(_str);
+	void Button::setScript(Button::Script _type, std::function<void() noexcept> _script) {
+		switch (_type)
+		{
+		case Button::Script::HighLight:
+			m_hl_script = _script;
+			break;
+
+		case Button::Script::UnHightlight:
+			m_unhl_script = _script;
+			break;
+
+		case Button::Script::Pressed:
+			m_press_script = _script;
+			break;
+
+		case Button::Script::Released:
+			m_repress_script = _script;
+			break;
+		}
+	}
+
+
+	void Button::setText(const sf::Text& _txt, Button::Stat _stat /*= Button::Stat::Default*/) {
+		switch (_stat)
+		{
+		case Button::Stat::Default:
+			m_defTxt = _txt;
+			m_highlightingTxt = _txt;
+			m_pressedTxt = _txt;
+			break;
+
+		case Button::Stat::HighLight:
+			m_highlightingTxt = _txt;
+			break;
+
+		case Button::Stat::Pressed:
+			m_pressedTxt = _txt;
+			break;
+		}
+	}
+
+
+	void Button::setString(const std::string& _str, Button::Stat stat /*= Button::Stat::Default*/) {
+		switch (stat)
+		{
+		case Button::Stat::Default:
+			m_defTxt.setString(_str);
+			m_highlightingTxt.setString(_str);
+			m_pressedTxt.setString(_str);
+			break;
+
+		case Button::Stat::HighLight:
+			m_highlightingTxt.setString(_str);
+			break;
+
+		case Button::Stat::Pressed:
+			m_pressedTxt.setString(_str);
+			break;
+		}
 	}
 
 
@@ -150,7 +201,25 @@ namespace menu {
 		m_highlighting_BG.setTexture(_new_tx);
 		m_pressed_BG.setTexture(_new_tx);
 	}
+	void Button::setTextureRect(sf::IntRect _rec, Button::Stat stat /*= Button::Stat::Default*/) {
+		activeTx = true;
+		switch (stat)
+		{
+		case Button::Stat::Default:
+			m_def_BG.setTextureRect(_rec);
+			m_highlighting_BG.setTextureRect(_rec);
+			m_pressed_BG.setTextureRect(_rec);
+			break;
 
+		case Button::Stat::HighLight:
+			m_highlighting_BG.setTextureRect(_rec);
+			break;
+
+		case Button::Stat::Pressed:
+			m_pressed_BG.setTextureRect(_rec);
+			break;
+		}
+	}
 
 
 	////////////////////////////////////Menu//////////////////////////////////////////
@@ -158,8 +227,8 @@ namespace menu {
 	Menu::Menu() noexcept
 		: m_def_size(25)
 		, m_def_color(sf::Color::White)
-		, m_highlighted_button(-1)
-		, m_pressed_button(-1)
+		//, m_highlighted_button(-1)
+		//, m_pressed_button(-1)
 	{
 
 	}
@@ -168,26 +237,10 @@ namespace menu {
 	void Menu::draw(sf::RenderTarget& _target) {
 
 		for (auto& item : m_other_items) {
-			//printf("%f %f %f %f\n", item->getRect().left, item->getRect().top, item->getRect().width, item->getRect().height);
 			item->draw(_target);
 		}
 
 		for (auto& button : m_buttons) {
-
-			Button* but = dynamic_cast<Button*>(button.second);
-			if (button.first == m_pressed_button) {
-				//hover button state
-				but->setStat(Button::Stat::Pressed);
-			}
-			else if (button.first == m_highlighted_button) {
-				//button state when pressed
-				but->setStat(Button::Stat::HighLight);
-			}
-			else {
-				//button default state
-				but->setStat(Button::Stat::Default);
-			}
-
 			button.second->draw(_target);
 		}
 
@@ -197,8 +250,7 @@ namespace menu {
 
 	void Menu::addButton(int _id, const Button& _button) {
 
-		Button* res = new Button();
-		*res = _button;
+		Button* res = new Button(_button);
 		res->setFont(m_font);
 		res->setTexture(m_texture);
 
@@ -226,7 +278,10 @@ namespace menu {
 		}
 	}
 
-
+	bool Menu::checkEvent(const sf::Event& _event, const sf::RenderWindow& _window) {
+		int id;
+		return checkPressing(_event, _window, id);
+	}
 	bool Menu::checkPressing(const sf::Event& _event, const sf::RenderWindow& _window, int& _id_button) {
 
 		_id_button = 0;
@@ -242,10 +297,11 @@ namespace menu {
 					if (button.second->getRect().contains(world_pos)) {
 						res = true;
 						_id_button = button.first;
-						
+
+						button.second->release();
 					}
 				}
-				m_pressed_button = -1;
+				//m_pressed_button = -1;
 			}
 
 		}
@@ -254,19 +310,20 @@ namespace menu {
 			if (_event.mouseButton.button == sf::Mouse::Left) {
 				const sf::Vector2f world_pos = _window.mapPixelToCoords(sf::Vector2i(_event.mouseButton.x, _event.mouseButton.y));
 
-				bool stat = false;
+				//bool stat = false;
 				for (auto& button : m_buttons) {
 
 					if (button.second->getRect().contains(world_pos)) {
 						//button state when pressed
-						m_pressed_button = button.first;
-						stat = true;
+						button.second->press();
+						//m_pressed_button = button.first;
+						//stat = true;
 					}
 
 				}
-				if (!stat) {
-					m_pressed_button = -1;
-				}
+				//if (!stat) {
+					//m_pressed_button = -1;
+				//}
 			}
 
 		}
@@ -274,82 +331,86 @@ namespace menu {
 
 			const sf::Vector2f world_pos = _window.mapPixelToCoords(sf::Vector2i(_event.mouseMove.x, _event.mouseMove.y));
 
-			bool stat = false;
+			//bool stat = false;
 			for (auto& button : m_buttons) {
 
 				if (button.second->getRect().contains(world_pos)) {
 					//hover button state
-					m_highlighted_button = button.first;
-					stat = true;
+					button.second->hightlight();
+					//m_highlighted_button = button.first;
+					//stat = true;
+				}
+				else {
+					button.second->unHightlight();
 				}
 
 			}
-			if (!stat) {
-				m_highlighted_button = -1;
-			}
+			//if (!stat) {
+			//	m_highlighted_button = -1;
+			//}
 			
 		}
-		else if (_event.type == sf::Event::KeyPressed) {
+		//else if (_event.type == sf::Event::KeyPressed) {
 
-			if (_event.key.code == sf::Keyboard::Enter && m_highlighted_button != -1) {
-				res = true;
-				_id_button = m_highlighted_button;
-			}
-			else if (_event.key.code == sf::Keyboard::W || _event.key.code == sf::Keyboard::Up) {
-				if (m_highlighted_button == -1) {
-					auto _but = m_buttons.begin();
+		//	if (_event.key.code == sf::Keyboard::Enter && m_highlighted_button != -1) {
+		//		res = true;
+		//		_id_button = m_highlighted_button;
+		//	}
+		//	else if (_event.key.code == sf::Keyboard::W || _event.key.code == sf::Keyboard::Up) {
+		//		if (m_highlighted_button == -1) {
+		//			auto _but = m_buttons.begin();
 
-					if (_but != m_buttons.end()) {
-						m_highlighted_button = _but->first;
-					}
+		//			if (_but != m_buttons.end()) {
+		//				m_highlighted_button = _but->first;
+		//			}
 
-				}
-				else {
-					auto _but = m_buttons.find(m_highlighted_button);
+		//		}
+		//		else {
+		//			auto _but = m_buttons.find(m_highlighted_button);
 
-					//it is assumed that the menu can be without buttons and therefore a check is required
-					if (_but != m_buttons.end()) {
-						if (_but != m_buttons.begin()) {
-							_but--;
-							m_highlighted_button = _but->first;
-						}
-						else {
-							auto it = m_buttons.end();
-							it--;
-							m_highlighted_button = it->first;
-						}
-					}
+		//			//it is assumed that the menu can be without buttons and therefore a check is required
+		//			if (_but != m_buttons.end()) {
+		//				if (_but != m_buttons.begin()) {
+		//					_but--;
+		//					m_highlighted_button = _but->first;
+		//				}
+		//				else {
+		//					auto it = m_buttons.end();
+		//					it--;
+		//					m_highlighted_button = it->first;
+		//				}
+		//			}
 
-				}
-			}
-			else if (_event.key.code == sf::Keyboard::S || _event.key.code == sf::Keyboard::Down) {
-				if (m_highlighted_button == -1) {
-					auto _but = m_buttons.begin();
+		//		}
+		//	}
+		//	else if (_event.key.code == sf::Keyboard::S || _event.key.code == sf::Keyboard::Down) {
+		//		if (m_highlighted_button == -1) {
+		//			auto _but = m_buttons.begin();
 
-					if (_but != m_buttons.end()) {
-						m_highlighted_button = _but->first;
-					}
+		//			if (_but != m_buttons.end()) {
+		//				m_highlighted_button = _but->first;
+		//			}
 
-				}
-				else {
-					auto _but = m_buttons.find(m_highlighted_button);
+		//		}
+		//		else {
+		//			auto _but = m_buttons.find(m_highlighted_button);
 
-					//it is assumed that the menu can be without buttons and therefore a check is required
-					if (_but != m_buttons.end()) {
-						_but++;
-						if (_but != m_buttons.end()) {
-							m_highlighted_button = _but->first;
-						}
-						else {
-							auto it = m_buttons.begin();
-							m_highlighted_button = it->first;
-						}
-					}
+		//			//it is assumed that the menu can be without buttons and therefore a check is required
+		//			if (_but != m_buttons.end()) {
+		//				_but++;
+		//				if (_but != m_buttons.end()) {
+		//					m_highlighted_button = _but->first;
+		//				}
+		//				else {
+		//					auto it = m_buttons.begin();
+		//					m_highlighted_button = it->first;
+		//				}
+		//			}
 
-				}
+		//		}
 
-			}
-		}
+		//	}
+		//}
 
 		return res;
 	}
@@ -402,14 +463,21 @@ namespace menu {
 		}
 	}
 
-
+	bool MenuManager::checkEvent(const sf::Event& _event, const sf::RenderWindow& _window) {
+		bool res = false;
+		if (is_active) {
+			res = m_menus.at(m_active).checkEvent(_event, _window);
+		}
+		else {
+			assert(0);
+		}
+		return res;
+	}
 	bool MenuManager::checkPressing(const sf::Event& _event, const sf::RenderWindow& _window, int& _id_button) {
 
 		bool res = false;
 		if (is_active) {
-
 			res = m_menus.at(m_active).checkPressing(_event, _window, _id_button);
-
 		}
 		else {
 			assert(0);

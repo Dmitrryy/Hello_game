@@ -13,7 +13,7 @@
 
 namespace ezg {
 
-    NodeGame::NodeGame() noexcept
+    NodeGame::NodeGame()
         : m_map()
         , m_hero()
         , m_menus()
@@ -24,7 +24,7 @@ namespace ezg {
     {
 
         _initialize_();
-        //m_window.setFramerateLimit(100);
+        m_window.setFramerateLimit(100);
 
     }
     NodeGame::~NodeGame()
@@ -124,10 +124,9 @@ namespace ezg {
                 menu::Button _but;
                 _but.setSize({ 0.05f, 0.03f });
 
-                _but.texture(true);
-                _but.setDefTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setHighlTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setPressedTextureRect(sf::IntRect(115, 31, 85, 31));
+                _but.setTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setTextureRect(sf::IntRect(115, 0, 85, 31), menu::Button::Stat::HighLight);
+                _but.setTextureRect(sf::IntRect(115, 31, 85, 31), menu::Button::Stat::Pressed);
                 _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
 
                 tmp_txt.setScale(0.15f, 0.15f);
@@ -136,7 +135,7 @@ namespace ezg {
 
                 {//button to Main(pressed)
                     auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setDefTextureRect(sf::IntRect(115, 31, 85, 31));
+                    _but1->setTextureRect(sf::IntRect(115, 31, 85, 31));
                     _but1->setPosition({ 0.025f, 0.015f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("main");
@@ -147,6 +146,9 @@ namespace ezg {
                     _but1->setPosition({ 0.075f, 0.015f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("Hero");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        cnsl->activate(ConsoleType::Hero);
+                        });
                     m_debug_cnsl.atMenu(ConsoleType::Main).addButton(ConsoleButton::toHero, std::move(_but1));
                 }
                 {//button to Entities
@@ -154,6 +156,9 @@ namespace ezg {
                     _but1->setPosition({ 0.125f, 0.015f });
                     _but1->setPositionTxt({ 0.17f, 0.2f });
                     _but1->setString("entities");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        cnsl->activate(ConsoleType::Entities);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Main).addButton(ConsoleButton::toEntities, std::move(_but1));
                 }
             }
@@ -188,10 +193,9 @@ namespace ezg {
                 menu::Button _but;
                 _but.setSize({ 0.05f, 0.03f });
 
-                _but.texture(true);
-                _but.setDefTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setHighlTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setPressedTextureRect(sf::IntRect(115, 31, 85, 31));
+                _but.setTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setTextureRect(sf::IntRect(115, 0, 85, 31), menu::Button::Stat::HighLight);
+                _but.setTextureRect(sf::IntRect(115, 31, 85, 31), menu::Button::Stat::Pressed);
                 _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
 
                 tmp_txt.setScale(0.15f, 0.15f);
@@ -203,11 +207,14 @@ namespace ezg {
                     _but1->setPosition({ 0.025f, 0.015f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("main");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        cnsl->activate(ConsoleType::Main);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Hero).addButton(ConsoleButton::toMain, std::move(_but1));
                 }
                 {//button to Hero(pressed)
                     auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setDefTextureRect(sf::IntRect(115, 31, 85, 31));
+                    _but1->setTextureRect(sf::IntRect(115, 31, 85, 31));
                     _but1->setPosition({ 0.075f, 0.015f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("Hero");
@@ -218,6 +225,9 @@ namespace ezg {
                     _but1->setPosition({ 0.125f, 0.015f });
                     _but1->setPositionTxt({ 0.17f, 0.2f });
                     _but1->setString("entities");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        cnsl->activate(ConsoleType::Entities);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Hero).addButton(ConsoleButton::toEntities, std::move(_but1));
                 }
 
@@ -257,10 +267,9 @@ namespace ezg {
                 menu::Button _but;
                 _but.setSize({ 0.05f, 0.03f });
 
-                _but.texture(true);
-                _but.setDefTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setHighlTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setPressedTextureRect(sf::IntRect(115, 31, 85, 31));
+                _but.setTextureRect(sf::IntRect(115, 0, 85, 31));
+                _but.setTextureRect(sf::IntRect(115, 0, 85, 31), menu::Button::Stat::HighLight);
+                _but.setTextureRect(sf::IntRect(115, 31, 85, 31), menu::Button::Stat::Pressed);
                 _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
 
                 tmp_txt.setScale(0.15f, 0.15f);
@@ -272,6 +281,9 @@ namespace ezg {
                     _but1->setPosition({ 0.025f, 0.015f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("main");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        cnsl->activate(ConsoleType::Main);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::toMain, std::move(_but1));
                 }
                 {//button to Hero
@@ -279,11 +291,14 @@ namespace ezg {
                     _but1->setPosition({ 0.075f, 0.015f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("Hero");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        cnsl->activate(ConsoleType::Hero);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::toHero, std::move(_but1));
                 }
                 {//button to Entities(pressed)
                     auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setDefTextureRect(sf::IntRect(115, 31, 85, 31));
+                    _but1->setTextureRect(sf::IntRect(115, 31, 85, 31));
                     _but1->setPosition({ 0.125f, 0.015f });
                     _but1->setPositionTxt({ 0.17f, 0.2f });
                     _but1->setString("entities");
@@ -294,6 +309,10 @@ namespace ezg {
                     _but1->setPosition({ 0.225f, 0.685f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("next");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
+                        id_entity->set(id_entity->get() + 1);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::Next, std::move(_but1));
                 }
                 {
@@ -301,6 +320,10 @@ namespace ezg {
                     _but1->setPosition({ 0.175f, 0.685f });
                     _but1->setPositionTxt({ 0.3f, 0.3f });
                     _but1->setString("pref");
+                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
+                        const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
+                        id_entity->set(id_entity->get() - 1);
+                    });
                     m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::Pref, std::move(_but1));
                 }
             }
@@ -310,8 +333,6 @@ namespace ezg {
     }
 
     void NodeGame::_addMainMenu_() {
-
-
         m_menus.create(TipeMenu::Main);
 
         if (!m_menus.atMenu(TipeMenu::Main).setTexture(MENU_BACKGROUND1_FNAME)) {
@@ -330,18 +351,25 @@ namespace ezg {
         sf::Text _pr_txt = _txt;
         _pr_txt.setFillColor(sf::Color::Black);
 
-        _but.setDefText(_txt);
-        _but.setHighlightingText(_hl_txt);
-        _but.setPressedText(_pr_txt);
+
+        _but.setText(_txt);
+        _but.setText(_hl_txt, menu::Button::Stat::HighLight);
+        _but.setText(_pr_txt, menu::Button::Stat::Pressed);
         _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
 
 
         _but.setString("Game");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::Game);
+            });
         _but.setPosition({ 0.65f, 0.46f });
         m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toGame, _but);
 
 
         _but.setString("Exit");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::Exit);
+            });
         _but.setPosition({ 0.65f, 0.56f });
         m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toExit, _but);
 
@@ -372,21 +400,30 @@ namespace ezg {
         sf::Text _pr_txt = _txt;
         _pr_txt.setFillColor(sf::Color::Black);
 
-        _but.setDefText(_txt);
-        _but.setHighlightingText(_hl_txt);
-        _but.setPressedText(_pr_txt);
+        _but.setText(_txt);
+        _but.setText(_hl_txt, menu::Button::Stat::HighLight);
+        _but.setText(_pr_txt, menu::Button::Stat::Pressed);
         _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
 
 
         _but.setString("Continue");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::Game);
+            });
         _but.setPosition({ 0.8f, 0.2f });
         m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Continue, _but);
 
         _but.setString("Restart");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::Restart);
+            });
         _but.setPosition({ 0.8f, 0.3f });
         m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Restart, _but);
 
         _but.setString("Menu");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::MainMenu);
+            });
         _but.setPosition({ 0.8f, 0.4f });
         m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::toMainMenu, _but);
 
@@ -416,16 +453,22 @@ namespace ezg {
         sf::Text _pr_txt = _txt;
         _pr_txt.setFillColor(sf::Color::Black);
 
-        _but.setDefText(_txt);
-        _but.setHighlightingText(_hl_txt);
-        _but.setPressedText(_pr_txt);
+        _but.setText(_txt);
+        _but.setText(_hl_txt, menu::Button::Stat::HighLight);
+        _but.setText(_pr_txt, menu::Button::Stat::Pressed);
         _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
 
         _but.setString("Restart");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::Restart);
+            });
         _but.setPosition({ 0.5f, 0.55f });
         m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, _but);
 
         _but.setString("Menu");
+        _but.setScript(menu::Button::Script::Released, [this]() {
+            this->changeMood(GameMood::MainMenu);
+            });
         _but.setPosition({ 0.5f, 0.65f });
         m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::toMainMenu, _but);
 
@@ -515,9 +558,24 @@ namespace ezg {
 
 
         tinyxml2::XMLElement* mapXML = lvl.FirstChildElement("map");
-
         if (mapXML == nullptr) {
             throw std::invalid_argument("not found a 'map' in XML file");
+        }
+
+        tinyxml2::XMLElement* pr = mapXML->FirstChildElement("properties");
+        if (pr != nullptr) {
+            pr = pr->FirstChildElement("property");
+            while (pr != nullptr) {
+
+                if (0 == std::strcmp(pr->Attribute("name"), "view spawn(x)")) {
+                    m_view.setCenter(pr->Int64Attribute("value"), m_view.getCenter().y);
+                }
+                else if (0 == std::strcmp(pr->Attribute("name"), "view spawn(y)")) {
+                    m_view.setCenter(m_view.getCenter().x, pr->Int64Attribute("value"));
+                }
+
+                pr = pr->NextSiblingElement();
+            }
         }
 
         {   //fix the card size (in tiles)
@@ -578,7 +636,9 @@ namespace ezg {
 
                 while (obj != nullptr) {
 
-                    //const int64_t id = obj->Int64Attribute("id");
+                    //addObject(Entity::loadFromXML(obj));
+
+                    const int64_t id = obj->Int64Attribute("id");
                     const int64_t x = obj->Int64Attribute("x");
                     const int64_t y = obj->Int64Attribute("y");
 
@@ -590,21 +650,22 @@ namespace ezg {
                         std::cout << "unknown tipe object" << std::endl;
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "solid")) {
-
-                        addObject(std::move(std::make_unique <Solid>(x, y, width, height)));
+                        std::unique_ptr<Entity> res = std::move(std::make_unique <Solid>(x, y, width, height));
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "solidabove")) {
-
-                        addObject(std::move(std::make_unique <SolidAbove>(x, y, width, height)));
+                        std::unique_ptr<Entity> res = std::move(std::make_unique <SolidAbove>(x, y, width, height));
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "stairs")) {
-
-                        addObject(std::move(std::make_unique <Stairs>(x, y, width, height)));
+                        std::unique_ptr<Entity> res = std::move(std::make_unique <Stairs>(x, y, width, height));
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "MushroomRed")) {
-
-                        int64_t pos_x = 0;
-                        int64_t pos_y = 0;
+                        std::unique_ptr<MushroomRed> res = std::move(std::make_unique<MushroomRed>(0, 0, sf::IntRect(x, y, width, height), m_enemy_texture));
 
                         tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
                         if (pr != nullptr) {
@@ -612,23 +673,27 @@ namespace ezg {
                             while (pr != nullptr) {
 
                                 if (0 == std::strcmp(pr->Attribute("name"), "spawn_x")) {
-                                    pos_x = pr->Int64Attribute("value");
+                                    res->setPosition(pr->Int64Attribute("value"), res->getPosY());
                                 }
                                 else if (0 == std::strcmp(pr->Attribute("name"), "spawn_y")) {
-                                    pos_y = pr->Int64Attribute("value");
+                                    res->setPosition(res->getPosX(), pr->Int64Attribute("value"));
                                 }
-
+                                else if (0 == std::strcmp(pr->Attribute("name"), "hp")) {
+                                    res->setHP(pr->Int64Attribute("value"));
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "speed")) {
+                                    res->setSpeedFactor(pr->Int64Attribute("value"));
+                                }
                                 pr = pr->NextSiblingElement();
                             }
                         }
 
-                        
-                        addObject(std::move(std::make_unique<MushroomRed>(pos_x, pos_y, sf::IntRect(x, y, width, height), m_enemy_texture)));
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "MushroomBlue")) {
 
-                        int64_t pos_x = 0;
-                        int64_t pos_y = 0;
+                        std::unique_ptr<MushroomBlue> res = std::move(std::make_unique<MushroomBlue>(0, 0, sf::IntRect(x, y, width, height), m_enemy_texture));
 
                         tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
                         if (pr != nullptr) {
@@ -636,22 +701,27 @@ namespace ezg {
                             while (pr != nullptr) {
 
                                 if (0 == std::strcmp(pr->Attribute("name"), "spawn_x")) {
-                                    pos_x = pr->Int64Attribute("value");
+                                    res->setPosition(pr->Int64Attribute("value"), res->getPosY());
                                 }
                                 else if (0 == std::strcmp(pr->Attribute("name"), "spawn_y")) {
-                                    pos_y = pr->Int64Attribute("value");
+                                    res->setPosition(res->getPosX(), pr->Int64Attribute("value"));
                                 }
-
+                                else if (0 == std::strcmp(pr->Attribute("name"), "hp")) {
+                                    res->setHP(pr->Int64Attribute("value"));
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "speed")) {
+                                    res->setSpeedFactor(pr->Int64Attribute("value"));
+                                }
                                 pr = pr->NextSiblingElement();
                             }
                         }
 
-
-                        addObject(std::move(std::make_unique<MushroomBlue>(pos_x, pos_y, sf::IntRect(x, y, width, height), m_enemy_texture)));
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "bee")) {
-
-                        int64_t radius = 0;
+                        std::unique_ptr<Bee> res = std::move(std::make_unique <Bee>(x, y, sf::IntRect(x, y, width, height),
+                            0, m_enemy_texture));
 
                         tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
                         if (pr != nullptr) {
@@ -659,19 +729,24 @@ namespace ezg {
                             while (pr != nullptr) {
 
                                 if (0 == std::strcmp(pr->Attribute("name"), "radius")) {
-                                    radius = pr->Int64Attribute("value");
+                                    res->setRadius(pr->Int64Attribute("value"));
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "hp")) {
+                                    res->setHP(pr->Int64Attribute("value"));
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "damage")) {
+                                    res->setDamage(pr->Int64Attribute("value"));
                                 }
 
                                 pr = pr->NextSiblingElement();
                             }
                         }
 
-                        addObject(std::move(std::make_unique <Bee>(x, y, sf::IntRect(x, y, width, height), 
-                            radius, m_enemy_texture)));
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "snake")) {
-
-                        int64_t radius = 0;
+                        std::unique_ptr<Snake> res = std::move(std::make_unique <Snake>(x, y, 0, m_enemy_texture));
 
                         tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
                         if (pr != nullptr) {
@@ -679,20 +754,40 @@ namespace ezg {
                             while (pr != nullptr) {
 
                                 if (0 == std::strcmp(pr->Attribute("name"), "radius")) {
-                                    radius = pr->Int64Attribute("value");
+                                    res->setRadius(pr->Int64Attribute("value"));
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "hp")) {
+                                    res->setHP(pr->Int64Attribute("value"));
+                                }
+                                else if (0 == std::strcmp(pr->Attribute("name"), "damage")) {
+                                    res->setDamage(pr->Int64Attribute("value"));
                                 }
 
                                 pr = pr->NextSiblingElement();
                             }
                         }
 
-                        addObject(std::move(std::make_unique <Snake>(x, y, radius, m_enemy_texture)));
 
-
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "needle")) {
+                    std::unique_ptr<Needle> res = std::move(std::make_unique <Needle>(x, y, width, height));
 
-                        addObject(std::move(std::make_unique <Needle>(x, y, width, height)));
+                    tinyxml2::XMLElement* pr = obj->FirstChildElement("properties");
+                    if (pr != nullptr) {
+                        pr = pr->FirstChildElement("property");
+                        while (pr != nullptr) {
+
+                            if (0 == std::strcmp(pr->Attribute("name"), "damage")) {
+                                res->setDamage(pr->Int64Attribute("value"));
+                            }
+
+                            pr = pr->NextSiblingElement();
+                        }
+                    }
+                        res->setID(id);
+                        addObject(std::move(res));
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "playerspawn")) {
 
@@ -734,9 +829,8 @@ namespace ezg {
     } // loadLevelXML
 
 
-    void NodeGame::checkEvents() noexcept {
+    void NodeGame::checkEvents() {
 
-        int id = 0;
         sf::Event event;
         while (m_window.pollEvent(event))
         {
@@ -748,55 +842,29 @@ namespace ezg {
                 m_hero.checkEvent(event);
                 switch (event.type)
                 {
-                    
                 case sf::Event::Closed:
                     m_mood = GameMood::Exit;
                     break;
 
-                   
                 case sf::Event::KeyPressed:
                     switch (event.key.code)
                     {
-
                     case sf::Keyboard::Escape:
                         changeMood(GameMood::Pause);
                         break;
-
 
                     case sf::Keyboard::LControl:
                     case sf::Keyboard::RControl:
                         addObject(std::move(m_hero.fire()));
                         break;
-
                     }
                     break; //case sf::Event::KeyPressed:
-
-
-                case sf::Event::KeyReleased:
-
-                    switch (event.key.code) 
-                    {
-
-                    }
-                    break; //case sf::Event::KeyReleased:
                 }
                 break; 
 
-
 ///////////////////////////Pause///////////////////////////////////
             case GameMood::Pause:
-                if (m_menus.checkPressing(event, m_window, id)) {
-                    if (id == MenuButton::Continue) {
-                        changeMood(GameMood::Game);
-                    }
-                    else if (id == MenuButton::Restart) {
-                        m_mood = GameMood::Restart;
-                        changeMood(GameMood::Game);
-                    }
-                    else if (id == MenuButton::toMainMenu) {
-                        changeMood(GameMood::MainMenu);
-                    }
-                }
+                m_menus.checkEvent(event, m_window);
                 switch (event.type)
                 {
                 case sf::Event::KeyPressed:
@@ -805,64 +873,38 @@ namespace ezg {
                     }
                     break;
 
-
                 case sf::Event::Closed:
                     m_mood = GameMood::Exit;
                     break;
                 }
                 break;
-
 
 ///////////////////////////Death///////////////////////////////////
             case GameMood::Death:
-                if (m_menus.checkPressing(event, m_window, id)) {
-                    if (id == MenuButton::Restart) {
-                        m_mood = GameMood::Restart;
-                        changeMood(GameMood::Game);
-                    }
-                    else if (id == MenuButton::toMainMenu) {
-                        changeMood(GameMood::MainMenu);
-                    }
-                }
+                m_menus.checkEvent(event, m_window);
                 switch (event.type)
                 {
-
                 case sf::Event::Closed:
                     m_mood = GameMood::Exit;
                     break;
                 }
                 break;
-
 
 ///////////////////////////MainMenu///////////////////////////////////
             case GameMood::MainMenu:
-                if (m_menus.checkPressing(event, m_window, id)) {
-                    if (id == MenuButton::toGame) {
-                        changeMood(GameMood::Game);
-                    }
-                    else if (id == MenuButton::toExit) {
-                        changeMood(GameMood::Exit);
-                    }
-                }
+                m_menus.checkEvent(event, m_window);
                 switch (event.type)
                 {
-
                 case sf::Event::Closed:
                     m_mood = GameMood::Exit;
                     break;
                 }
-            
                 break;
 
-
-////////////////////////////////////////////////////////////////////////
             default:
-                
                 break;
             }
         }
-
-
     }
 
 
@@ -874,15 +916,7 @@ namespace ezg {
             m_hero.checkKeyBoard();
             break;
 
-        case GameMood::MainMenu:
-        case GameMood::Death   :
-        case GameMood::Pause   :
-
-            //m_menus.checkKeyBoard(m_window);
-
-            break;
         }
-
     }
 
 
@@ -892,8 +926,8 @@ namespace ezg {
         {
         case GameMood::Exit:
             clear();
+            m_mood = _new;
             break;
-
 
         case GameMood::Game:
             if (m_mood != GameMood::Pause) {
@@ -901,29 +935,36 @@ namespace ezg {
                 loadLevelXML(LVL_FNAME);
             }
             m_clock.restart();
+            m_mood = _new;
             break;
 
+        case GameMood::Restart:
+            clear();
+            loadLevelXML(LVL_FNAME);
+            m_clock.restart();
+            m_mood = GameMood::Game;
+            break;
 
         case GameMood::MainMenu:
             clear();
             m_menus.activate(TipeMenu::Main);
+            m_mood = _new;
             break;
-
 
         case GameMood::Pause:
             m_menus.activate(TipeMenu::Pause);
+            m_mood = _new;
             break;
-
 
         case GameMood::Death:
             m_menus.activate(TipeMenu::Death);
+            m_mood = _new;
             break;
 
         default:
             
             break;
         }
-        m_mood = _new;
     }
 
 
@@ -945,24 +986,12 @@ namespace ezg {
     void NodeGame::update() {
 
         m_period = m_clock.restart().asSeconds();
-        //m_period = _time.asSeconds();
 
         updateDbConsole(m_period);
 
         m_period *= GAME_SPEED_CONTROLLER;
         m_time += m_period;
 
-
-
-//************************************************************
-// алгоритм(для каждого элемента):
-//      1. смещаем все элементы по х (устанавливаем on_ground = false т.к. персонаж может упасть)
-//      2. проверяем на взаиможействие с картой
-//      3. смещаем все элементы по у
-//      4. проверяем на взаимодействие с картой
-//      6. устанавливаем спрайт в новую позицию
-// все в цикл с проверкой на dзаимодействие элементов между собой
-//************************************************************
         switch (m_mood) 
         {
         case GameMood::Game:
@@ -971,7 +1000,6 @@ namespace ezg {
 
             upAllPosition(m_period, Direction::Horixontal);
             allColision(Direction::Horixontal);
-
 
             upAllPosition(m_period, Direction::Vertical);
             allColision(Direction::Vertical);
@@ -1047,7 +1075,6 @@ namespace ezg {
 
     void NodeGame::checkEventDbConsole(const sf::Event& _event) {
 
-
         if (_event.type == sf::Event::KeyPressed) {
 
             if (_event.key.code == sf::Keyboard::F1) {
@@ -1056,50 +1083,8 @@ namespace ezg {
             }
 
         }
-
         if (m_cnslIsActive) {
-
-            int id = 0;
-            m_debug_cnsl.isActive(id);
-            if (id == ConsoleType::Main) {
-                if (m_debug_cnsl.checkPressing(_event, m_window, id)) {
-                    if (id == ConsoleButton::toEntities) {
-                        m_debug_cnsl.activate(ConsoleType::Entities);
-                    }
-                    else if (id == ConsoleButton::toHero) {
-                        m_debug_cnsl.activate(ConsoleType::Hero);
-                    }
-                }
-            }
-            else if (id == ConsoleType::Entities) {
-                if (m_debug_cnsl.checkPressing(_event, m_window, id)) {
-                    if (id == ConsoleButton::toMain) {
-                        m_debug_cnsl.activate(ConsoleType::Main);
-                    }
-                    else if (id == ConsoleButton::toHero) {
-                        m_debug_cnsl.activate(ConsoleType::Hero);
-                    }
-                    else if (id == ConsoleButton::Next) {
-                        gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
-                        id_entity->set(id_entity->get() + 1);
-                    }
-                    else if (id == ConsoleButton::Pref) {
-                        gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
-                        id_entity->set(id_entity->get() - 1);
-                    }
-                }
-            }
-            else if (id == ConsoleType::Hero) {
-                if (m_debug_cnsl.checkPressing(_event, m_window, id)) {
-                    if (id == ConsoleButton::toMain) {
-                        m_debug_cnsl.activate(ConsoleType::Main);
-                    }
-                    else if (id == ConsoleButton::toEntities) {
-                        m_debug_cnsl.activate(ConsoleType::Entities);
-                    }
-                }
-            }
-
+            m_debug_cnsl.checkEvent(_event, m_window);
         }
 
     }
@@ -1113,17 +1098,20 @@ namespace ezg {
             m_debug_cnsl.isActive(id);
             if (id == ConsoleType::Main) {
                 menu::Item* txt = m_debug_cnsl.atMenu(ConsoleType::Main).atItem(1);
+                assert(txt != nullptr);
 
                 if (txt->getType() == menu::Item::Type::Text) {
-                    auto ptr_txt = dynamic_cast<menu::Text*>(txt);
+                    gsl::not_null<menu::Text*> ptr_txt = dynamic_cast<menu::Text*>(txt);
 
                     ptr_txt->setText(localDebugString() + '\n' + m_map.debugString());
                 }
                 else { assert(0); }
             }
             else if (id == ConsoleType::Entities) {
-                gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(2));
-                gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
+                const gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(2));
+                const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(
+                    m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
 
                 auto ent = std::find_if(m_entities.cbegin(), m_entities.cend(), [i = id_entity->get()](auto _enttity) {
                     return i == _enttity->getID();
@@ -1138,7 +1126,8 @@ namespace ezg {
                 }
             }
             else if (id == ConsoleType::Hero) {
-                gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(m_debug_cnsl.atMenu(ConsoleType::Hero).atItem(1));
+                const gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(
+                    m_debug_cnsl.atMenu(ConsoleType::Hero).atItem(1));
 
                 txt->setText(m_hero.debugString());
             }

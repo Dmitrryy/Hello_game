@@ -1,6 +1,7 @@
 #pragma once
 
-
+#include <cassert>
+#include <iostream>
 
 #include "../config.h"
 
@@ -11,44 +12,35 @@
 #include "../Menu/Menu.h"
 #include "../TileMap/TileMap.h"
 
-#include <cassert>
-#include <iostream>
 
 namespace ezg {
 
-    enum class GameMood {
-        NotInitialized
-        , Loading
-        , MainMenu
-        , Pause
-        , Restart
-        , Game
-        , Death
-        , Exit
-    };
-
-    std::string enumName(GameMood _en);
-    std::ostream& operator<<(std::ostream& _stream, GameMood _en);
-
-
-    class NodeGame
+    class Game
     {
     public:
 
-        NodeGame            (const NodeGame& _that)      = delete; //not saported
-        NodeGame& operator= (const NodeGame&)            = delete; //not saported
-        NodeGame            (NodeGame&& _that)           = delete; //not saported
-        NodeGame& operator= (NodeGame&&)                 = delete; //not saported
+        enum class IDtexture {
+            e
+        };
+
+        enum class Mood;
+
+        Game            (const Game& _that)      = delete; //not saported
+        Game& operator= (const Game&)            = delete; //not saported
+        Game            (Game&& _that)           = delete; //not saported
+        Game& operator= (Game&&)                 = delete; //not saported
 
 
     public:
 
-        NodeGame();
-        ~NodeGame();
+        Game();
+        ~Game();
 
+
+        void run();
 
         //function of drawing the whole picture
-        void draw   (sf::RenderStates states);
+        void draw   ();
 
 
         //////////////////////////////////////////////////////
@@ -62,20 +54,20 @@ namespace ezg {
 
 
         // updates the coordinates of elements and checks for interaction and etc
-        void update         ();
+        void update         (float _time);
 
 
         inline const float   getPosHeroX () const noexcept { return m_hero.getPosX(); }
         inline const float   getPosHeroY () const noexcept { return m_hero.getPosY(); }
 
 
-        inline const GameMood getMood    () const noexcept { return m_mood; }
+        inline const Mood getMood    () const noexcept { return m_mood; }
 
         
         std::string localDebugString();
 
 
-        void changeMood(GameMood _new);
+        void changeMood(Mood _new);
 
     private:
 
@@ -91,9 +83,6 @@ namespace ezg {
         ////////////////////////////////////////////////////////////////////////
 
 
-
-
-
         void addObject(std::unique_ptr<Entity>&& _elem) { 
             if (_elem != nullptr) {
                 m_entities.push_back(_elem.release());
@@ -103,15 +92,17 @@ namespace ezg {
 
         void clear();
 
-
         void _initialize_();
 
 
-        void _addMainMenu_();
-        void _addPauseMenu_();
-        void _addDeathMenu_();
+        ////////////////////////////////////////////////////////////////////////
+        void _setMainMenu_();
+        void _setPauseMenu_();
+        void _setDeathMenu_();
+        ////////////////////////////////////////////////////////////////////////
 
 
+        ////////////////////////////////////////////////////////////////////////
         enum ConsoleType {
               Main
             , Hero
@@ -126,15 +117,18 @@ namespace ezg {
         };
         void checkEventDbConsole(const sf::Event& _event);
         void updateDbConsole(float _time);
+        void _setDbConsole_();
+        ////////////////////////////////////////////////////////////////////////
 
 
     private:
 
-        GameMood               m_mood;
+        Mood                   m_mood;
 
         sf::Clock              m_clock;
         double                 m_time;
         float                  m_period;
+        size_t                 m_update_VS_render;
 
         sf::View               m_view;
         sf::RenderWindow       m_window;
@@ -145,11 +139,27 @@ namespace ezg {
         std::list < Entity* >  m_entities; // an array with other elements of the game (enemies, bullets, etc.)
 
         menu::MenuManager      m_menus;
+
         menu::MenuManager      m_debug_cnsl;
         bool                   m_cnslIsActive;
+        ////1 - every screen update
+        //size_t                 m_refresh_rate_cnsl;
 
         sf::Texture            m_enemy_texture;
     }; // class NodeGame
 
+
+    enum class Game::Mood {
+        NotInitialized
+        , Loading
+        , MainMenu
+        , Pause
+        , Restart
+        , Game
+        , Death
+        , Exit
+    };
+    std::string enumName(Game::Mood _en);
+    std::ostream& operator<<(std::ostream& _stream, Game::Mood _en);
 
 } //namespace ezg

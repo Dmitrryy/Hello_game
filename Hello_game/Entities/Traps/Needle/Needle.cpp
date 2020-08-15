@@ -19,8 +19,22 @@ namespace ezg {
 
 		if (_lhs->getType() == Type::Hero) {
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
+
+				const float diff_x = _lhs->getPosX() - m_hit_box.left;
+				const float diff_y = _lhs->getPosY() - m_hit_box.top;
+
+
+				float m_corner = std::atan(diff_y / diff_x);
+
+				if (diff_y < 0.f && diff_x < 0.f) {
+					m_corner -= 3.141592;
+				}
+				else if (diff_x < 0.f && diff_y > 0.f) {
+					m_corner = 3.141592 + m_corner;
+				}
+
 				gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
-				_hr->getHit(Hit(getDamage()));
+				_hr->getHit(Hit(m_damage, Effect(Effect::Type::Discarding, m_corner, 100.f, 0.12f)));
 			}
 		}
 

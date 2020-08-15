@@ -63,8 +63,9 @@ namespace ezg {
     }
 
 
-    void Hero::checkEvent(const sf::Event& _event) {
+    std::unique_ptr<Entity> Hero::checkEvent(const sf::Event& _event) {
 
+        std::unique_ptr<Entity> res = nullptr;
         switch (_event.type)
         {
         case sf::Event::KeyPressed:
@@ -82,10 +83,14 @@ namespace ezg {
                     jump();
                 }
             }
+            else if (_event.key.code == sf::Keyboard::LControl || _event.key.code == sf::Keyboard::RControl) {
+                res = fire();
+            }
 
             break;
 
         }
+        return res;
     }
 
 
@@ -137,7 +142,7 @@ namespace ezg {
             if (_hit._damage > 0.f) {
                 m_hp -= _hit._damage;
 
-                speed_y = -80.f;
+                //speed_y = -80.f;
                 setStat(Stat::InAir);
 
                 m_effects[Effect::Type::Wounded]._time_effect = 0.15f;

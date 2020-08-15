@@ -150,7 +150,6 @@ namespace menu {
 			  Default
 			, HighLight
 			, Pressed
-			//, Released
 		};
 		enum class Script {
 			HighLight
@@ -162,7 +161,7 @@ namespace menu {
 
 	public:
 		//////////////////////////////////////////////////////////////////////////////
-		//befoult constructor
+		//defoult constructor
 		//_position - button center position, but not in coordinates (pixels): [0.f, 1.f]
 		//_size - what part of the screen it occupies. also from 0 to 1 (see the picture)
 		//
@@ -187,7 +186,10 @@ namespace menu {
 			}
 		}
 		void unHightlight() {
-			setStat(Button::Stat::Default);
+			if (m_stat != Button::Stat::Default) {
+				setStat(Button::Stat::Default);
+				m_unhl_script();
+			}
 		}
 		void press() {
 			setStat(Button::Stat::Pressed);
@@ -284,8 +286,8 @@ namespace menu {
 		//adds a button.
 		//	_id		- button identifier (key)
 		//  _button - already configured button
-		void addButton(int _id, const Button& _button);
-		void addButton(int _id, std::unique_ptr<Button>&& _bt);
+		void addButton(const Button& _button);
+		void addButton(std::unique_ptr<Button>&& _bt);
 		//
 		void addOtherItem(std::unique_ptr<Item>&& _item) { m_other_items.push_back(_item.release()); }
 		void addImage(std::unique_ptr<Image>&& _im) { _im->setTexture(m_texture); m_other_items.push_back(_im.release()); }
@@ -306,16 +308,16 @@ namespace menu {
 
 		/////////////////////////////////settings/////////////////////////////////////
 		//set text color (default = RGB(255, 255, 255))
-		void setTextColor   (sf::Color _color)  noexcept{ m_def_color	= _color;                  }
+		void setTextColor (sf::Color _color) noexcept { m_def_color	= _color;                  }
 		//set text size  (default = 25)
-		void setTextSize    (int _size)         noexcept{ m_def_size	= _size;                   }
+		void setTextSize  (int _size)        noexcept { m_def_size	= _size;                   }
 		//set font
-		bool setFont        (std::string _fname)        { return m_font.loadFromFile(_fname);      }
-		void setFont        (sf::Font _font)            { m_font = _font; }
+		bool setFont      (std::string _fname)        { return m_font.loadFromFile(_fname);    }
+		void setFont      (sf::Font _font)            { m_font = _font; }
 		//set BackGround for ALL window
-		bool setTexture  (std::string _fname)        { return m_texture.loadFromFile(_fname);}
-		void setTexture  (const sf::Texture& _tx)    { m_texture = _tx;}
-		const sf::Texture& getTexture() noexcept { return m_texture; }
+		bool setTexture   (std::string _fname)        { return m_texture.loadFromFile(_fname);}
+		void setTexture   (const sf::Texture& _tx)    { m_texture = _tx;}
+		const sf::Texture& getTexture() noexcept      { return m_texture; }
 		///////////////////////////////////////////////////////////////////////////////
 
 
@@ -342,13 +344,14 @@ namespace menu {
 	private:
 
 
-		sf::Font				m_font;
-		sf::Texture				m_texture;
-		std::map<int, Button*>	m_buttons;
+		sf::Font                m_font;
+		sf::Texture             m_texture;
+		std::vector<Button*>    m_buttons;
+		size_t                  m_highlighted_button;
 		std::vector<Item*>      m_other_items;
 
-		int						m_def_size;
-		sf::Color				m_def_color;
+		int                     m_def_size;
+		sf::Color               m_def_color;
 
 	}; // class Menu
 
@@ -402,12 +405,12 @@ namespace menu {
 
 	private:
 
-		bool					is_active;
-		int						m_active;
+		bool                 is_active;
+		int                  m_active;
 
-		std::map <int, Menu>	m_menus;
+		std::map <int, Menu> m_menus;
 		
-		sf::Font				m_font;
+		sf::Font             m_font;
 	};
 
 } // namespace menu

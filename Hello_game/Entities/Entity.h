@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "../config.h"
 #include "../Libs/tinyxml2/tinyxml2.h"
 
@@ -98,7 +97,7 @@ namespace ezg {
 
 	protected:
 
-		Type		m_tipe;
+		Type		    m_tipe;
 
 		int             m_id;
 
@@ -107,7 +106,7 @@ namespace ezg {
 
 		sf::FloatRect	m_hit_box;
 	}; // class Entity
-
+	
 
 	struct Entity::Effect {
 

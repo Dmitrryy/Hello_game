@@ -86,7 +86,7 @@ namespace ezg {
 				else if (diff_x < 0.f && diff_y > 0.f) {
 					m_corner = 3.141592 + m_corner;
 				}
-				return Hit{ m_damage, Effect{Effect::Type::Discarding, m_corner, 100.f, 0.15f}, 
+				return Hit{ m_damage, Effect{Effect::Type::Discarding, m_corner, 90.f, 0.15f}, 
 									  Effect{Effect::Type::Poisoning, 5, 10.f, 2.f} };
 			}
 		}

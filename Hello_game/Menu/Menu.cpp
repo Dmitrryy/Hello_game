@@ -107,21 +107,30 @@ namespace menu {
 			break;
 		}
 
+		//sf::RectangleShape _b;
+		//_b.setSize(sf::Vector2f(m_rec.width, m_rec.height));
+		//_b.setPosition(sf::Vector2f(m_rec.left, m_rec.top));
+		//_b.setFillColor(sf::Color::Red);
+		//_target.draw(_b);
+
+		//sf::RectangleShape _t;
+		//_t.setSize(sf::Vector2f(tmp_txt->getGlobalBounds().width, tmp_txt->getGlobalBounds().height));
+		//_t.setPosition(sf::Vector2f(tmp_txt->getGlobalBounds().left, tmp_txt->getGlobalBounds().top));
+		//_t.setFillColor(sf::Color::Green);
+		//_target.draw(_t);
+
+
 		if (activeTx) {
 			tmp_sp->setPosition(bt_pos);
 			tmp_sp->setOrigin(tmp_sp->getTextureRect().width / 2.f, tmp_sp->getTextureRect().height / 2.f);
 			tmp_sp->setScale(m_rec.width / tmp_sp->getTextureRect().width, m_rec.height / tmp_sp->getTextureRect().height);
 			_target.draw(*tmp_sp);
 		}
-		tmp_txt->setPosition(txt_pos);
-		tmp_txt->setOrigin(tmp_txt->getGlobalBounds().width / 2.f + tmp_txt->getLocalBounds().left,
-			tmp_txt->getGlobalBounds().height / 2.f + tmp_txt->getLocalBounds().top);
 
-		//sf::RectangleShape _r;
-		//_r.setSize(sf::Vector2f(m_rec.width, m_rec.height));
-		//_r.setPosition(sf::Vector2f(m_rec.left, m_rec.top));
-		//_r.setFillColor(sf::Color::Red);
-		//_target.draw(_r);
+		tmp_txt->setPosition(txt_pos);
+		//nothing unusual about that... just a fit... scroll on.
+		tmp_txt->setOrigin (tmp_txt->getGlobalBounds().width / 2.f / tmp_txt->getScale().x + tmp_txt->getLocalBounds().left,
+			tmp_txt->getGlobalBounds().height / 2.f / tmp_txt->getScale().y + tmp_txt->getLocalBounds().top);
 
 		_target.draw(*tmp_txt);
 	}
@@ -227,8 +236,7 @@ namespace menu {
 	Menu::Menu() noexcept
 		: m_def_size(25)
 		, m_def_color(sf::Color::White)
-		//, m_highlighted_button(-1)
-		//, m_pressed_button(-1)
+		, m_highlighted_button(-1)
 	{
 
 	}
@@ -241,41 +249,26 @@ namespace menu {
 		}
 
 		for (auto& button : m_buttons) {
-			button.second->draw(_target);
+			button->draw(_target);
 		}
-
-
 	}
 
 
-	void Menu::addButton(int _id, const Button& _button) {
+	void Menu::addButton(const Button& _button) {
 
 		Button* res = new Button(_button);
 		res->setFont(m_font);
 		res->setTexture(m_texture);
 
-		if (m_buttons[_id] == nullptr) {
-			m_buttons[_id] = res;
-		}
-		else {
-			delete m_buttons[_id];
-			m_buttons[_id] = res;
-		}
-
+		m_buttons.push_back(res);
 	}
 
-	void Menu::addButton(int _id, std::unique_ptr<Button>&& _bt) {
+	void Menu::addButton(std::unique_ptr<Button>&& _bt) {
 
 		_bt->setFont(m_font);
 		_bt->setTexture(m_texture);
 
-		if (m_buttons[_id] == nullptr) {
-			m_buttons[_id] = _bt.release();
-		}
-		else {
-			delete m_buttons[_id];
-			m_buttons[_id] = _bt.release();
-		}
+		m_buttons.push_back(_bt.release());
 	}
 
 	bool Menu::checkEvent(const sf::Event& _event, const sf::RenderWindow& _window) {
@@ -294,14 +287,12 @@ namespace menu {
 
 				for (auto button : m_buttons) {
 
-					if (button.second->getRect().contains(world_pos)) {
+					if (button->getRect().contains(world_pos)) {
 						res = true;
-						_id_button = button.first;
-
-						button.second->release();
+						button->release();
+						break;
 					}
 				}
-				//m_pressed_button = -1;
 			}
 
 		}
@@ -313,17 +304,13 @@ namespace menu {
 				//bool stat = false;
 				for (auto& button : m_buttons) {
 
-					if (button.second->getRect().contains(world_pos)) {
+					if (button->getRect().contains(world_pos)) {
 						//button state when pressed
-						button.second->press();
-						//m_pressed_button = button.first;
-						//stat = true;
+						button->press();
+						break;
 					}
 
 				}
-				//if (!stat) {
-					//m_pressed_button = -1;
-				//}
 			}
 
 		}
@@ -331,86 +318,58 @@ namespace menu {
 
 			const sf::Vector2f world_pos = _window.mapPixelToCoords(sf::Vector2i(_event.mouseMove.x, _event.mouseMove.y));
 
-			//bool stat = false;
+			bool stat = false;
+			size_t i = 0;
 			for (auto& button : m_buttons) {
-
-				if (button.second->getRect().contains(world_pos)) {
+				if (!stat && button->getRect().contains(world_pos)) {
 					//hover button state
-					button.second->hightlight();
-					//m_highlighted_button = button.first;
-					//stat = true;
+					button->hightlight();
+					stat = true;
+					m_highlighted_button = i;
 				}
 				else {
-					button.second->unHightlight();
+					button->unHightlight();
 				}
-
+				i++;
 			}
-			//if (!stat) {
-			//	m_highlighted_button = -1;
-			//}
+			if (!stat) {
+				m_highlighted_button = -1;
+			}
 			
 		}
-		//else if (_event.type == sf::Event::KeyPressed) {
+		else if (_event.type == sf::Event::KeyPressed) {
 
-		//	if (_event.key.code == sf::Keyboard::Enter && m_highlighted_button != -1) {
-		//		res = true;
-		//		_id_button = m_highlighted_button;
-		//	}
-		//	else if (_event.key.code == sf::Keyboard::W || _event.key.code == sf::Keyboard::Up) {
-		//		if (m_highlighted_button == -1) {
-		//			auto _but = m_buttons.begin();
-
-		//			if (_but != m_buttons.end()) {
-		//				m_highlighted_button = _but->first;
-		//			}
-
-		//		}
-		//		else {
-		//			auto _but = m_buttons.find(m_highlighted_button);
-
-		//			//it is assumed that the menu can be without buttons and therefore a check is required
-		//			if (_but != m_buttons.end()) {
-		//				if (_but != m_buttons.begin()) {
-		//					_but--;
-		//					m_highlighted_button = _but->first;
-		//				}
-		//				else {
-		//					auto it = m_buttons.end();
-		//					it--;
-		//					m_highlighted_button = it->first;
-		//				}
-		//			}
-
-		//		}
-		//	}
-		//	else if (_event.key.code == sf::Keyboard::S || _event.key.code == sf::Keyboard::Down) {
-		//		if (m_highlighted_button == -1) {
-		//			auto _but = m_buttons.begin();
-
-		//			if (_but != m_buttons.end()) {
-		//				m_highlighted_button = _but->first;
-		//			}
-
-		//		}
-		//		else {
-		//			auto _but = m_buttons.find(m_highlighted_button);
-
-		//			//it is assumed that the menu can be without buttons and therefore a check is required
-		//			if (_but != m_buttons.end()) {
-		//				_but++;
-		//				if (_but != m_buttons.end()) {
-		//					m_highlighted_button = _but->first;
-		//				}
-		//				else {
-		//					auto it = m_buttons.begin();
-		//					m_highlighted_button = it->first;
-		//				}
-		//			}
-
-		//		}
-
-		//	}
-		//}
+			if (_event.key.code == sf::Keyboard::Enter && m_highlighted_button != -1) {
+				m_buttons.at(m_highlighted_button)->release();
+			}
+			else if (_event.key.code == sf::Keyboard::W || _event.key.code == sf::Keyboard::Up) {
+				if (m_buttons.size() > 0) {
+					if (m_highlighted_button == -1) {
+						m_highlighted_button = 0;
+						m_buttons.at(0)->hightlight();
+					}
+					else {
+						m_buttons.at(m_highlighted_button)->unHightlight();
+						m_highlighted_button++;
+						m_highlighted_button = (m_highlighted_button == m_buttons.size()) ? 0 : m_highlighted_button;
+						m_buttons.at(m_highlighted_button)->hightlight();
+					}
+				}
+			}
+			else if (_event.key.code == sf::Keyboard::S || _event.key.code == sf::Keyboard::Down) {
+				if (m_buttons.size() > 0) {
+					if (m_highlighted_button == -1) {
+						m_highlighted_button = m_buttons.size() - 1;
+						m_buttons.at(m_highlighted_button)->hightlight();
+					}
+					else {
+						m_buttons.at(m_highlighted_button)->unHightlight();
+						m_highlighted_button = (m_highlighted_button == 0) ? m_buttons.size() - 1 : m_highlighted_button - 1;
+						m_buttons.at(m_highlighted_button)->hightlight();
+					}
+				}
+			}
+		}
 
 		return res;
 	}

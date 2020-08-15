@@ -23,8 +23,7 @@ namespace ezg {
 		{ /* nop */ }
 
 		//draws a hero texture
-		void draw (sf::RenderTarget& target, sf::RenderStates states) const;
-
+		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 
 		//makes the hero jump ...
 		void jump   ();
@@ -49,7 +48,7 @@ namespace ezg {
 		//hero control
 		void checkKeyBoard();
 		//hero control
-		void checkEvent(const sf::Event& _event);
+		std::unique_ptr<Entity> checkEvent(const sf::Event& _event);
 		//////////////////////////////////////////////////
 
 
@@ -109,7 +108,6 @@ namespace ezg {
 
 
 	private:
-
 
 		bool _effectIsActive_(Effect::Type _eff) const noexcept;
 

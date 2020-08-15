@@ -27,6 +27,7 @@
 ////////////////////////////////settings/////////////////////////////////////
 //game speed controller
 static float GAME_SPEED_CONTROLLER   = 1.f;
+static float FrameTime               = 1.f / 60.f;
 //
 static float acceleration_of_gravity = 350.f;
 //
@@ -41,7 +42,8 @@ static int WINDOW_WIDTH = 16 * 100;
 static int WINDOW_HEIGHT = 9 * 100;
 //
 //font
-#define FONT_FNAME              "Resource/calibri.ttf"
+#define FONT_FNAME              "Resource/19440.ttf"
+#define FONT_FOR_CNSL_FNAME     "Resource/calibri.ttf"
 //#define FONT_DEFAULT_SIZE       50
 #define FONT_DEFAULT_COLOR      sf::Color(255, 255, 255)
 //
@@ -59,7 +61,7 @@ static int WINDOW_HEIGHT = 9 * 100;
 #define MENU_PAUSE_FONT_COLOR       sf::Color(175, 144, 64)
     //main menu
 #define MENU_BACKGROUND1_FNAME      "Resource/Images/menu1.png"
-#define MAIN_MENU_FONT_SIZE         20
+#define MAIN_MENU_FONT_SIZE         60
 #define MAIN_MENU_FONT_COLOR        sf::Color(175, 144, 64)
     //death menu
 #define MENU_BACKGROUND_DEATH_FNAME "Resource/Images/menu_death.png"
@@ -78,7 +80,7 @@ static int WINDOW_HEIGHT = 9 * 100;
 namespace ezg {
 
     
-    class NodeGame;
+    class Game;
 
     class Hero;
 
@@ -97,6 +99,21 @@ namespace ezg {
     class Bee;
     class Snake;
 
+    namespace resource {
+
+        namespace texture {
+
+            enum class ID {
+                Hero
+                , Bots
+                , Landscape
+
+                , MainMenu
+                , PauseMenu
+                , DeathMenu
+            };
+        }
+    }
 
     /////////////////////////////////////////////
     //existing menu pages

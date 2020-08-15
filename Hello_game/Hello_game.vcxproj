@@ -162,6 +162,7 @@
     <ClCompile Include="Libs\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu\Menu.cpp" />
+    <ClCompile Include="NodeGame\initializing menu.cpp" />
     <ClCompile Include="NodeGame\NodeGame.cpp" />
     <ClCompile Include="TileMap\TileMap.cpp" />
   </ItemGroup>
@@ -198,6 +199,7 @@
     <Font Include="Resource\calibri.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="Resource\Levels\lvl1.tmx" />
     <None Include="Resource\Levels\lvl2.tmx" />
     <None Include="Resource\Levels\lvl3_test.tmx" />

@@ -13,21 +13,23 @@
 
 namespace ezg {
 
-    NodeGame::NodeGame()
+    Game::Game()
         : m_map()
         , m_hero()
         , m_menus()
-        , m_mood(GameMood::NotInitialized)
+        , m_mood(Mood::NotInitialized)
         , m_view(sf::FloatRect(0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT))
         , m_window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Hello Game (ezg)")
         , m_cnslIsActive(false)
+        //, m_refresh_rate_cnsl(1)
     {
 
         _initialize_();
-        m_window.setFramerateLimit(100);
+        m_window.setVerticalSyncEnabled(true);
+        //m_window.setFramerateLimit(100);
 
     }
-    NodeGame::~NodeGame()
+    Game::~Game()
     {
 
         for (auto& ent : m_entities) {
@@ -38,7 +40,7 @@ namespace ezg {
     }
 
 
-    void NodeGame::_initialize_() {
+    void Game::_initialize_() {
 
         m_window.setView(m_view);
         m_window.setKeyRepeatEnabled(false);
@@ -76,467 +78,81 @@ namespace ezg {
             m_hero.atAnimation().addFrame(static_cast<int>(Entity::Animation::Idle), sf::IntRect(24, 56, 8, 8), 0.4f);
         }
 
-
         if (!m_enemy_texture.loadFromFile(ENEMY_TEXTURE_FNAME)) {
             assert(0);
         }
 
-
         m_menus.setFont(FONT_FNAME);
 
-        _addMainMenu_();
-        _addPauseMenu_();
-        _addDeathMenu_();
+        _setMainMenu_();
+        _setPauseMenu_();
+        _setDeathMenu_();
 
-        //set Console (MenuManager)
-        {
-            m_debug_cnsl.setFont(FONT_FNAME);
-            
-            //Main page
-            {
-                m_debug_cnsl.create(ConsoleType::Main);
-                m_debug_cnsl.atMenu(ConsoleType::Main).setTexture("Resource/Images/console_db.png");
+        _setDbConsole_();
 
-                //set background
-                {
-                    auto _bg(std::make_unique<menu::Image>());
-                    _bg->setSize(sf::Vector2f(0.4f, 0.7f));
-                    _bg->setTextureRect(sf::IntRect(0, 0, 100, 100));
-                    m_debug_cnsl.atMenu(ConsoleType::Main).addImage(std::move(_bg));
-                }
-
-                //set text
-                sf::Text tmp_txt;
-                tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
-                tmp_txt.setFont(m_debug_cnsl.getFont());
-                tmp_txt.setCharacterSize(30);
-                tmp_txt.setScale(0.15f, 0.15f);
-                {
-                    //_txt2 - item(id = 1) for data (text)
-                    auto _txt = std::make_unique<menu::Text>();
-                    _txt->setText(tmp_txt);
-                    _txt->setPosition(sf::Vector2f(0.005f, 0.05f));
-
-                    m_debug_cnsl.atMenu(ConsoleType::Main).addOtherItem(std::move(_txt));
-                }
+        changeMood(Mood::MainMenu);
+    }
 
 
-                menu::Button _but;
-                _but.setSize({ 0.05f, 0.03f });
+    void Game::run() {
 
-                _but.setTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setTextureRect(sf::IntRect(115, 0, 85, 31), menu::Button::Stat::HighLight);
-                _but.setTextureRect(sf::IntRect(115, 31, 85, 31), menu::Button::Stat::Pressed);
-                _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
+        sf::Clock clock;
+        float periodUpdate = 0.f;
+        while (getMood() != Game::Mood::Exit) {
+            m_period = clock.restart().asSeconds();
+            periodUpdate += m_period * GAME_SPEED_CONTROLLER;
 
-                tmp_txt.setScale(0.15f, 0.15f);
-                tmp_txt.setFillColor(sf::Color::White);
-                _but.setText(tmp_txt);
+            while (periodUpdate > FrameTime) {
+                periodUpdate -= FrameTime;
+                checkEvents();
+                checkKeyBoard();
 
-                {//button to Main(pressed)
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setTextureRect(sf::IntRect(115, 31, 85, 31));
-                    _but1->setPosition({ 0.025f, 0.015f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("main");
-                    m_debug_cnsl.atMenu(ConsoleType::Main).addOtherItem(std::move(_but1));
-                }
-                {//button to Hero
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.075f, 0.015f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("Hero");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        cnsl->activate(ConsoleType::Hero);
-                        });
-                    m_debug_cnsl.atMenu(ConsoleType::Main).addButton(ConsoleButton::toHero, std::move(_but1));
-                }
-                {//button to Entities
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.125f, 0.015f });
-                    _but1->setPositionTxt({ 0.17f, 0.2f });
-                    _but1->setString("entities");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        cnsl->activate(ConsoleType::Entities);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Main).addButton(ConsoleButton::toEntities, std::move(_but1));
-                }
+                update(FrameTime);
+                m_update_VS_render++;
             }
-            //Hero page
-            {
-                m_debug_cnsl.create(ConsoleType::Hero);
-                m_debug_cnsl.atMenu(ConsoleType::Hero).setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
+            updateDbConsole(m_period);
 
-                //set background
-                {
-                    auto _bg(std::make_unique<menu::Image>());
-                    _bg->setSize(sf::Vector2f(0.4f, 0.7f));
-                    _bg->setTextureRect(sf::IntRect(0, 0, 100, 100));
-                    m_debug_cnsl.atMenu(ConsoleType::Hero).addImage(std::move(_bg));
-                }
-                //set text
-                sf::Text tmp_txt;
-                tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
-                tmp_txt.setFont(m_debug_cnsl.getFont());
-                tmp_txt.setCharacterSize(30);
-                tmp_txt.setScale(0.15f, 0.15f);
-
-                {//_txt - item(id = 1) for data (text)
-                    auto _txt = std::make_unique<menu::Text>();
-                    _txt->setText(tmp_txt);
-                    _txt->setPosition(sf::Vector2f(0.005f, 0.05f));
-
-                    m_debug_cnsl.atMenu(ConsoleType::Hero).addOtherItem(std::move(_txt));
-                }
-
-                //set button
-                menu::Button _but;
-                _but.setSize({ 0.05f, 0.03f });
-
-                _but.setTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setTextureRect(sf::IntRect(115, 0, 85, 31), menu::Button::Stat::HighLight);
-                _but.setTextureRect(sf::IntRect(115, 31, 85, 31), menu::Button::Stat::Pressed);
-                _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
-
-                tmp_txt.setScale(0.15f, 0.15f);
-                tmp_txt.setFillColor(sf::Color::White);
-                _but.setText(tmp_txt);
-
-                {//button to Main
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.025f, 0.015f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("main");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        cnsl->activate(ConsoleType::Main);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Hero).addButton(ConsoleButton::toMain, std::move(_but1));
-                }
-                {//button to Hero(pressed)
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setTextureRect(sf::IntRect(115, 31, 85, 31));
-                    _but1->setPosition({ 0.075f, 0.015f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("Hero");
-                    m_debug_cnsl.atMenu(ConsoleType::Hero).addOtherItem(std::move(_but1));
-                }
-                {//button to Entities
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.125f, 0.015f });
-                    _but1->setPositionTxt({ 0.17f, 0.2f });
-                    _but1->setString("entities");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        cnsl->activate(ConsoleType::Entities);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Hero).addButton(ConsoleButton::toEntities, std::move(_but1));
-                }
-
-            }
-            //Entities page
-            {
-                m_debug_cnsl.create(ConsoleType::Entities);
-                m_debug_cnsl.atMenu(ConsoleType::Entities).setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
-
-                //set background
-                {
-                    auto _bg(std::make_unique<menu::Image>());
-                    _bg->setSize(sf::Vector2f(0.4f, 0.7f));
-                    _bg->setTextureRect(sf::IntRect(0, 0, 100, 100));
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addImage(std::move(_bg));
-                }
-
-                //set text
-                sf::Text tmp_txt;
-                tmp_txt.setFillColor(sf::Color(80, 80, 80, 255));
-                tmp_txt.setFont(m_debug_cnsl.getFont());
-                tmp_txt.setCharacterSize(30);
-                tmp_txt.setScale(0.15f, 0.15f);
-                {//id_entiti - item(id = 1) with id of entity
-                    auto id_entiti = std::make_unique<menu::DataInt>();
-                    id_entiti->set(19);
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addOtherItem(std::move(id_entiti));
-                }
-                {//_txt - item(id = 2) for data (text)
-                    auto _txt = std::make_unique<menu::Text>();
-                    _txt->setText(tmp_txt);
-                    _txt->setPosition(sf::Vector2f(0.005f, 0.05f));
-
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addOtherItem(std::move(_txt));
-                }
-                //set button
-                menu::Button _but;
-                _but.setSize({ 0.05f, 0.03f });
-
-                _but.setTextureRect(sf::IntRect(115, 0, 85, 31));
-                _but.setTextureRect(sf::IntRect(115, 0, 85, 31), menu::Button::Stat::HighLight);
-                _but.setTextureRect(sf::IntRect(115, 31, 85, 31), menu::Button::Stat::Pressed);
-                _but.setTexture(m_debug_cnsl.atMenu(ConsoleType::Main).getTexture());
-
-                tmp_txt.setScale(0.15f, 0.15f);
-                tmp_txt.setFillColor(sf::Color::White);
-                _but.setText(tmp_txt);
-
-                {//button to Main
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.025f, 0.015f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("main");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        cnsl->activate(ConsoleType::Main);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::toMain, std::move(_but1));
-                }
-                {//button to Hero
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.075f, 0.015f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("Hero");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        cnsl->activate(ConsoleType::Hero);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::toHero, std::move(_but1));
-                }
-                {//button to Entities(pressed)
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setTextureRect(sf::IntRect(115, 31, 85, 31));
-                    _but1->setPosition({ 0.125f, 0.015f });
-                    _but1->setPositionTxt({ 0.17f, 0.2f });
-                    _but1->setString("entities");
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addOtherItem(std::move(_but1));
-                }
-                {
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.225f, 0.685f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("next");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
-                        id_entity->set(id_entity->get() + 1);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::Next, std::move(_but1));
-                }
-                {
-                    auto _but1 = std::make_unique<menu::Button>(_but);
-                    _but1->setPosition({ 0.175f, 0.685f });
-                    _but1->setPositionTxt({ 0.3f, 0.3f });
-                    _but1->setString("pref");
-                    _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                        const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
-                        id_entity->set(id_entity->get() - 1);
-                    });
-                    m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(ConsoleButton::Pref, std::move(_but1));
-                }
-            }
-        }//end set Concole
-
-        changeMood(GameMood::MainMenu);
-    }
-
-    void NodeGame::_addMainMenu_() {
-        m_menus.create(TipeMenu::Main);
-
-        if (!m_menus.atMenu(TipeMenu::Main).setTexture(MENU_BACKGROUND1_FNAME)) {
-            assert(0);
+            m_update_VS_render = 0;
+            draw();
         }
-
-        menu::Button _but;
-        _but.setSize({ 0.15f, 0.095f});
-        sf::Text _txt;
-        _txt.setCharacterSize(MAIN_MENU_FONT_SIZE);
-        _txt.setFillColor(MAIN_MENU_FONT_COLOR);
-        
-
-        sf::Text _hl_txt = _txt;
-        _hl_txt.setFillColor(sf::Color::Blue);
-        sf::Text _pr_txt = _txt;
-        _pr_txt.setFillColor(sf::Color::Black);
-
-
-        _but.setText(_txt);
-        _but.setText(_hl_txt, menu::Button::Stat::HighLight);
-        _but.setText(_pr_txt, menu::Button::Stat::Pressed);
-        _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
-
-
-        _but.setString("Game");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::Game);
-            });
-        _but.setPosition({ 0.65f, 0.46f });
-        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toGame, _but);
-
-
-        _but.setString("Exit");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::Exit);
-            });
-        _but.setPosition({ 0.65f, 0.56f });
-        m_menus.atMenu(TipeMenu::Main).addButton(MenuButton::toExit, _but);
-
-
-        auto _bg(std::make_unique<menu::Image>());
-        _bg->setSize(sf::Vector2f(1.f, 1.f));
-        _bg->setTextureRect(sf::IntRect(0, 0, 1003, 563));
-        m_menus.atMenu(TipeMenu::Main).addImage(std::move(_bg));
-
-    }
-
-    void NodeGame::_addPauseMenu_() {
-
-        m_menus.create(TipeMenu::Pause);
-
-        if (!m_menus.atMenu(TipeMenu::Pause).setTexture(MENU_BACKGROUND_PAUSE_FNAME)) {
-            assert(0);
-        }
-
-        menu::Button _but;
-        _but.setSize({ 0.15f, 0.095f });
-        sf::Text _txt;
-        _txt.setCharacterSize(MAIN_MENU_FONT_SIZE);
-        _txt.setFillColor(MAIN_MENU_FONT_COLOR);
-
-        sf::Text _hl_txt = _txt;
-        _hl_txt.setFillColor(sf::Color::Blue);
-        sf::Text _pr_txt = _txt;
-        _pr_txt.setFillColor(sf::Color::Black);
-
-        _but.setText(_txt);
-        _but.setText(_hl_txt, menu::Button::Stat::HighLight);
-        _but.setText(_pr_txt, menu::Button::Stat::Pressed);
-        _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
-
-
-        _but.setString("Continue");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::Game);
-            });
-        _but.setPosition({ 0.8f, 0.2f });
-        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Continue, _but);
-
-        _but.setString("Restart");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::Restart);
-            });
-        _but.setPosition({ 0.8f, 0.3f });
-        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::Restart, _but);
-
-        _but.setString("Menu");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::MainMenu);
-            });
-        _but.setPosition({ 0.8f, 0.4f });
-        m_menus.atMenu(TipeMenu::Pause).addButton(MenuButton::toMainMenu, _but);
-
-
-        auto _bg(std::make_unique<menu::Image>());
-        _bg->setSize(sf::Vector2f(1.f, 1.f));
-        _bg->setTextureRect(sf::IntRect(0, 0, 256, 144));
-        m_menus.atMenu(TipeMenu::Pause).addImage(std::move(_bg));
-    }
-
-    void NodeGame::_addDeathMenu_() {
-       
-        m_menus.create(TipeMenu::Death); 
-
-        if (!m_menus.atMenu(TipeMenu::Death).setTexture(MENU_BACKGROUND_DEATH_FNAME)) {
-            assert(0);
-        }
-
-        menu::Button _but;
-        _but.setSize({ 0.15f, 0.095f });
-        sf::Text _txt;
-        _txt.setCharacterSize(MAIN_MENU_FONT_SIZE);
-        _txt.setFillColor(MAIN_MENU_FONT_COLOR);
-
-        sf::Text _hl_txt = _txt;
-        _hl_txt.setFillColor(sf::Color::Blue);
-        sf::Text _pr_txt = _txt;
-        _pr_txt.setFillColor(sf::Color::Black);
-
-        _but.setText(_txt);
-        _but.setText(_hl_txt, menu::Button::Stat::HighLight);
-        _but.setText(_pr_txt, menu::Button::Stat::Pressed);
-        _but.setPositionTxt(sf::Vector2f(0.5f, 0.5f));
-
-        _but.setString("Restart");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::Restart);
-            });
-        _but.setPosition({ 0.5f, 0.55f });
-        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::Restart, _but);
-
-        _but.setString("Menu");
-        _but.setScript(menu::Button::Script::Released, [this]() {
-            this->changeMood(GameMood::MainMenu);
-            });
-        _but.setPosition({ 0.5f, 0.65f });
-        m_menus.atMenu(TipeMenu::Death).addButton(MenuButton::toMainMenu, _but);
-
-
-        auto _bg(std::make_unique<menu::Image>());
-        _bg->setSize(sf::Vector2f(1.f, 1.f));
-        _bg->setTextureRect(sf::IntRect(0, 0, 1920, 1080));
-        m_menus.atMenu(TipeMenu::Death).addImage(std::move(_bg));
-
     }
 
 
-    void NodeGame::draw(sf::RenderStates states) {
+    void Game::draw() {
 
         m_window.clear();
 
         m_window.setView(m_view);
 
+        sf::Transform states;
         switch (m_mood) 
         {
-        case GameMood::Game: 
+        case Mood::Game: 
             m_map.drawBackGround(m_window, states);
             m_map.drawMap(m_window, states);
-
-
             m_hero.draw(m_window, states);
-
-
             for (auto elem : m_entities) {
-
                 elem->draw(m_window, states);
-
             }
-
             m_map.drawFrontGround(m_window, states);
-
             break; // case GameMod::Game
-        
 
-        case GameMood::MainMenu:
-
+        case Mood::MainMenu:
             m_menus.drawActive(m_window);
-            
             break;
-
 
             //these menus are drawn against the background of a stopped game
-        case GameMood::Pause:
-        case GameMood::Death:
-
+        case Mood::Pause:
+        case Mood::Death:
             m_map.drawBackGround(m_window, states);
             m_map.drawMap(m_window, states);
-
-
             m_hero.draw(m_window, states);
-
             for (auto elem : m_entities) {
-
                 elem->draw(m_window, states);
-
             }
             m_map.drawFrontGround(m_window, states);
-
-
             m_menus.drawActive(m_window);
-
             break;
-
         }
 
         if (m_cnslIsActive) {
@@ -544,13 +160,12 @@ namespace ezg {
         }
 
         m_window.display();
-
     }
 
 
-    bool NodeGame::loadLevelXML(const std::string& _fileXML) {
+    bool Game::loadLevelXML(const std::string& _fileXML) {
 
-        //changeMood(GameMood::Loading);
+        //changeMood(Mood::Loading);
 
         //system("dir");
         tinyxml2::XMLDocument lvl;
@@ -572,6 +187,9 @@ namespace ezg {
                 }
                 else if (0 == std::strcmp(pr->Attribute("name"), "view spawn(y)")) {
                     m_view.setCenter(m_view.getCenter().x, pr->Int64Attribute("value"));
+                }
+                else {
+                    std::cout << std::endl << "unknown property's name for map: " << pr->Attribute("name") << std::endl;
                 }
 
                 pr = pr->NextSiblingElement();
@@ -617,15 +235,12 @@ namespace ezg {
             else if (0 == std::strcmp(layer->Name(), "layer")) {
 
                 if (0 == std::strcmp(layer->Attribute("name"), "background")) {
-                    
                     m_map.addBackGround(layer);
                 }
                 else if (0 == std::strcmp(layer->Attribute("name"), "frontground")) {
-
                     m_map.addFrontGround(layer); 
                 }
                 else {
-
                     m_map.addLayer(layer);
                 }
 
@@ -646,7 +261,6 @@ namespace ezg {
                     const int64_t height = obj->Int64Attribute("height");
                     //todo вынести в Entity
                     if (obj->Attribute("type") == nullptr) {
-
                         std::cout << "unknown tipe object" << std::endl;
                     }
                     else if (0 == std::strcmp(obj->Attribute("type"), "solid")) {
@@ -684,6 +298,9 @@ namespace ezg {
                                 else if (0 == std::strcmp(pr->Attribute("name"), "speed")) {
                                     res->setSpeedFactor(pr->Int64Attribute("value"));
                                 }
+                                else {
+                                    std::cout << std::endl << "unknown property's name for MushroomRed: " << pr->Attribute("name") << std::endl;
+                                }
                                 pr = pr->NextSiblingElement();
                             }
                         }
@@ -712,6 +329,9 @@ namespace ezg {
                                 else if (0 == std::strcmp(pr->Attribute("name"), "speed")) {
                                     res->setSpeedFactor(pr->Int64Attribute("value"));
                                 }
+                                else {
+                                    std::cout << std::endl << "unknown property's name for MushroomBlue: " << pr->Attribute("name") << std::endl;
+                                }
                                 pr = pr->NextSiblingElement();
                             }
                         }
@@ -736,6 +356,9 @@ namespace ezg {
                                 }
                                 else if (0 == std::strcmp(pr->Attribute("name"), "damage")) {
                                     res->setDamage(pr->Int64Attribute("value"));
+                                }
+                                else {
+                                    std::cout << std::endl << "unknown property's name for Bee: " << pr->Attribute("name") << std::endl;
                                 }
 
                                 pr = pr->NextSiblingElement();
@@ -762,6 +385,9 @@ namespace ezg {
                                 else if (0 == std::strcmp(pr->Attribute("name"), "damage")) {
                                     res->setDamage(pr->Int64Attribute("value"));
                                 }
+                                else {
+                                    std::cout << std::endl << "unknown property's name for Snake: " << pr->Attribute("name") << std::endl;
+                                }
 
                                 pr = pr->NextSiblingElement();
                             }
@@ -781,6 +407,9 @@ namespace ezg {
 
                             if (0 == std::strcmp(pr->Attribute("name"), "damage")) {
                                 res->setDamage(pr->Int64Attribute("value"));
+                            }
+                            else {
+                                std::cout << std::endl << "unknown property's name for Needle: " << pr->Attribute("name") << std::endl;
                             }
 
                             pr = pr->NextSiblingElement();
@@ -803,14 +432,15 @@ namespace ezg {
                                     m_hero.setHp(pr->IntAttribute("value"));
                                     //assert(m_hero.m_hp > 0);
                                 }
-                              
+                                else {
+                                    std::cout << std::endl << "unknown property's name for playerspawn: " << pr->Attribute("name") << std::endl;
+                                }
                                 pr = pr->NextSiblingElement();
                             }
                         }
 
                     }
                     else {
-
                         std::cout << "unknown tipe object: " << obj->Attribute("type") << std::endl;
                     }
 
@@ -829,7 +459,7 @@ namespace ezg {
     } // loadLevelXML
 
 
-    void NodeGame::checkEvents() {
+    void Game::checkEvents() {
 
         sf::Event event;
         while (m_window.pollEvent(event))
@@ -838,24 +468,19 @@ namespace ezg {
             switch (m_mood)
             {
 ///////////////////////////Game///////////////////////////////////
-            case GameMood::Game:
-                m_hero.checkEvent(event);
+            case Mood::Game:
+                addObject(m_hero.checkEvent(event));
                 switch (event.type)
                 {
                 case sf::Event::Closed:
-                    m_mood = GameMood::Exit;
+                    m_mood = Mood::Exit;
                     break;
 
                 case sf::Event::KeyPressed:
                     switch (event.key.code)
                     {
                     case sf::Keyboard::Escape:
-                        changeMood(GameMood::Pause);
-                        break;
-
-                    case sf::Keyboard::LControl:
-                    case sf::Keyboard::RControl:
-                        addObject(std::move(m_hero.fire()));
+                        changeMood(Mood::Pause);
                         break;
                     }
                     break; //case sf::Event::KeyPressed:
@@ -863,40 +488,40 @@ namespace ezg {
                 break; 
 
 ///////////////////////////Pause///////////////////////////////////
-            case GameMood::Pause:
+            case Mood::Pause:
                 m_menus.checkEvent(event, m_window);
                 switch (event.type)
                 {
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {
-                        changeMood(GameMood::Game);
+                        changeMood(Mood::Game);
                     }
                     break;
 
                 case sf::Event::Closed:
-                    m_mood = GameMood::Exit;
+                    m_mood = Mood::Exit;
                     break;
                 }
                 break;
 
 ///////////////////////////Death///////////////////////////////////
-            case GameMood::Death:
+            case Mood::Death:
                 m_menus.checkEvent(event, m_window);
                 switch (event.type)
                 {
                 case sf::Event::Closed:
-                    m_mood = GameMood::Exit;
+                    m_mood = Mood::Exit;
                     break;
                 }
                 break;
 
 ///////////////////////////MainMenu///////////////////////////////////
-            case GameMood::MainMenu:
+            case Mood::MainMenu:
                 m_menus.checkEvent(event, m_window);
                 switch (event.type)
                 {
                 case sf::Event::Closed:
-                    m_mood = GameMood::Exit;
+                    m_mood = Mood::Exit;
                     break;
                 }
                 break;
@@ -908,11 +533,11 @@ namespace ezg {
     }
 
 
-    void NodeGame::checkKeyBoard() {
+    void Game::checkKeyBoard() {
 
         switch (m_mood) {
 
-        case GameMood::Game:
+        case Mood::Game:
             m_hero.checkKeyBoard();
             break;
 
@@ -920,17 +545,17 @@ namespace ezg {
     }
 
 
-    void NodeGame::changeMood(GameMood _new) {
+    void Game::changeMood(Mood _new) {
 
         switch (_new)
         {
-        case GameMood::Exit:
+        case Mood::Exit:
             clear();
             m_mood = _new;
             break;
 
-        case GameMood::Game:
-            if (m_mood != GameMood::Pause) {
+        case Mood::Game:
+            if (m_mood != Mood::Pause) {
                 clear();
                 loadLevelXML(LVL_FNAME);
             }
@@ -938,25 +563,25 @@ namespace ezg {
             m_mood = _new;
             break;
 
-        case GameMood::Restart:
+        case Mood::Restart:
             clear();
             loadLevelXML(LVL_FNAME);
             m_clock.restart();
-            m_mood = GameMood::Game;
+            m_mood = Mood::Game;
             break;
 
-        case GameMood::MainMenu:
+        case Mood::MainMenu:
             clear();
             m_menus.activate(TipeMenu::Main);
             m_mood = _new;
             break;
 
-        case GameMood::Pause:
+        case Mood::Pause:
             m_menus.activate(TipeMenu::Pause);
             m_mood = _new;
             break;
 
-        case GameMood::Death:
+        case Mood::Death:
             m_menus.activate(TipeMenu::Death);
             m_mood = _new;
             break;
@@ -968,7 +593,7 @@ namespace ezg {
     }
 
 
-    void NodeGame::clear() {
+    void Game::clear() {
 
         m_window.clear();
         
@@ -983,34 +608,27 @@ namespace ezg {
     }
 
 
-    void NodeGame::update() {
-
-        m_period = m_clock.restart().asSeconds();
-
-        updateDbConsole(m_period);
-
-        m_period *= GAME_SPEED_CONTROLLER;
-        m_time += m_period;
+    void Game::update(float _time) {
 
         switch (m_mood) 
         {
-        case GameMood::Game:
+        case Mood::Game:
 
-            m_hero.upEffect(m_period);
+            m_hero.upEffect(_time);
 
-            upAllPosition(m_period, Direction::Horixontal);
+            upAllPosition(_time, Direction::Horixontal);
             allColision(Direction::Horixontal);
 
-            upAllPosition(m_period, Direction::Vertical);
+            upAllPosition(_time, Direction::Vertical);
             allColision(Direction::Vertical);
 
-            allOtherUpdate(m_period);
+            allOtherUpdate(_time);
 
-            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * m_period,
-                (getPosHeroY() - m_view.getCenter().y) * m_period));
+            m_view.move(sf::Vector2f((getPosHeroX() - m_view.getCenter().x) * _time,
+                (getPosHeroY() - m_view.getCenter().y) * _time));
 
             if (m_hero.getStat() == Entity::Stat::Death) {
-                changeMood(GameMood::Death);
+                changeMood(Mood::Death);
             }
             break;
 
@@ -1019,7 +637,7 @@ namespace ezg {
     } // update
 
 
-    void NodeGame::upAllPosition(float time, Direction _dir) {
+    void Game::upAllPosition(float time, Direction _dir) {
 
         m_hero.upPosition(time, _dir);
 
@@ -1030,7 +648,7 @@ namespace ezg {
     }
 
 
-    void NodeGame::allColision(Direction _dir) {
+    void Game::allColision(Direction _dir) {
 
         for (const gsl::not_null < Entity* > elem : m_entities) {
 
@@ -1051,7 +669,7 @@ namespace ezg {
     }
 
 
-    void NodeGame::allOtherUpdate(float _time) {
+    void Game::allOtherUpdate(float _time) {
 
         m_hero.otherUpdate(_time);
 
@@ -1073,7 +691,7 @@ namespace ezg {
     }
 
 
-    void NodeGame::checkEventDbConsole(const sf::Event& _event) {
+    void Game::checkEventDbConsole(const sf::Event& _event) {
 
         if (_event.type == sf::Event::KeyPressed) {
 
@@ -1090,7 +708,7 @@ namespace ezg {
     }
 
 
-    void NodeGame::updateDbConsole(float _time) {
+    void Game::updateDbConsole(float ) {
 
         if (m_cnslIsActive) {
             
@@ -1101,7 +719,7 @@ namespace ezg {
                 assert(txt != nullptr);
 
                 if (txt->getType() == menu::Item::Type::Text) {
-                    gsl::not_null<menu::Text*> ptr_txt = dynamic_cast<menu::Text*>(txt);
+                    const gsl::not_null<menu::Text*> ptr_txt = dynamic_cast<menu::Text*>(txt);
 
                     ptr_txt->setText(localDebugString() + '\n' + m_map.debugString());
                 }
@@ -1118,7 +736,6 @@ namespace ezg {
                     });
                 
                 if (ent != m_entities.cend()) {
-
                     txt->setText((*ent)->DebugStr());
                 }
                 else {
@@ -1137,7 +754,7 @@ namespace ezg {
     }
 
 
-    std::string NodeGame::localDebugString() {
+    std::string Game::localDebugString() {
 
         using std::setw;
         using std::endl;
@@ -1148,9 +765,10 @@ namespace ezg {
 
         out << setw(13) << setfill('\t') << "FPS" << 1.f / m_period << endl
             << setw(16) << "game speed" << "  " << GAME_SPEED_CONTROLLER << endl
+            << setw(20) << "update in a frame" << "   " << m_update_VS_render << endl
             << setw(15) << "game mood" << "  " << m_mood << endl
             << setw(20) << "number of objects" << "   " << m_entities.size() << endl
-            << setw(14) << "m_time" << " " << m_time << endl
+            << setw(14) << "time" << " " << m_clock.getElapsedTime().asSeconds() << endl
             << setw(20) << "window resolution" << "  " << m_window.getSize().x << 'x' << m_window.getSize().y << endl
             << setw(17) << "mouse coord" << "(" << sf::Mouse::getPosition().x << ", " << sf::Mouse::getPosition().y << ") || ("
               << static_cast<int>(m_window.mapPixelToCoords(sf::Mouse::getPosition()).x) << ", " 
@@ -1163,10 +781,10 @@ namespace ezg {
     }
 
 
-#define GMcase(a) case GameMood::a: \
+#define GMcase(a) case Game::Mood::a: \
 res = #a; \
 break;
-    std::string enumName(GameMood _en) {
+    std::string enumName(Game::Mood _en) {
 
         std::string res;
 
@@ -1184,7 +802,7 @@ break;
 
         return res;
     }
-    std::ostream& operator<<(std::ostream& _stream, GameMood _en) {
+    std::ostream& operator<<(std::ostream& _stream, Game::Mood _en) {
         _stream << enumName(_en);
         return _stream;
     }

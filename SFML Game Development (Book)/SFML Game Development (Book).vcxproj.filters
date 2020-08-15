@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{0b168a1a-65e7-4cb4-9ad6-c13f2854193b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{1ffde5b7-535c-46fe-b5ee-9153494a2d33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\ResourceHolder">
+      <UniqueIdentifier>{351e11e8-9791-46d5-b89f-9ffab826eeb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\SceneNode">
+      <UniqueIdentifier>{2819df55-4a35-45aa-abc3-01c04c2c3399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource\Textures">
+      <UniqueIdentifier>{443b79c5-aac5-4e84-bbc9-b9af4ddeb508}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Aircraft">
+      <UniqueIdentifier>{ffcad2e5-5322-415f-8023-3bb6508cecc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\SpriteNode">
+      <UniqueIdentifier>{ceb6adad-f7ec-4e00-b39e-d3988f82190b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tools\SceneNode\SceneNode.cpp">
+      <Filter>Tools\SceneNode</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Entities\Entity.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\Aircraft\Aircraft.cpp">
+      <Filter>Entities\Aircraft</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\SpriteNode\SpriteNode.cpp">
+      <Filter>Tools\SpriteNode</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\World.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\Game.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tools\SceneNode\SceneNode.h">
+      <Filter>Tools\SceneNode</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\ResourceHolder\ResourceHolder.h">
+      <Filter>Tools\ResourceHolder</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Entity.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\Aircraft\Aircraft.h">
+      <Filter>Entities\Aircraft</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="tools\SpriteNode\SpriteNode.h">
+      <Filter>Tools\SpriteNode</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\World.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\Game.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tools\ResourceHolder\ResourceHolder.inl">
+      <Filter>Tools\ResourceHolder</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource\Textures\Desert.png">
+      <Filter>Resource\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Textures\Eagle.png">
+      <Filter>Resource\Textures</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

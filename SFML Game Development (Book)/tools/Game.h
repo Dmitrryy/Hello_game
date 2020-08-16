@@ -3,31 +3,38 @@
 #include <SFML/Graphics.hpp>
 
 #include "World.h"
+#include "Player.h"
 
-class Game : private sf::NonCopyable
-{
-public:
-	Game();
-	void run();
+namespace ezg {
 
-
-private:
-	void processEvents();
-	void update(sf::Time elapsedTime);
-	void render();
-
-	void updateStatistics(sf::Time elapsedTime);
-	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+	class Game : private sf::NonCopyable
+	{
+	public:
+		Game();
+		void run();
 
 
-private:
-	static const sf::Time	TimePerFrame;
+	private:
+		void processInput();
 
-	sf::RenderWindow		m_window;
-	World					m_world;
+		void update(sf::Time elapsedTime);
+		void render();
 
-	sf::Font				m_font;
-	sf::Text				m_statisticsText;
-	sf::Time				m_statisticsUpdateTime;
-	std::size_t				m_statisticsNumFrames;
-};
+		void updateStatistics(sf::Time elapsedTime);
+
+
+	private:
+		static const sf::Time	TimePerFrame;
+
+		sf::RenderWindow		m_window;
+		World					m_world;
+		Player                  m_player;
+
+		sf::Font				m_font;
+		sf::Text				m_statisticsText;
+		sf::Time				m_statisticsUpdateTime;
+		std::size_t				m_statisticsNumFrames;
+
+		bool m_isPaused;
+	};
+}

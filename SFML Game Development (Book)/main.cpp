@@ -9,7 +9,7 @@ int main()
 {
 	try
 	{
-		Game game;
+		ezg::Game game;
 		game.run();
 	}
 	catch (std::exception& e)

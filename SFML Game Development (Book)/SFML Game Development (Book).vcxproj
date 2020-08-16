@@ -78,6 +78,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -143,21 +146,28 @@
     <ClCompile Include="Entities\Entity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tools\Game.cpp" />
+    <ClCompile Include="tools\player.cpp" />
     <ClCompile Include="tools\SceneNode\SceneNode.cpp" />
     <ClCompile Include="tools\SpriteNode\SpriteNode.cpp" />
     <ClCompile Include="tools\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="categories.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Entities\Aircraft\Aircraft.h" />
     <ClInclude Include="Entities\Entity.h" />
+    <ClInclude Include="include\Flag\Flag.h" />
+    <ClInclude Include="tools\Command.h" />
+    <ClInclude Include="tools\CommandQueue.h" />
     <ClInclude Include="tools\Game.h" />
+    <ClInclude Include="tools\Player.h" />
     <ClInclude Include="tools\ResourceHolder\ResourceHolder.h" />
     <ClInclude Include="tools\SceneNode\SceneNode.h" />
     <ClInclude Include="tools\SpriteNode\SpriteNode.h" />
     <ClInclude Include="tools\World.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="include\Flag\Flag.inl" />
     <None Include="tools\ResourceHolder\ResourceHolder.inl" />
   </ItemGroup>
   <ItemGroup>

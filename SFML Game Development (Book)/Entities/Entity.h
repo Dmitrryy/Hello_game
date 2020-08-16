@@ -2,20 +2,23 @@
 
 #include "../tools/SceneNode/SceneNode.h"
 
+namespace ezg {
 
-class Entity : public SceneNode
-{
-public:
+	class Entity : public SceneNode
+	{
+	public:
 
-	void				setVelocity(sf::Vector2f velocity);
-	void				setVelocity(float vx, float vy);
-	sf::Vector2f		getVelocity() const;
+		void				setVelocity(sf::Vector2f velocity);
+		void				setVelocity(float vx, float vy);
+		sf::Vector2f		getVelocity() const;
 
-private:
+	private:
 
-	virtual void		updateCurrent(sf::Time dt);
+		virtual void		updateThis(sf::Time dt) override;
 
-private:
+	private:
 
-	sf::Vector2f		mVelocity;
-};
+		sf::Vector2f		mVelocity;
+	};
+
+}

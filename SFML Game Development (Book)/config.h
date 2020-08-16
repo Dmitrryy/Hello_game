@@ -22,6 +22,7 @@ namespace Resource
 	}
 }
 
+
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 

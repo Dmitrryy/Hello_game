@@ -2,18 +2,21 @@
 
 #include "../SceneNode/SceneNode.h"
 
-class SpriteNode : public SceneNode
-{
-public:
+namespace ezg {
 
-	SpriteNode(const sf::Texture& texture);
-	SpriteNode(const sf::Texture& texture, const sf::IntRect& rect);
+	class SpriteNode : public SceneNode
+	{
+	public:
 
-private:
+		SpriteNode(const sf::Texture& texture);
+		SpriteNode(const sf::Texture& texture, const sf::IntRect& rect);
 
-	void drawThis(sf::RenderTarget& target, sf::RenderStates states) const final;
+	private:
 
-private:
+		void drawThis(sf::RenderTarget& target, sf::RenderStates states) const final;
 
-	sf::Sprite m_sprite;
-};
+	private:
+
+		sf::Sprite m_sprite;
+	};
+}

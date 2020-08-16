@@ -1,61 +1,76 @@
 #include "SceneNode.h"
 #include <cassert>
 
-void SceneNode::attachChild(Ptr&& child)
-{
-	child->m_parent = this;
-	m_children.push_back(std::move(child));
-}
+namespace ezg {
 
-std::unique_ptr<SceneNode> SceneNode::detachChild(const SceneNode& node)
-{
-	auto found = std::find_if(m_children.begin(), m_children.end(),
-		[&node](Ptr& p) -> bool { return p.get() == &node; });
-	assert(found != m_children.end());
-
-	Ptr result = std::move(*found);
-	result->m_parent = nullptr;
-	m_children.erase(found);
-
-	return result;
-}
-
-void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) /*final*/ const
-{
-	states.transform *= getTransform();
-
-	drawThis(target, states);
-	drawChildren(target, states);
-}
-
-void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const {
-	for (const Ptr& ch : m_children) {
-		ch->draw(target, states);
+	void SceneNode::attachChild(Ptr&& child)
+	{
+		child->m_parent = this;
+		m_children.push_back(std::move(child));
 	}
-}
 
-void SceneNode::update(sf::Time _time) {
-	updateThis(_time);
-	updateChildren(_time);
-}
+	std::unique_ptr<SceneNode> SceneNode::detachChild(const SceneNode& node)
+	{
+		auto found = std::find_if(m_children.begin(), m_children.end(),
+			[&node](Ptr& p) -> bool { return p.get() == &node; });
+		assert(found != m_children.end());
 
-void SceneNode::updateChildren(sf::Time _time) {
-	for (const Ptr& ch : m_children) {
-		ch->update(_time);
+		Ptr result = std::move(*found);
+		result->m_parent = nullptr;
+		m_children.erase(found);
+
+		return result;
 	}
-}
 
-sf::Vector2f SceneNode::getWorldPosition() const
-{
-	return getWorldTransform() * sf::Vector2f();
-}
+	void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) /*final*/ const
+	{
+		states.transform *= getTransform();
 
-sf::Transform SceneNode::getWorldTransform() const
-{
-	sf::Transform transform = sf::Transform::Identity;
+		drawThis(target, states);
+		drawChildren(target, states);
+	}
 
-	for (const SceneNode* node = this; node != nullptr; node = node->m_parent)
-		transform = node->getTransform() * transform;
+	void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const 
+	{
+		for (const Ptr& ch : m_children) {
+			ch->draw(target, states);
+		}
+	}
 
-	return transform;
+	void SceneNode::update(sf::Time _time) {
+		updateThis(_time);
+		updateChildren(_time);
+	}
+
+	void SceneNode::updateChildren(sf::Time _time) {
+		for (const Ptr& ch : m_children) {
+			ch->update(_time);
+		}
+	}
+
+	sf::Vector2f SceneNode::getWorldPosition() const
+	{
+		return getWorldTransform() * sf::Vector2f();
+	}
+
+	sf::Transform SceneNode::getWorldTransform() const
+	{
+		sf::Transform transform = sf::Transform::Identity;
+
+		for (const SceneNode* node = this; node != nullptr; node = node->m_parent)
+			transform = node->getTransform() * transform;
+
+		return transform;
+	}
+
+	void SceneNode::onCommand(const Command& command, sf::Time dt)
+	{
+		if (command.category & getCategory()) {
+			command.action(*this, dt);
+		}
+
+		for (auto& ch : m_children) {
+			ch->onCommand(command, dt);
+		}
+	}
 }

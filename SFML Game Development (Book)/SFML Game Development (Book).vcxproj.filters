@@ -26,6 +26,12 @@
     <Filter Include="Tools\SpriteNode">
       <UniqueIdentifier>{ceb6adad-f7ec-4e00-b39e-d3988f82190b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{30719131-b80e-4ae5-9d3b-76aabda8957e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Flag">
+      <UniqueIdentifier>{8e6182d2-ca90-4b3c-949e-bb63f69c4c23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tools\SceneNode\SceneNode.cpp">
@@ -45,6 +51,9 @@
       <Filter>Tools</Filter>
     </ClCompile>
     <ClCompile Include="tools\Game.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\player.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,10 +80,26 @@
     <ClInclude Include="tools\Game.h">
       <Filter>Tools</Filter>
     </ClInclude>
+    <ClInclude Include="categories.h" />
+    <ClInclude Include="include\Flag\Flag.h">
+      <Filter>include\Flag</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\Command.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\CommandQueue.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\Player.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="tools\ResourceHolder\ResourceHolder.inl">
       <Filter>Tools\ResourceHolder</Filter>
+    </None>
+    <None Include="include\Flag\Flag.inl">
+      <Filter>include\Flag</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

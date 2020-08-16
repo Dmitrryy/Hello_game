@@ -4,49 +4,58 @@
 #include <memory>
 #include <vector>
 
-class SceneNode : public sf::Drawable, public sf::Transformable
-{
-public:
+#include "../Command.h"
 
-	using Ptr = std::unique_ptr<SceneNode>;
+namespace ezg {
 
-	SceneNode (const SceneNode& _that)      = delete; //not saported
-	SceneNode& operator= (const SceneNode&) = delete; //not saported
-	SceneNode (SceneNode&& _that)           = delete; //not saported
-	SceneNode& operator= (SceneNode&&)      = delete; //not saported
+	class SceneNode : public sf::Drawable, public sf::Transformable
+	{
+	public:
 
-public:
+		using Ptr = std::unique_ptr<SceneNode>;
 
-	SceneNode()
-		: m_parent(nullptr)
-	{}
+		SceneNode(const SceneNode& _that) = delete; //not saported
+		SceneNode& operator= (const SceneNode&) = delete; //not saported
+		SceneNode(SceneNode&& _that) = delete; //not saported
+		SceneNode& operator= (SceneNode&&) = delete; //not saported
 
-public:
+	public:
 
-	void attachChild(Ptr&& child);
-	Ptr  detachChild(const SceneNode& node);
+		SceneNode()
+			: m_parent(nullptr)
+		{}
 
-public:
+	public:
 
-	void update(sf::Time _time);
+		void attachChild(Ptr&& child);
+		Ptr  detachChild(const SceneNode& node);
 
-	sf::Vector2f  getWorldPosition () const;
-	sf::Transform getWorldTransform() const;
+		virtual Category::Type getCategory() const noexcept { return Category::Type::Scene; }
 
-private:
+		void onCommand(const Command& command, sf::Time dt);
 
-	virtual void updateThis(sf::Time _time) { /*nop*/ }
-	void updateChildren(sf::Time _time);
+	public:
+
+		void update(sf::Time _time);
+
+		sf::Vector2f  getWorldPosition() const;
+		sf::Transform getWorldTransform() const;
+
+	private:
+
+		virtual void updateThis(sf::Time _time) { /*nop*/ }
+		void updateChildren(sf::Time _time);
 
 
-private:
+	private:
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
-	virtual void drawThis(sf::RenderTarget& target, sf::RenderStates states) const  {}
-	void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+		virtual void drawThis(sf::RenderTarget& target, sf::RenderStates states) const {}
+		void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
 
-private:
+	private:
 
-	SceneNode*       m_parent;
-	std::vector<Ptr> m_children;
-};
+		SceneNode* m_parent;
+		std::vector<Ptr> m_children;
+	};
+}

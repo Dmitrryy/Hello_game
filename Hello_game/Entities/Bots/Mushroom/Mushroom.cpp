@@ -76,14 +76,14 @@ namespace ezg {
 		if (_lhs->getType() == Entity::Type::Bullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
+				Bullet* bl = dynamic_cast<Bullet*>(_lhs);
 				getHit(bl->getHit());
 			}
 
 		}
 		else if (_lhs->getType() == Type::Hero) {
 			if (m_area_attack.intersects(_lhs->getHitBox())) {
-				const gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
+				Hero* _hr = dynamic_cast<Hero*>(_lhs);
 				result = attack(_hr->getPosX(), _hr->getPosY());
 			}
 		}

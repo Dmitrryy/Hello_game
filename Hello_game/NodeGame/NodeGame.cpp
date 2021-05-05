@@ -11,6 +11,7 @@
 #include "../Entities/Bots/Snake/Snake.h"
 #include "../Entities/Traps/Needle/Needle.h"
 
+
 namespace ezg {
 
     Game::Game()
@@ -259,7 +260,7 @@ namespace ezg {
 
                     const int64_t width = obj->Int64Attribute("width");
                     const int64_t height = obj->Int64Attribute("height");
-                    //todo вынести в Entity
+                    //todo пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Entity
                     if (obj->Attribute("type") == nullptr) {
                         std::cout << "unknown tipe object" << std::endl;
                     }
@@ -453,7 +454,7 @@ namespace ezg {
 
         } // while (layer != nullptr)
 
-        //todo: проверка на состояние уровня (все ли загружено) 
+        //todo: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ) 
         return true;
 
     } // loadLevelXML
@@ -641,7 +642,7 @@ namespace ezg {
 
         m_hero.upPosition(time, _dir);
 
-        for (const gsl::not_null < Entity* > elem : m_entities) {
+        for (Entity* elem : m_entities) {
             elem->upPosition(time, _dir);
         }
 
@@ -650,14 +651,14 @@ namespace ezg {
 
     void Game::allColision(Direction _dir) {
 
-        for (const gsl::not_null < Entity* > elem : m_entities) {
+        for (Entity* elem : m_entities) {
 
             addObject(m_hero.colision(elem, _dir));
             addObject(elem->colision(&m_hero, _dir));
         }
 
-        for (const gsl::not_null < Entity* > elem1 : m_entities) {
-            for (const gsl::not_null < Entity* > elem2 : m_entities) {
+        for (Entity*  elem1 : m_entities) {
+            for (Entity* elem2 : m_entities) {
 
                 if (elem1 != elem2) {
                     elem1->colision(elem2, _dir);
@@ -719,16 +720,16 @@ namespace ezg {
                 assert(txt != nullptr);
 
                 if (txt->getType() == menu::Item::Type::Text) {
-                    const gsl::not_null<menu::Text*> ptr_txt = dynamic_cast<menu::Text*>(txt);
+                    menu::Text* ptr_txt = dynamic_cast<menu::Text*>(txt);
 
                     ptr_txt->setText(localDebugString() + '\n' + m_map.debugString());
                 }
                 else { assert(0); }
             }
             else if (id == ConsoleType::Entities) {
-                const gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(
+                menu::Text* txt = dynamic_cast<menu::Text*>(
                     m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(2));
-                const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(
+                menu::DataInt* id_entity = dynamic_cast<menu::DataInt*>(
                     m_debug_cnsl.atMenu(ConsoleType::Entities).atItem(1));
 
                 auto ent = std::find_if(m_entities.cbegin(), m_entities.cend(), [i = id_entity->get()](auto _enttity) {
@@ -743,7 +744,7 @@ namespace ezg {
                 }
             }
             else if (id == ConsoleType::Hero) {
-                const gsl::not_null < menu::Text* > txt = dynamic_cast<menu::Text*>(
+                menu::Text* txt = dynamic_cast<menu::Text*>(
                     m_debug_cnsl.atMenu(ConsoleType::Hero).atItem(1));
 
                 txt->setText(m_hero.debugString());

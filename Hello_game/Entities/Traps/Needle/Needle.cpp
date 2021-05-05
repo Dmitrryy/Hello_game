@@ -1,8 +1,9 @@
-#include <gsl/gsl>
-#define GSL_THROW_ON_CONTRACT_VIOLATION
+#include <cmath>
 
 #include "Needle.h"
 #include "../../Hero/Player.h"
+
+
 namespace ezg {
 
 	Needle::Needle(float place_x, float place_y, float width, float height) noexcept
@@ -33,7 +34,7 @@ namespace ezg {
 					m_corner = 3.141592 + m_corner;
 				}
 
-				gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
+				Hero* _hr = dynamic_cast<Hero*>(_lhs);
 				_hr->getHit(Hit(m_damage, Effect(Effect::Type::Discarding, m_corner, 100.f, 0.12f)));
 			}
 		}

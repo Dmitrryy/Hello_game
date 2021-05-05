@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "MushroomBlue.h"
 
 #include "../../Bullets/Bullets.h"

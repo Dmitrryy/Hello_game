@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "Entity.h"
 #include "Solid/Solid.h"
 #include "Bots/Mushroom/MushroomRed.h"

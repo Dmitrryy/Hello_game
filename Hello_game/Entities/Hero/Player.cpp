@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <cmath>
 
 #include "Player.h"
 
@@ -282,7 +283,7 @@ namespace ezg {
         if (m_hit_box.intersects(_entity->getHitBox())) {
 
             if (_entity->getType() == Entity::Type::Landscape) {
-                gsl::not_null<Landscape*> lndscp = dynamic_cast<Landscape*>(_entity);
+                Landscape* lndscp = dynamic_cast<Landscape*>(_entity);
 
                 if (lndscp->getType() == Landscape::Type::Solid) {
                     if (_dir == Direction::Horixontal) {
@@ -345,7 +346,7 @@ namespace ezg {
                 }
             }
             else if (_entity->getType() == Entity::Type::Bullet) {
-                const gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_entity);
+                Bullet* bl = dynamic_cast<Bullet*>(_entity);
                 getHit(bl->getHit());
             }
            

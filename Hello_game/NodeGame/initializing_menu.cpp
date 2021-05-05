@@ -370,7 +370,7 @@ namespace ezg {
                 _but1->setPositionTxt({ 0.5f, 0.5f });
                 _but1->setString("next");
                 _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                    const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
+                    menu::DataInt* id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
                     id_entity->set(id_entity->get() + 1);
                 });
                 m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(std::move(_but1));
@@ -381,7 +381,7 @@ namespace ezg {
                 _but1->setPositionTxt({ 0.5f, 0.5f });
                 _but1->setString("pref");
                 _but1->setScript(menu::Button::Script::Released, [cnsl = &(this->m_debug_cnsl)]() {
-                    const gsl::not_null < menu::DataInt* > id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
+                    menu::DataInt* id_entity = dynamic_cast<menu::DataInt*>(cnsl->atMenu(ConsoleType::Entities).atItem(1));
                     id_entity->set(id_entity->get() - 1);
                 });
                 m_debug_cnsl.atMenu(ConsoleType::Entities).addButton(std::move(_but1));

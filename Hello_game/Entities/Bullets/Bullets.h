@@ -42,7 +42,7 @@ namespace ezg {
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
 				if (_lhs->getType() == Entity::Type::Landscape) {
 
-					const gsl::not_null<Landscape*> lndscp = dynamic_cast<Landscape*>(_lhs);
+					Landscape* lndscp = dynamic_cast<Landscape*>(_lhs);
 					if (lndscp->getType() == Landscape::Type::Solid) {
 						setAlive(false);
 					}

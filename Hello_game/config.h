@@ -20,9 +20,6 @@
 #include <memory>
 
 
-#include <gsl/gsl>
-#define GSL_THROW_ON_CONTRACT_VIOLATION
-
 
 ////////////////////////////////settings/////////////////////////////////////
 //game speed controller

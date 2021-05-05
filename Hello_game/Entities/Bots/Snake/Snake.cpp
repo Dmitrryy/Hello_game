@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <cmath>
 
 #include "Snake.h"
 
@@ -130,7 +131,7 @@ namespace ezg {
 		std::unique_ptr<Entity> result = nullptr;
 
 		if (_lhs->getType() == Entity::Type::Landscape) {
-			gsl::not_null<Landscape*> lndscp = dynamic_cast<Landscape*>(_lhs);
+			Landscape* lndscp = dynamic_cast<Landscape*>(_lhs);
 
 			if (lndscp->getType() == Landscape::Type::Solid) {
 
@@ -185,14 +186,14 @@ namespace ezg {
 		}
 		else if (_lhs->getType() == Entity::Type::Hero) {
 
-			const gsl::not_null<Hero*> _hr = dynamic_cast<Hero*>(_lhs);
+			Hero* _hr = dynamic_cast<Hero*>(_lhs);
 			_hr->getHit(attack(_hr->getHitBox()));
 
 		}
 		else if (_lhs->getType() == Entity::Type::Bullet) {
 
 			if (m_hit_box.intersects(_lhs->getHitBox())) {
-				gsl::not_null<Bullet*> bl = dynamic_cast<Bullet*>(_lhs);
+				Bullet* bl = dynamic_cast<Bullet*>(_lhs);
 				getHit(bl->getHit());
 			}
 		}

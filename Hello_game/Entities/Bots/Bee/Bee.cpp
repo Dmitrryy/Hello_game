@@ -97,8 +97,8 @@ namespace ezg {
 			m_goto = sf::Vector2f(_x, _y);
 
 			if (_rec.intersects(m_hit_box)) {
-				speed_x /= -1.3;
-				speed_y /= -1.3;
+				speed_x /= -1.3f;
+				speed_y /= -1.3f;
 				return Hit{ m_damage };
 			}
 		}
@@ -125,7 +125,6 @@ namespace ezg {
 
 
 	void Bee::upPosition(float _time, Direction _dir) noexcept /*override*/ {
-		
 		if (_dir == Direction::Horixontal) {
 			moveIt(countSpeed().x * _time, 0);
 		}
@@ -177,6 +176,7 @@ namespace ezg {
 		}
 
 	}
+#undef _eff_
 
 
 	void Bee::setEffect(const Effect& _eff) {
@@ -284,15 +284,14 @@ namespace ezg {
 		if (!m_hit_box.contains(sf::Vector2f(_x, _y))) {
 			const float diff_x = _x - (m_hit_box.left + m_hit_box.width / 2.f);
 			const float diff_y = _y - (m_hit_box.top + m_hit_box.height / 2.f);
-
-
+			
 			m_corner = std::atan(diff_y / diff_x);
 
 			if (diff_y < 0.f && diff_x < 0.f) {
-				m_corner -= 3.141592;
+				m_corner -= 3.141592f;
 			}
 			else if (diff_x < 0.f && diff_y > 0.f) {
-				m_corner = 3.141592 + m_corner;
+				m_corner = 3.141592f + m_corner;
 			}
 
 			speed_x += acl * std::cos(m_corner) * _time;

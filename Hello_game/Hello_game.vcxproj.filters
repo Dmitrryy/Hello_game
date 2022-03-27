@@ -90,7 +90,7 @@
     <ClCompile Include="Entities\Traps\Needle\Needle.cpp">
       <Filter>Entities\Traps\Needle</Filter>
     </ClCompile>
-    <ClCompile Include="NodeGame\initializing menu.cpp">
+    <ClCompile Include="NodeGame\initializing_menu.cpp">
       <Filter>NodeGame</Filter>
     </ClCompile>
   </ItemGroup>

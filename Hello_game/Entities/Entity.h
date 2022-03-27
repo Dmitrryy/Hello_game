@@ -104,7 +104,7 @@ namespace ezg {
 		bool			m_alive;
 		bool			is_gravity;
 
-		sf::FloatRect	m_hit_box;
+		sf::FloatRect	m_hit_box = {};
 	}; // class Entity
 	
 

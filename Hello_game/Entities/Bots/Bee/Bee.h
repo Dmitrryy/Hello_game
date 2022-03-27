@@ -117,8 +117,8 @@ namespace ezg {
 		sf::Vector2f    m_goto;
 
 
-		float			speed_x;
-		float			speed_y;
+		float			speed_x = 0.f;
+		float			speed_y = 0.f;
 		float			m_acceleration;
 		float			m_corner;
 

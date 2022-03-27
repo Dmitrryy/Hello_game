@@ -55,7 +55,7 @@
   </object>
  </objectgroup>
  <objectgroup id="6" name="enemy">
-  <object id="25" name="bee" type="bee" x="256" y="80.75" width="136.5" height="106">
+  <object id="25" name="bee" type="bee" x="120" y="100.75" width="136.5" height="106">
    <properties>
     <property name="damage" type="int" value="10"/>
     <property name="hp" type="int" value="100"/>
